@@ -38,8 +38,10 @@ npm run types:check        # TypeScript type check (vue-tsc)
 
 - `GET /` — Smart Redirect: eingeloggt → `/admin/links`, sonst → `/login`
 - `GET /tags/:slug` — öffentliche Tag-Seite (kein Login erforderlich)
+- `/admin/links`, `/admin/tags`, `/admin/buckets` — Admin-CRUD (in Entwicklung, siehe GitHub Issues)
 - `routes/settings.php` — `/settings/*`: profile, security, appearance
 - Fortify regelt alle Auth-Routen (login, 2FA, password reset, email verify); Registrierung deaktiviert
+- Admin-Account wird per `php artisan admin:create` angelegt (in Entwicklung)
 
 ### Middleware
 
