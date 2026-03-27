@@ -20,7 +20,7 @@ import type { NavItem } from '@/types';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard().url,
+        href: dashboard(),
         icon: LayoutGrid,
     },
 ];
@@ -45,7 +45,7 @@ const footerNavItems: NavItem[] = [
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard().url">
+                        <Link :href="dashboard()">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>

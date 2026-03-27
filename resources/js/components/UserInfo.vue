@@ -15,6 +15,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { getInitials } = useInitials();
 
+// Compute whether we should show the avatar image
 const showAvatar = computed(
     () => props.user.avatar && props.user.avatar !== '',
 );
@@ -30,10 +31,8 @@ const showAvatar = computed(
 
     <div class="grid flex-1 text-left text-sm leading-tight">
         <span class="truncate font-medium">{{ user.name }}</span>
-        <span
-            v-if="showEmail"
-            class="truncate text-xs text-muted-foreground"
-            >{{ user.email }}</span
-        >
+        <span v-if="showEmail" class="truncate text-xs text-muted-foreground">{{
+            user.email
+        }}</span>
     </div>
 </template>
