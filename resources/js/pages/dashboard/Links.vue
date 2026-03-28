@@ -26,6 +26,7 @@ type Tag = {
     id: number;
     name: string;
     color: string;
+    is_public: boolean;
 };
 
 type Link = {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { X } from 'lucide-vue-next';
+import { Globe, X } from 'lucide-vue-next';
 import {
     ComboboxAnchor,
     ComboboxContent,
@@ -19,6 +19,7 @@ type Tag = {
     id: number;
     name: string;
     color: string;
+    is_public: boolean;
 };
 
 const props = defineProps<{
@@ -135,6 +136,11 @@ function remove(id: number) {
                             :class="COLOR_BG[tag.color] ?? 'bg-gray-400'"
                         />
                         {{ tag.name }}
+                        <Globe
+                            v-if="tag.is_public"
+                            class="size-3 opacity-60 shrink-0"
+                            :aria-label="`${tag.name} is public`"
+                        />
                         <ComboboxItemIndicator class="ml-auto">
                             <span class="text-xs opacity-60">✓</span>
                         </ComboboxItemIndicator>

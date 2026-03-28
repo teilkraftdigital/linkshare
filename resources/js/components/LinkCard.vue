@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ExternalLink } from 'lucide-vue-next';
+import { ExternalLink, Globe } from 'lucide-vue-next';
 import { COLOR_BG } from '@/lib/colors';
 
 type Tag = {
     id: number;
     name: string;
     color: string;
+    is_public: boolean;
 };
 
 type Bucket = {
@@ -67,6 +68,11 @@ defineProps<Props>();
                     :class="COLOR_BG[tag.color] ?? 'bg-gray-400'"
                 />
                 {{ tag.name }}
+                <Globe
+                    v-if="tag.is_public"
+                    class="size-3 opacity-60"
+                    :aria-label="`${tag.name} is public`"
+                />
             </span>
         </div>
     </div>
