@@ -30,6 +30,9 @@ npm run dev                # Vite dev server
 npm run lint               # ESLint
 npm run format             # Prettier
 npm run types:check        # TypeScript type check (vue-tsc)
+
+# Wayfinder (after adding/changing routes or controllers)
+php artisan wayfinder:generate
 ```
 
 ## Architecture
@@ -37,24 +40,61 @@ npm run types:check        # TypeScript type check (vue-tsc)
 ### Route Structure
 
 - `GET /` — Smart Redirect: eingeloggt → `/dashboard`, sonst → `/login`
-- `GET /tags/:slug` — öffentliche Tag-Seite (kein Login erforderlich)
-- `/dashboard`, `/dashboard/links`, `/dashboard/tags`, `/dashboard/buckets` — Admin-CRUD (in Entwicklung, siehe GitHub Issues)
+- `GET /dashboard` — Dashboard (Auth + Verified)
+- `GET|POST /dashboard/buckets`, `PATCH|DELETE /dashboard/buckets/{bucket}` — Bucket-CRUD
+- `GET|POST /dashboard/tags`, `PATCH|DELETE /dashboard/tags/{tag}` — Tag-CRUD
+- `GET /tags/{tag:slug}` — öffentliche Tag-Seite, kein Login erforderlich
 - `routes/settings.php` — `/settings/*`: profile, security, appearance
 - Fortify regelt alle Auth-Routen (login, 2FA, password reset, email verify); Registrierung deaktiviert
-- Admin-Account wird per `php artisan admin:create` angelegt (in Entwicklung)
+- Admin-Account wird per `php artisan admin:create` angelegt
 
-### Middleware
+### Middleware & Shared Props
 
-- `HandleInertiaRequests` — shared props: `auth.user`, `sidebarOpen`
+- `HandleInertiaRequests` — shared props: `auth.user`, `appUrl`, `sidebarOpen`
 - `HandleAppearance` — setzt Theme aus Cookie
+- TypeScript-Typen für shared props in `resources/js/types/global.d.ts` (`InertiaConfig.sharedPageProps`)
+
+### Backend
+
+- **Controllers** leben in `app/Http/Controllers/Dashboard/` (CRUD) und `app/Http/Controllers/Settings/`
+- **Form Requests** in `app/Http/Requests/Dashboard/` validieren alle Eingaben; Controller greifen nur auf `$request->validated()` zu
+- **Services** in `app/Services/`: `InboxBucketResolver` (Inbox-Bucket sicherstellen), `SlugGenerator` (kollisionsfreie Slugs für Tags, berücksichtigt soft-deleted Einträge)
+- **Events/Listeners**: `AdminCreated` Event → `EnsureInboxBucketExists` Listener (via Laravel Event Discovery). Kopplung zwischen `admin:create`-Command und Inbox-Erzeugung erfolgt locker über dieses Event.
+- **Traits** in `app/Concerns/`: `PasswordValidationRules`, `ProfileValidationRules` — werden in Form Requests eingebunden
+
+### Datenmodelle
+
+- **Bucket** — `name`, `color`, `is_inbox` (bool; Inbox-Bucket kann nicht gelöscht werden), SoftDeletes
+- **Tag** — `name`, `slug` (auto-generiert via `SlugGenerator`), `description` (nullable), `color`, `is_public` (bool), SoftDeletes
 
 ### Frontend
 
-Pages in `resources/js/pages/` nach Feature (`auth/`, `settings/`). Layouts: `AppLayout` (Sidebar) und `AuthLayout`. Wayfinder generiert typisierte Route-Helper in `resources/js/actions/` und `resources/js/routes/`. UI-Komponenten via Reka UI (shadcn/ui für Vue).
+- Pages in `resources/js/pages/` nach Feature (`auth/`, `settings/`, `dashboard/`)
+- Layouts: `AppLayout` (mit Sidebar, inkl. `<Toaster />`) und `AuthLayout`
+- UI-Komponenten via Reka UI (shadcn/ui für Vue) in `resources/js/components/ui/`
+- Eigene Komponenten: `ColorPalette`, `ConfirmModal`, `Heading`, `InputError`
+- Toast-System: `useToast` Composable + `Toaster.vue` (3 s Auto-Dismiss)
+- Farb-Konstanten: `resources/js/lib/colors.ts` — `COLORS` (Array) und `COLOR_BG` (Record für Tailwind-Klassen), 12 Farben
 
-### Business Logic
+### Wayfinder
 
-Action classes in `app/Actions/Fortify/` (`CreateNewUser`). Traits in `app/Concerns/` (`PasswordValidationRules`, `ProfileValidationRules`) werden in Requests eingebunden.
+`resources/js/actions/` und `resources/js/routes/` sind **gitignored** — werden von `php artisan wayfinder:generate` erzeugt. Nach Änderungen an Controllern oder Routen muss Wayfinder neu generiert werden.
+
+### Formulare mit nicht-nativen Feldern (Farbe, Boolean)
+
+Die Inertia `<Form>`-Komponente serialisiert native FormData. Für Custom-Inputs werden versteckte `<input type="hidden">`-Felder verwendet:
+
+```vue
+<!-- Boolean (reka-ui Checkbox emittiert update:modelValue, nicht update:checked) -->
+<input type="hidden" name="is_public" :value="isPublic ? '1' : '0'" />
+<Checkbox v-model="isPublic" />
+
+<!-- Farbe -->
+<input type="hidden" name="color" :value="color" />
+<ColorPalette v-model="color" />
+```
+
+> **Wichtig:** reka-ui `CheckboxRoot` verwendet `modelValue`/`update:modelValue` — **nicht** `checked`/`update:checked`. Immer `v-model` verwenden.
 
 <laravel-boost-guidelines>
 === foundation rules ===

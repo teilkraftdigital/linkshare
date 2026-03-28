@@ -74,8 +74,10 @@ function deleteTag() {
     });
 }
 
-function copyUrl(slug: string) {
-    navigator.clipboard.writeText(`${window.location.origin}/tags/${slug}`);
+async function copyUrl(slug: string) {
+    const url = `${window.location.origin}/tags/${slug}`;
+    await navigator.clipboard.writeText(url);
+
     toast('URL copied', 'success');
 }
 </script>
@@ -139,11 +141,7 @@ function copyUrl(slug: string) {
                         name="is_public"
                         :value="createIsPublic ? '1' : '0'"
                     />
-                    <Checkbox
-                        id="create-is-public"
-                        :checked="createIsPublic"
-                        @update:checked="createIsPublic = !!$event"
-                    />
+                    <Checkbox id="create-is-public" v-model="createIsPublic" />
                     <Label for="create-is-public">Public</Label>
                     <InputError :message="errors.is_public" />
                 </div>
@@ -172,7 +170,11 @@ function copyUrl(slug: string) {
                     >
                         <div class="grid gap-4 sm:grid-cols-2">
                             <div class="flex flex-col gap-2">
-                                <Label :for="`tag-name-${tag.id}`" class="sr-only">Name</Label>
+                                <Label
+                                    :for="`tag-name-${tag.id}`"
+                                    class="sr-only"
+                                    >Name</Label
+                                >
                                 <Input
                                     :id="`tag-name-${tag.id}`"
                                     name="name"
@@ -184,7 +186,11 @@ function copyUrl(slug: string) {
                             </div>
 
                             <div class="flex flex-col gap-2">
-                                <Label :for="`tag-desc-${tag.id}`" class="sr-only">Description</Label>
+                                <Label
+                                    :for="`tag-desc-${tag.id}`"
+                                    class="sr-only"
+                                    >Description</Label
+                                >
                                 <Textarea
                                     :id="`tag-desc-${tag.id}`"
                                     name="description"
@@ -199,7 +205,11 @@ function copyUrl(slug: string) {
 
                         <div class="flex flex-wrap items-end gap-6">
                             <div class="flex flex-col gap-2">
-                                <input type="hidden" name="color" :value="editColor" />
+                                <input
+                                    type="hidden"
+                                    name="color"
+                                    :value="editColor"
+                                />
                                 <ColorPalette v-model="editColor" />
                                 <InputError :message="errors.color" />
                             </div>
@@ -212,16 +222,27 @@ function copyUrl(slug: string) {
                                 />
                                 <Checkbox
                                     :id="`edit-is-public-${tag.id}`"
-                                    :checked="editIsPublic"
-                                    @update:checked="editIsPublic = !!$event"
+                                    v-model="editIsPublic"
                                 />
-                                <Label :for="`edit-is-public-${tag.id}`">Public</Label>
+                                <Label :for="`edit-is-public-${tag.id}`"
+                                    >Public</Label
+                                >
                                 <InputError :message="errors.is_public" />
                             </div>
 
                             <div class="ml-auto flex gap-2">
-                                <Button type="submit" size="sm" :disabled="processing">Save</Button>
-                                <Button type="button" size="sm" variant="outline" @click="cancelEdit">
+                                <Button
+                                    type="submit"
+                                    size="sm"
+                                    :disabled="processing"
+                                    >Save</Button
+                                >
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    @click="cancelEdit"
+                                >
                                     Cancel
                                 </Button>
                             </div>
@@ -238,7 +259,9 @@ function copyUrl(slug: string) {
 
                         <span class="flex-1 font-medium">{{ tag.name }}</span>
 
-                        <code class="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
+                        <code
+                            class="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground"
+                        >
                             /{{ tag.slug }}
                         </code>
 
@@ -268,14 +291,15 @@ function copyUrl(slug: string) {
                         {{ tag.description }}
                     </div>
 
-                    <div
-                        v-if="tag.is_public"
-                        class="flex items-center gap-2"
-                    >
-                        <span class="rounded bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                    <div v-if="tag.is_public" class="flex items-center gap-2">
+                        <span
+                            class="rounded bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                        >
                             public
                         </span>
-                        <code class="flex-1 truncate text-xs text-muted-foreground">
+                        <code
+                            class="flex-1 truncate text-xs text-muted-foreground"
+                        >
                             {{ `${$page.props.appUrl}/tags/${tag.slug}` }}
                         </code>
                         <Button
@@ -298,7 +322,11 @@ function copyUrl(slug: string) {
         title="Delete tag?"
         :description="`Delete '${deleteTarget?.name}'? This action cannot be undone.`"
         confirm-label="Delete"
-        @update:open="(val) => { if (!val) deleteTarget = null; }"
+        @update:open="
+            (val) => {
+                if (!val) deleteTarget = null;
+            }
+        "
         @confirm="deleteTag"
     />
 </template>

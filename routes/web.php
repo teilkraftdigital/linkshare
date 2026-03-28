@@ -25,6 +25,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('dashboard/tags/{tag}', [TagController::class, 'destroy'])->name('dashboard.tags.destroy');
 });
 
-Route::get('tags/{tag:slug}', fn () => inertia('tags/Show'))->name('tags.show');
+// This will be handled by issue #9 and is just a placeholder for now
+// Route::get('tags/{tag:slug}', fn () => inertia('tags/Show'))->name('tags.show');
 
 require __DIR__.'/settings.php';
