@@ -8,11 +8,11 @@ import ConfirmModal from '@/components/ConfirmModal.vue';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import LinkCard from '@/components/LinkCard.vue';
+import TagSelect from '@/components/TagSelect.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 import { index } from '@/routes/dashboard/links';
 
 type Bucket = {
@@ -46,7 +46,7 @@ type Props = {
     inboxBucketId: number;
 };
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 defineOptions({
     layout: {
@@ -56,7 +56,7 @@ defineOptions({
 
 const { toast } = useToast();
 
-const createBucketId = ref<number>(0);
+const createBucketId = ref<number>(props.inboxBucketId);
 const createTagIds = ref<number[]>([]);
 
 const editingLink = ref<Link | null>(null);
@@ -65,17 +65,6 @@ const editTagIds = ref<number[]>([]);
 
 const deleteTarget = ref<Link | null>(null);
 
-function initCreate(inboxBucketId: number) {
-    if (createBucketId.value === 0) {
-        createBucketId.value = inboxBucketId;
-    }
-}
-
-function toggleCreateTag(id: number) {
-    createTagIds.value = createTagIds.value.includes(id)
-        ? createTagIds.value.filter((t) => t !== id)
-        : [...createTagIds.value, id];
-}
 
 function startEdit(link: Link) {
     editingLink.value = link;
@@ -87,11 +76,6 @@ function cancelEdit() {
     editingLink.value = null;
 }
 
-function toggleEditTag(id: number) {
-    editTagIds.value = editTagIds.value.includes(id)
-        ? editTagIds.value.filter((t) => t !== id)
-        : [...editTagIds.value, id];
-}
 
 function confirmDelete(link: Link) {
     deleteTarget.value = link;
@@ -122,10 +106,9 @@ function deleteLink() {
             :options="{ preserveScroll: true }"
             class="flex flex-col gap-4 rounded-lg border p-4"
             v-slot="{ errors, processing }"
-            @vue:mounted="initCreate(inboxBucketId)"
             @success="
                 () => {
-                    createBucketId = inboxBucketId;
+                    createBucketId = props.inboxBucketId;
                     createTagIds = [];
                     toast('Link added', 'success');
                 }
@@ -199,23 +182,10 @@ function deleteLink() {
 
                 <div v-if="tags.length > 0" class="flex flex-col gap-2">
                     <Label>Tags</Label>
-                    <template v-for="tagId in createTagIds" :key="tagId">
-                        <input type="hidden" name="tag_ids[]" :value="tagId" />
-                    </template>
-                    <div class="flex flex-wrap gap-3">
-                        <div
-                            v-for="tag in tags"
-                            :key="tag.id"
-                            class="flex items-center gap-2"
-                        >
-                            <Checkbox
-                                :id="`create-tag-${tag.id}`"
-                                :model-value="createTagIds.includes(tag.id)"
-                                @update:model-value="toggleCreateTag(tag.id)"
-                            />
-                            <Label :for="`create-tag-${tag.id}`">{{ tag.name }}</Label>
-                        </div>
-                    </div>
+                    <TagSelect
+                        :tags="tags"
+                        v-model="createTagIds"
+                    />
                     <InputError :message="errors['tag_ids']" />
                 </div>
             </div>
@@ -310,23 +280,10 @@ function deleteLink() {
 
                             <div v-if="tags.length > 0" class="flex flex-col gap-2">
                                 <Label>Tags</Label>
-                                <template v-for="tagId in editTagIds" :key="tagId">
-                                    <input type="hidden" name="tag_ids[]" :value="tagId" />
-                                </template>
-                                <div class="flex flex-wrap gap-3">
-                                    <div
-                                        v-for="tag in tags"
-                                        :key="tag.id"
-                                        class="flex items-center gap-2"
-                                    >
-                                        <Checkbox
-                                            :id="`edit-tag-${link.id}-${tag.id}`"
-                                            :model-value="editTagIds.includes(tag.id)"
-                                            @update:model-value="toggleEditTag(tag.id)"
-                                        />
-                                        <Label :for="`edit-tag-${link.id}-${tag.id}`">{{ tag.name }}</Label>
-                                    </div>
-                                </div>
+                                <TagSelect
+                                    :tags="tags"
+                                    v-model="editTagIds"
+                                />
                             </div>
                         </div>
 
