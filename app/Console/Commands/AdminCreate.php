@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Events\AdminCreated;
 use App\Models\User;
-use App\Services\InboxBucketResolver;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -14,11 +14,6 @@ use Illuminate\Support\Facades\Validator;
 #[Description('Create the admin user account')]
 class AdminCreate extends Command
 {
-    public function __construct(private readonly InboxBucketResolver $inboxBucketResolver)
-    {
-        parent::__construct();
-    }
-
     public function handle(): int
     {
         $name = $this->ask('Name');
@@ -49,7 +44,7 @@ class AdminCreate extends Command
             'email_verified_at' => now(),
         ]);
 
-        $this->inboxBucketResolver->resolve();
+        AdminCreated::dispatch($user);
 
         $this->info("Admin account created for {$user->email}.");
 
