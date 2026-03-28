@@ -48,8 +48,6 @@ const { toasts, dismiss } = useToast();
 
         <ToastViewport
             class="fixed right-4 bottom-4 z-50 flex w-full max-w-sm flex-col gap-2"
-            aria-live="polite"
-            aria-atomic="true"
         />
     </ToastProvider>
 </template>
