@@ -21,5 +21,5 @@ test('new users can register', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('admin.links.index', absolute: false));
+    $response->assertRedirect(route('dashboard.index', absolute: false));
 });

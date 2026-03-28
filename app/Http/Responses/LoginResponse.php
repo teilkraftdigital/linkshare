@@ -12,6 +12,6 @@ class LoginResponse implements LoginResponseContract
     {
         return $request->wantsJson()
             ? new JsonResponse(['two_factor' => false], 200)
-            : redirect()->intended(route('admin.links.index'));
+            : redirect()->intended(route('dashboard.index'));
     }
 }
