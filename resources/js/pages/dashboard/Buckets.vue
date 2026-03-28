@@ -10,6 +10,7 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { BUCKET_COLOR_BG } from '@/lib/bucketColors';
 import { index } from '@/routes/dashboard/buckets';
 
 type Bucket = {
@@ -66,20 +67,6 @@ function deleteBucket() {
     });
 }
 
-const COLOR_BG: Record<string, string> = {
-    gray: 'bg-gray-400',
-    red: 'bg-red-500',
-    orange: 'bg-orange-500',
-    amber: 'bg-amber-500',
-    yellow: 'bg-yellow-400',
-    lime: 'bg-lime-500',
-    green: 'bg-green-500',
-    teal: 'bg-teal-500',
-    cyan: 'bg-cyan-500',
-    blue: 'bg-blue-500',
-    indigo: 'bg-indigo-500',
-    violet: 'bg-violet-500',
-};
 </script>
 
 <template>
@@ -127,7 +114,7 @@ const COLOR_BG: Record<string, string> = {
                 <!-- Color dot -->
                 <span
                     class="size-4 shrink-0 rounded-full"
-                    :class="COLOR_BG[bucket.color] ?? 'bg-gray-400'"
+                    :class="BUCKET_COLOR_BG[bucket.color] ?? 'bg-gray-400'"
                 />
 
                 <!-- Inline edit form -->
