@@ -3,6 +3,7 @@ import { Form, Head, router } from '@inertiajs/vue3';
 import { Pencil, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import BucketController from '@/actions/App/Http/Controllers/Dashboard/BucketController';
+import { useToast } from '@/composables/useToast';
 import ColorPalette from '@/components/ColorPalette.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import Heading from '@/components/Heading.vue';
@@ -37,6 +38,7 @@ defineOptions({
     },
 });
 
+const { toast } = useToast();
 const createColor = ref<string>('gray');
 const editingBucket = ref<Bucket | null>(null);
 const editColor = ref<string>('gray');
@@ -83,7 +85,7 @@ function deleteBucket() {
             :options="{ preserveScroll: true }"
             class="flex flex-col gap-4 rounded-lg border p-4 sm:flex-row sm:items-start"
             v-slot="{ errors, processing }"
-            @success="createColor = 'gray'"
+            @success="() => { createColor = 'gray'; toast('Bucket created', 'success'); }"
         >
             <div class="flex flex-1 flex-col gap-2">
                 <Label for="bucket-name">New bucket</Label>
