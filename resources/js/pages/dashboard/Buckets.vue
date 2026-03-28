@@ -85,7 +85,12 @@ function deleteBucket() {
             :options="{ preserveScroll: true }"
             class="flex flex-col gap-4 rounded-lg border p-4 sm:flex-row sm:items-start"
             v-slot="{ errors, processing }"
-            @success="() => { createColor = 'gray'; toast('Bucket created', 'success'); }"
+            @success="
+                () => {
+                    createColor = 'gray';
+                    toast('Bucket created', 'success');
+                }
+            "
         >
             <div class="flex flex-1 flex-col gap-2">
                 <Label for="bucket-name">New bucket</Label>
@@ -105,9 +110,9 @@ function deleteBucket() {
                 <InputError :message="errors.color" />
             </div>
 
-            <Button type="submit" :disabled="processing" class="self-end"
-                >Add</Button
-            >
+            <Button type="submit" :disabled="processing" class="self-end">
+                Add
+            </Button>
         </Form>
 
         <!-- Bucket list -->
@@ -191,8 +196,9 @@ function deleteBucket() {
                     <span
                         v-if="bucket.is_inbox"
                         class="text-xs text-muted-foreground"
-                        >Inbox</span
                     >
+                        Inbox
+                    </span>
 
                     <Button
                         variant="ghost"
