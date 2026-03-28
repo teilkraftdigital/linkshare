@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue';
 import { X } from 'lucide-vue-next';
 import {
+    ComboboxAnchor,
     ComboboxContent,
     ComboboxEmpty,
     ComboboxGroup,
@@ -38,11 +39,16 @@ const selectedTags = computed(() =>
 );
 
 const filteredTags = computed(() => {
-    const q = searchTerm.value.toLowerCase();
+    const q = searchTerm.value.toLowerCase().trim();
     return q
         ? props.tags.filter((t) => t.name.toLowerCase().includes(q))
         : props.tags;
 });
+
+// Bypass reka-ui's internal filtering — we handle it via filteredTags
+function filterFunction() {
+    return true;
+}
 
 function toggle(tag: Tag) {
     const next = props.modelValue.includes(tag.id)
@@ -64,31 +70,34 @@ function remove(id: number) {
     </template>
 
     <ComboboxRoot
-        :open="open"
+        v-model:open="open"
         :model-value="[]"
+        :filter-function="filterFunction"
         :reset-search-term-on-blur="false"
-        @update:open="open = $event"
+        :open-on-focus="true"
+        :open-on-click="true"
     >
-        <!-- Trigger: pill container + search input -->
-        <div
+        <ComboboxAnchor
             :class="
                 cn(
                     'border-input bg-background flex min-h-9 flex-wrap items-center gap-1 rounded-md border px-2 py-1 text-sm shadow-xs',
                     'focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]',
                 )
             "
-            @click="open = true"
         >
             <span
                 v-for="tag in selectedTags"
                 :key="tag.id"
-                class="flex items-center gap-1 rounded-full py-0.5 pl-2 pr-1 text-xs font-medium"
-                :class="COLOR_BG[tag.color] ? `bg-${tag.color}-100 text-${tag.color}-800 dark:bg-${tag.color}-900/30 dark:text-${tag.color}-300` : 'bg-muted text-muted-foreground'"
+                class="bg-muted flex items-center gap-1 rounded-full py-0.5 pl-2 pr-1 text-xs font-medium"
             >
+                <span
+                    class="size-2 rounded-full"
+                    :class="COLOR_BG[tag.color] ?? 'bg-gray-400'"
+                />
                 {{ tag.name }}
                 <button
                     type="button"
-                    class="rounded-full p-0.5 hover:bg-black/10 dark:hover:bg-white/20"
+                    class="text-muted-foreground rounded-full p-0.5 hover:text-foreground"
                     :aria-label="`Remove ${tag.name}`"
                     @click.stop="remove(tag.id)"
                 >
@@ -99,19 +108,18 @@ function remove(id: number) {
             <ComboboxInput
                 v-model="searchTerm"
                 class="min-w-24 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
-                placeholder="Search tags…"
-                @focus="open = true"
+                placeholder="Tags suchen…"
             />
-        </div>
+        </ComboboxAnchor>
 
         <ComboboxContent
-            class="border-input bg-popover z-50 mt-1 max-h-60 overflow-y-auto rounded-md border shadow-md"
-            :avoid-collisions="true"
+            class="border-input bg-popover z-50 mt-1 w-(--reka-combobox-trigger-width) max-h-60 overflow-y-auto rounded-md border shadow-md"
             position="popper"
+            :avoid-collisions="true"
         >
             <ComboboxViewport class="p-1">
                 <ComboboxEmpty class="py-2 text-center text-sm text-muted-foreground">
-                    No tags found
+                    Keine Tags gefunden
                 </ComboboxEmpty>
 
                 <ComboboxGroup>
@@ -119,7 +127,7 @@ function remove(id: number) {
                         v-for="tag in filteredTags"
                         :key="tag.id"
                         :value="tag"
-                        class="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent data-[highlighted]:bg-accent"
+                        class="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none data-highlighted:bg-accent"
                         @select.prevent="toggle(tag)"
                     >
                         <span
@@ -128,7 +136,7 @@ function remove(id: number) {
                         />
                         {{ tag.name }}
                         <ComboboxItemIndicator class="ml-auto">
-                            <span v-if="modelValue.includes(tag.id)" class="text-xs text-muted-foreground">✓</span>
+                            <span class="text-xs opacity-60">✓</span>
                         </ComboboxItemIndicator>
                     </ComboboxItem>
                 </ComboboxGroup>
