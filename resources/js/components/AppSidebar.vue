@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, Inbox, LayoutGrid, Tag } from 'lucide-vue-next';
+import { BookOpen, FolderGit2, Inbox, LayoutGrid, Link as LinkIcon, Tag } from 'lucide-vue-next';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
 import NavMain from '@/components/NavMain.vue';
@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/sidebar';
 import { index as dashboard } from '@/routes/dashboard';
 import { index as bucketsIndex } from '@/routes/dashboard/buckets';
+import { index as linksIndex } from '@/routes/dashboard/links';
 import { index as tagsIndex } from '@/routes/dashboard/tags';
 import type { NavItem } from '@/types';
 
@@ -29,6 +30,11 @@ const mainNavItems: NavItem[] = [
         title: 'Buckets',
         href: bucketsIndex(),
         icon: Inbox,
+    },
+    {
+        title: 'Links',
+        href: linksIndex(),
+        icon: LinkIcon,
     },
     {
         title: 'Tags',

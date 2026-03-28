@@ -6,6 +6,7 @@ use Database\Factories\TagFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable(['name', 'slug', 'description', 'color', 'is_public'])]
@@ -19,5 +20,10 @@ class Tag extends Model
         return [
             'is_public' => 'boolean',
         ];
+    }
+
+    public function links(): BelongsToMany
+    {
+        return $this->belongsToMany(Link::class);
     }
 }
