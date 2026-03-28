@@ -10,7 +10,7 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { BUCKET_COLOR_BG } from '@/lib/bucketColors';
+import { COLOR_BG } from '@/lib/colors';
 import { index } from '@/routes/dashboard/buckets';
 
 type Bucket = {
@@ -66,20 +66,22 @@ function deleteBucket() {
         },
     });
 }
-
 </script>
 
 <template>
     <Head title="Buckets" />
 
     <div class="flex flex-col gap-8 p-4">
-        <Heading title="Buckets" description="Organise your links into buckets" />
+        <Heading
+            title="Buckets"
+            description="Organise your links into buckets"
+        />
 
         <!-- Create form -->
         <Form
             v-bind="BucketController.store.form()"
             :options="{ preserveScroll: true }"
-            class="flex flex-col gap-4 rounded-lg border p-4 sm:flex-row sm:items-end"
+            class="flex flex-col gap-4 rounded-lg border p-4 sm:flex-row sm:items-start"
             v-slot="{ errors, processing }"
             @success="createColor = 'gray'"
         >
@@ -97,11 +99,13 @@ function deleteBucket() {
             <div class="flex flex-col gap-2">
                 <Label>Color</Label>
                 <input type="hidden" name="color" :value="createColor" />
-                <ColorPalette v-model="createColor" />
+                <ColorPalette v-model="createColor" class="mt-1.5" />
                 <InputError :message="errors.color" />
             </div>
 
-            <Button type="submit" :disabled="processing">Add</Button>
+            <Button type="submit" :disabled="processing" class="self-end"
+                >Add</Button
+            >
         </Form>
 
         <!-- Bucket list -->
@@ -114,7 +118,7 @@ function deleteBucket() {
                 <!-- Color dot -->
                 <span
                     class="size-4 shrink-0 rounded-full"
-                    :class="BUCKET_COLOR_BG[bucket.color] ?? 'bg-gray-400'"
+                    :class="COLOR_BG[bucket.color] ?? 'bg-gray-400'"
                 />
 
                 <!-- Inline edit form -->
@@ -122,12 +126,19 @@ function deleteBucket() {
                     <Form
                         v-bind="BucketController.update.form(bucket)"
                         :options="{ preserveScroll: true }"
-                        class="flex flex-1 flex-wrap items-end gap-3"
+                        class="flex flex-1 flex-wrap items-start justify-between gap-3"
                         v-slot="{ errors, processing }"
                         @success="cancelEdit"
                     >
-                        <div class="flex flex-col gap-1">
+                        <div class="flex flex-col gap-2">
+                            <Label
+                                :for="`bucket-name-${bucket.id}`"
+                                class="sr-only"
+                            >
+                                Bucket name
+                            </Label>
                             <Input
+                                :id="`bucket-name-${bucket.id}`"
                                 name="name"
                                 :default-value="bucket.name"
                                 placeholder="Bucket name"
@@ -137,14 +148,30 @@ function deleteBucket() {
                             <InputError :message="errors.name" />
                         </div>
 
-                        <div class="flex flex-col gap-1">
-                            <input type="hidden" name="color" :value="editColor" />
-                            <ColorPalette v-model="editColor" />
+                        <div class="flex flex-col gap-2">
+                            <Label
+                                :for="`bucket-color-${bucket.id}`"
+                                class="sr-only"
+                            >
+                                Color
+                            </Label>
+                            <input
+                                type="hidden"
+                                :id="`bucket-color-${bucket.id}`"
+                                name="color"
+                                :value="editColor"
+                            />
+                            <ColorPalette v-model="editColor" class="mt-1.5" />
                             <InputError :message="errors.color" />
                         </div>
 
-                        <div class="flex gap-2">
-                            <Button type="submit" size="sm" :disabled="processing">Save</Button>
+                        <div class="flex gap-2 self-end">
+                            <Button
+                                type="submit"
+                                size="sm"
+                                :disabled="processing"
+                                >Save</Button
+                            >
                             <Button
                                 type="button"
                                 size="sm"
@@ -159,7 +186,11 @@ function deleteBucket() {
 
                 <template v-else>
                     <span class="flex-1 font-medium">{{ bucket.name }}</span>
-                    <span v-if="bucket.is_inbox" class="text-xs text-muted-foreground">Inbox</span>
+                    <span
+                        v-if="bucket.is_inbox"
+                        class="text-xs text-muted-foreground"
+                        >Inbox</span
+                    >
 
                     <Button
                         variant="ghost"
@@ -189,7 +220,11 @@ function deleteBucket() {
         title="Delete bucket?"
         :description="`Delete '${deleteTarget?.name}'? This action cannot be undone.`"
         confirm-label="Delete"
-        @update:open="(val) => { if (!val) deleteTarget = null; }"
+        @update:open="
+            (val) => {
+                if (!val) deleteTarget = null;
+            }
+        "
         @confirm="deleteBucket"
     />
 </template>

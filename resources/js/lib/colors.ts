@@ -1,9 +1,9 @@
-export type BucketColor = {
+export type Color = {
     name: string;
     bg: string;
 };
 
-export const BUCKET_COLORS: BucketColor[] = [
+export const COLORS: Color[] = [
     { name: 'gray', bg: 'bg-gray-400' },
     { name: 'red', bg: 'bg-red-500' },
     { name: 'orange', bg: 'bg-orange-500' },
@@ -18,6 +18,6 @@ export const BUCKET_COLORS: BucketColor[] = [
     { name: 'violet', bg: 'bg-violet-500' },
 ];
 
-export const BUCKET_COLOR_BG: Record<string, string> = Object.fromEntries(
-    BUCKET_COLORS.map((c) => [c.name, c.bg]),
+export const COLOR_BG: Record<string, string> = Object.fromEntries(
+    COLORS.map((c) => [c.name, c.bg]),
 );
