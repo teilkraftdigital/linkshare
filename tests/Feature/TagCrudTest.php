@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Bucket;
+use App\Models\Link;
 use App\Models\Tag;
 use App\Models\User;
 
@@ -95,6 +97,19 @@ test('update preserves slug when name unchanged', function () {
     ]);
 
     expect($tag->fresh()->slug)->toBe('frontend');
+});
+
+test('tags index includes links_count', function () {
+    $inbox = Bucket::factory()->inbox()->create();
+    $tag = Tag::factory()->create();
+    Link::factory()->count(3)->create(['bucket_id' => $inbox->id])->each(
+        fn ($link) => $link->tags()->attach($tag),
+    );
+
+    $this->get(route('dashboard.tags.index'))
+        ->assertInertia(fn ($page) => $page
+            ->where('tags.0.links_count', 3)
+        );
 });
 
 test('authenticated user can delete a tag', function () {

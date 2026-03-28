@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Form, Head, router } from '@inertiajs/vue3';
-import { Copy, Pencil, Trash2 } from 'lucide-vue-next';
+import { Copy, Link as LinkIcon, Pencil, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import TagController from '@/actions/App/Http/Controllers/Dashboard/TagController';
 import { useToast } from '@/composables/useToast';
@@ -23,6 +23,7 @@ type Tag = {
     description: string | null;
     color: string;
     is_public: boolean;
+    links_count: number;
 };
 
 type Props = {
@@ -258,6 +259,14 @@ async function copyUrl(slug: string) {
                         />
 
                         <span class="flex-1 font-medium">{{ tag.name }}</span>
+
+                        <span
+                            class="flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground"
+                            :aria-label="`${tag.links_count} links`"
+                        >
+                            <LinkIcon class="size-3 shrink-0" />
+                            {{ tag.links_count }}
+                        </span>
 
                         <code
                             class="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground"

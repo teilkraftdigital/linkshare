@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Bucket;
+use App\Models\Link;
 use App\Models\User;
 
 beforeEach(function () {
@@ -67,6 +68,16 @@ test('authenticated user can delete a non-inbox bucket', function () {
         ->assertRedirect();
 
     expect($bucket->fresh()->deleted_at)->not->toBeNull();
+});
+
+test('buckets index includes links_count', function () {
+    $bucket = Bucket::factory()->inbox()->create();
+    Link::factory()->count(2)->create(['bucket_id' => $bucket->id]);
+
+    $this->get(route('dashboard.buckets.index'))
+        ->assertInertia(fn ($page) => $page
+            ->where('buckets.0.links_count', 2)
+        );
 });
 
 test('inbox bucket cannot be deleted', function () {

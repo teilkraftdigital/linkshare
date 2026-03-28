@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Form, Head, router } from '@inertiajs/vue3';
-import { Pencil, Trash2 } from 'lucide-vue-next';
+import { Link as LinkIcon, Pencil, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import BucketController from '@/actions/App/Http/Controllers/Dashboard/BucketController';
 import { useToast } from '@/composables/useToast';
@@ -19,6 +19,7 @@ type Bucket = {
     name: string;
     color: string;
     is_inbox: boolean;
+    links_count: number;
 };
 
 type Props = {
@@ -193,6 +194,15 @@ function deleteBucket() {
 
                 <template v-else>
                     <span class="flex-1 font-medium">{{ bucket.name }}</span>
+
+                    <span
+                        class="flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground"
+                        :aria-label="`${bucket.links_count} links`"
+                    >
+                        <LinkIcon class="size-3 shrink-0" />
+                        {{ bucket.links_count }}
+                    </span>
+
                     <span
                         v-if="bucket.is_inbox"
                         class="text-xs text-muted-foreground"

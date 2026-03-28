@@ -18,7 +18,7 @@ class TagController extends Controller
     public function index(): Response
     {
         return Inertia::render('dashboard/Tags', [
-            'tags' => Tag::orderBy('name')->get(),
+            'tags' => Tag::withCount('links')->orderBy('name')->get(),
         ]);
     }
 

@@ -18,7 +18,7 @@ class BucketController extends Controller
     public function index(): Response
     {
         return Inertia::render('dashboard/Buckets', [
-            'buckets' => Bucket::orderBy('is_inbox', 'desc')->orderBy('name')->get(),
+            'buckets' => Bucket::withCount('links')->orderBy('is_inbox', 'desc')->orderBy('name')->get(),
         ]);
     }
 
