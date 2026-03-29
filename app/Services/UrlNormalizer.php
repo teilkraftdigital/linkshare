@@ -5,15 +5,20 @@ namespace App\Services;
 class UrlNormalizer
 {
     /**
-     * Normalize a URL: remove trailing slash from the path.
+     * Normalize a URL: assume https when no protocol given, remove trailing slash from the path.
      *
      * Examples:
      *   https://example.com/        → https://example.com
      *   https://example.com/path/   → https://example.com/path
      *   https://example.com/path/?q=1 → https://example.com/path?q=1
+     *   www.example.com             → https://www.example.com
      */
     public function normalize(string $url): string
     {
+        if (! str_contains($url, '://')) {
+            $url = 'https://'.$url;
+        }
+
         $parsed = parse_url($url);
 
         if ($parsed === false) {
