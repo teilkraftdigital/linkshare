@@ -5,6 +5,7 @@ use App\Http\Controllers\Dashboard\CheckDuplicateController;
 use App\Http\Controllers\Dashboard\ImportController;
 use App\Http\Controllers\Dashboard\LinkController;
 use App\Http\Controllers\Dashboard\MetaFetchController;
+use App\Http\Controllers\Dashboard\QuickAddController;
 use App\Http\Controllers\Dashboard\TagController as DashboardTagController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('dashboard/tags/{tag}', [DashboardTagController::class, 'update'])->name('dashboard.tags.update');
     Route::delete('dashboard/tags/{tag}', [DashboardTagController::class, 'destroy'])->name('dashboard.tags.destroy');
 
+    Route::get('dashboard/quick-add', QuickAddController::class)->name('dashboard.quick-add');
     Route::get('dashboard/import', [ImportController::class, 'create'])->name('dashboard.import.create');
     Route::post('dashboard/import', [ImportController::class, 'store'])->name('dashboard.import.store');
 
