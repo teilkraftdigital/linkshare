@@ -3,6 +3,7 @@ import { Form, Head, router } from '@inertiajs/vue3';
 import { Loader2, Pencil, Search, Trash2, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
+import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
 import { useMetaFetch } from '@/composables/useMetaFetch';
 import { useToast } from '@/composables/useToast';
 import ConfirmModal from '@/components/ConfirmModal.vue';
@@ -82,6 +83,31 @@ const {
     if (meta.description && !createDescription.value)
         createDescription.value = meta.description;
 });
+
+const {
+    exists: duplicateExists,
+    similar: duplicateSimilar,
+    check: checkDuplicate,
+    reset: resetDuplicate,
+} = useDuplicateCheck();
+
+const duplicateConfirmOpen = ref(false);
+const pendingSubmit = ref<(() => void) | null>(null);
+
+function handleCreateSubmit(submit: () => void) {
+    if (duplicateExists.value) {
+        pendingSubmit.value = submit;
+        duplicateConfirmOpen.value = true;
+    } else {
+        submit();
+    }
+}
+
+function confirmDuplicateSubmit() {
+    duplicateConfirmOpen.value = false;
+    pendingSubmit.value?.();
+    pendingSubmit.value = null;
+}
 
 // — Edit state —
 const editingLink = ref<Link | null>(null);
@@ -170,7 +196,7 @@ function deleteLink() {
             v-bind="LinkController.store.form()"
             :options="{ preserveScroll: true }"
             class="flex flex-col gap-4 rounded-lg border p-4"
-            v-slot="{ errors, processing }"
+            v-slot="{ errors, processing, submit }"
             @success="
                 () => {
                     createUrl = '';
@@ -178,6 +204,7 @@ function deleteLink() {
                     createDescription = '';
                     createBucketId = props.inboxBucketId;
                     createTagIds = [];
+                    resetDuplicate();
                     toast('Link added', 'success');
                 }
             "
@@ -193,14 +220,20 @@ function deleteLink() {
                             type="url"
                             placeholder="https://example.com"
                             autocomplete="off"
-                            @input="fetchMeta(createUrl)"
+                            @input="fetchMeta(createUrl); checkDuplicate(createUrl)"
                         />
                         <Loader2
                             v-if="metaFetching"
                             class="absolute top-2.5 right-2.5 size-4 animate-spin text-muted-foreground"
                         />
                     </div>
-                    <p v-if="metaFailed" class="text-xs text-muted-foreground">
+                    <p v-if="duplicateExists" class="text-xs text-amber-600 dark:text-amber-400">
+                        This link already exists.
+                    </p>
+                    <p v-else-if="duplicateSimilar" class="text-xs text-amber-600 dark:text-amber-400">
+                        A similar link already exists.
+                    </p>
+                    <p v-else-if="metaFailed" class="text-xs text-muted-foreground">
                         Could not load metadata for this URL.
                     </p>
                     <InputError :message="errors.url" />
@@ -281,10 +314,24 @@ function deleteLink() {
                 </div>
             </div>
 
-            <Button type="submit" :disabled="processing" class="self-start">
+            <Button
+                type="button"
+                :disabled="processing"
+                class="self-start"
+                @click="handleCreateSubmit(submit)"
+            >
                 Add
             </Button>
         </Form>
+
+        <ConfirmModal
+            :open="duplicateConfirmOpen"
+            title="Link already exists"
+            description="A link with this URL is already saved. Add it again anyway?"
+            confirm-label="Add anyway"
+            @update:open="duplicateConfirmOpen = $event"
+            @confirm="confirmDuplicateSubmit"
+        />
 
         <!-- Filters -->
         <div class="flex flex-wrap gap-3">

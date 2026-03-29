@@ -1,10 +1,15 @@
 <?php
 
+use App\Models\Bucket;
+use App\Models\Link;
 use App\Services\BookmarkImportService;
 
 beforeEach(function () {
     $this->service = app(BookmarkImportService::class);
+    $this->inbox = Bucket::factory()->inbox()->create();
 });
+
+// --- parse() ---
 
 test('parses urls and titles from netscape bookmark html', function () {
     $html = <<<'HTML'
@@ -28,15 +33,11 @@ test('parses urls and titles from netscape bookmark html', function () {
 });
 
 test('returns empty array for empty file', function () {
-    $bookmarks = $this->service->parse('');
-
-    expect($bookmarks)->toBeEmpty();
+    expect($this->service->parse(''))->toBeEmpty();
 });
 
 test('returns empty array for whitespace-only content', function () {
-    $bookmarks = $this->service->parse('   ');
-
-    expect($bookmarks)->toBeEmpty();
+    expect($this->service->parse('   '))->toBeEmpty();
 });
 
 test('skips anchors without http urls', function () {
@@ -55,13 +56,96 @@ test('skips anchors without http urls', function () {
 });
 
 test('uses url as title when title is empty', function () {
-    $html = <<<'HTML'
-        <DL>
-            <DT><A HREF="https://example.com"></A>
-        </DL>
-        HTML;
+    $html = '<DL><DT><A HREF="https://example.com"></A></DL>';
 
     $bookmarks = $this->service->parse($html);
 
     expect($bookmarks[0]['title'])->toBe('https://example.com');
+});
+
+// --- import() ---
+
+test('import returns correct counts for a clean import', function () {
+    $html = <<<'HTML'
+        <DL>
+            <DT><A HREF="https://laravel.com">Laravel</A>
+            <DT><A HREF="https://vuejs.org">Vue.js</A>
+        </DL>
+        HTML;
+
+    $result = $this->service->import($html, $this->inbox->id);
+
+    expect($result)->toBe(['imported' => 2, 'skipped' => 0, 'hints' => 0]);
+    expect(Link::count())->toBe(2);
+});
+
+test('import skips duplicate against db', function () {
+    Link::factory()->create(['url' => 'https://laravel.com', 'bucket_id' => $this->inbox->id]);
+
+    $html = '<DL><DT><A HREF="https://laravel.com">Laravel</A></DL>';
+
+    $result = $this->service->import($html, $this->inbox->id);
+
+    expect($result)->toBe(['imported' => 0, 'skipped' => 1, 'hints' => 0]);
+    expect(Link::count())->toBe(1);
+});
+
+test('import skips duplicate with trailing slash against db', function () {
+    Link::factory()->create(['url' => 'https://laravel.com', 'bucket_id' => $this->inbox->id]);
+
+    $html = '<DL><DT><A HREF="https://laravel.com/">Laravel</A></DL>';
+
+    $result = $this->service->import($html, $this->inbox->id);
+
+    expect($result)->toBe(['imported' => 0, 'skipped' => 1, 'hints' => 0]);
+});
+
+test('import deduplicates within file', function () {
+    $html = <<<'HTML'
+        <DL>
+            <DT><A HREF="https://example.com">Example</A>
+            <DT><A HREF="https://example.com">Example again</A>
+        </DL>
+        HTML;
+
+    $result = $this->service->import($html, $this->inbox->id);
+
+    expect($result)->toBe(['imported' => 1, 'skipped' => 1, 'hints' => 0]);
+    expect(Link::count())->toBe(1);
+});
+
+test('import flags similar url with different query string as hint', function () {
+    Link::factory()->create(['url' => 'https://example.com/page?ref=old', 'bucket_id' => $this->inbox->id]);
+
+    $html = '<DL><DT><A HREF="https://example.com/page?ref=new">Example</A></DL>';
+
+    $result = $this->service->import($html, $this->inbox->id);
+
+    expect($result['imported'])->toBe(1);
+    expect($result['hints'])->toBe(1);
+    expect($result['skipped'])->toBe(0);
+    expect(Link::count())->toBe(2);
+});
+
+test('import normalizes trailing slash before storing', function () {
+    $html = '<DL><DT><A HREF="https://example.com/">Example</A></DL>';
+
+    $this->service->import($html, $this->inbox->id);
+
+    expect(Link::first()->url)->toBe('https://example.com');
+});
+
+test('import places links in given bucket', function () {
+    $other = Bucket::factory()->create();
+    $html = '<DL><DT><A HREF="https://example.com">Example</A></DL>';
+
+    $this->service->import($html, $other->id);
+
+    expect(Link::first()->bucket_id)->toBe($other->id);
+});
+
+test('import with empty html returns zeros', function () {
+    $result = $this->service->import('', $this->inbox->id);
+
+    expect($result)->toBe(['imported' => 0, 'skipped' => 0, 'hints' => 0]);
 });
