@@ -19,8 +19,8 @@ type Props = {
     title: string;
     url: string;
     description?: string | null;
-    bucket: Bucket;
-    tags: Tag[];
+    bucket?: Bucket;
+    tags?: Tag[];
 };
 
 defineProps<Props>();
@@ -48,8 +48,8 @@ defineProps<Props>();
             </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2">
-            <span class="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <div v-if="bucket || tags?.length" class="flex flex-wrap items-center gap-2">
+            <span v-if="bucket" class="flex items-center gap-1.5 text-xs text-muted-foreground">
                 <span
                     class="size-2.5 rounded-full"
                     :class="COLOR_BG[bucket.color] ?? 'bg-gray-400'"
