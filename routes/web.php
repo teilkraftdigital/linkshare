@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Dashboard\BucketController;
 use App\Http\Controllers\Dashboard\LinkController;
+use App\Http\Controllers\Dashboard\MetaFetchController;
 use App\Http\Controllers\Dashboard\TagController as DashboardTagController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('dashboard/tags', [DashboardTagController::class, 'store'])->name('dashboard.tags.store');
     Route::patch('dashboard/tags/{tag}', [DashboardTagController::class, 'update'])->name('dashboard.tags.update');
     Route::delete('dashboard/tags/{tag}', [DashboardTagController::class, 'destroy'])->name('dashboard.tags.destroy');
+
+    Route::post('dashboard/links/fetch-meta', MetaFetchController::class)->name('dashboard.links.fetch-meta');
 
     Route::get('dashboard/links', [LinkController::class, 'index'])->name('dashboard.links.index');
     Route::post('dashboard/links', [LinkController::class, 'store'])->name('dashboard.links.store');
