@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\FetchLinkMeta;
 use App\Models\Link;
 
 /**
@@ -110,11 +111,13 @@ class BookmarkImportService
                 $hints++;
             }
 
-            Link::create([
+            $link = Link::create([
                 'url' => $normalized,
                 'title' => $bookmark['title'],
                 'bucket_id' => $bucketId,
             ]);
+
+            FetchLinkMeta::dispatch($link);
 
             // Add to existing set so within-file entries don't trigger false similar-checks
             $existingUrls[$normalized] = true;
