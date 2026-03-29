@@ -20,6 +20,9 @@ declare module '@inertiajs/core' {
             appUrl: string;
             auth: Auth;
             sidebarOpen: boolean;
+            flash: {
+                import_count: number | null;
+            };
             [key: string]: unknown;
         };
     }
