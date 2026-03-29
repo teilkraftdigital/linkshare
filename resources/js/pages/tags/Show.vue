@@ -28,7 +28,10 @@ setLayoutProps({
 
 <template>
     <Head :title="tag.name">
-        <meta property="og:title" :content="`${tag.name} – Linkshare`" />
+        <meta
+            property="og:title"
+            :content="`${tag.name} – ${links.length} link${links.length !== 1 ? 's' : ''} – ${$page.props.name}`"
+        />
         <meta
             v-if="tag.description"
             property="og:description"
