@@ -3,12 +3,13 @@
 namespace App\Jobs;
 
 use App\Models\Link;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
-class FetchFavicon implements ShouldQueue
+class FetchFavicon implements ShouldBeUnique, ShouldQueue
 {
     use Queueable;
 
@@ -17,6 +18,11 @@ class FetchFavicon implements ShouldQueue
     public int $timeout = 15;
 
     public function __construct(public readonly Link $link, public readonly string $faviconUrl) {}
+
+    public function uniqueId(): string
+    {
+        return (string) $this->link->id;
+    }
 
     public function handle(): void
     {

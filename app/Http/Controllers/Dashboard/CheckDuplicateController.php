@@ -21,11 +21,11 @@ class CheckDuplicateController extends Controller
         $normalized = $this->urlNormalizer->normalize($request->input('url'));
         $base = $this->urlNormalizer->baseUrl($normalized);
 
-        $exists = Link::withTrashed()
+        $exists = Link::withoutTrashed() // ::withTrashed() if you want to consider soft-deleted links as duplicates
             ->where('url', $normalized)
             ->exists();
 
-        $similar = ! $exists && Link::withTrashed()
+        $similar = ! $exists && Link::withoutTrashed() // ::withTrashed() if you want to consider soft-deleted links as duplicates
             ->where('url', 'like', $base.'%')
             ->where('url', '!=', $normalized)
             ->exists();

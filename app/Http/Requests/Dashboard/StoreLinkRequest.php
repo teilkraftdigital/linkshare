@@ -20,6 +20,7 @@ class StoreLinkRequest extends FormRequest
             'bucket_id' => ['required', 'integer', 'exists:buckets,id'],
             'tag_ids' => ['nullable', 'array'],
             'tag_ids.*' => ['integer', 'exists:tags,id'],
+            'favicon_url' => ['nullable', 'url', 'max:2048'],
         ];
     }
 }

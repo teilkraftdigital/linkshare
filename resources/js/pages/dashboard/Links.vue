@@ -197,7 +197,11 @@ function deleteLink() {
                             :src="createFaviconUrl"
                             class="absolute top-2.5 left-2.5 size-4 rounded-sm object-contain"
                             alt=""
-                            @error="($event.target as HTMLImageElement).style.display = 'none'"
+                            @error="
+                                (
+                                    $event.target as HTMLImageElement
+                                ).style.display = 'none'
+                            "
                         />
                         <Input
                             id="link-url"
@@ -207,20 +211,32 @@ function deleteLink() {
                             placeholder="https://example.com"
                             autocomplete="off"
                             :class="createFaviconUrl ? 'pl-8' : ''"
-                            @input="fetchMeta(createUrl); checkDuplicate(createUrl)"
+                            @input="
+                                fetchMeta(createUrl);
+                                checkDuplicate(createUrl);
+                            "
                         />
                         <Loader2
                             v-if="metaFetching"
                             class="absolute top-2.5 right-2.5 size-4 animate-spin text-muted-foreground"
                         />
                     </div>
-                    <p v-if="duplicateExists" class="text-xs text-amber-600 dark:text-amber-400">
+                    <p
+                        v-if="duplicateExists"
+                        class="text-xs text-amber-600 dark:text-amber-400"
+                    >
                         This link already exists.
                     </p>
-                    <p v-else-if="duplicateSimilar" class="text-xs text-amber-600 dark:text-amber-400">
+                    <p
+                        v-else-if="duplicateSimilar"
+                        class="text-xs text-amber-600 dark:text-amber-400"
+                    >
                         A similar link already exists.
                     </p>
-                    <p v-else-if="metaFailed" class="text-xs text-muted-foreground">
+                    <p
+                        v-else-if="metaFailed"
+                        class="text-xs text-muted-foreground"
+                    >
                         Could not load metadata for this URL.
                     </p>
                     <InputError :message="errors.url" />
@@ -301,14 +317,22 @@ function deleteLink() {
                 </div>
             </div>
 
-            <Button
-                type="button"
-                :disabled="processing"
-                class="self-start"
-                @click="handleCreateSubmit(submit)"
-            >
-                Add
-            </Button>
+            <input
+                v-if="createFaviconUrl"
+                type="hidden"
+                name="favicon_url"
+                :value="createFaviconUrl"
+            />
+
+            <div class="flex gap-6 self-start">
+                <Button
+                    type="button"
+                    :disabled="processing"
+                    @click="handleCreateSubmit(submit)"
+                >
+                    Add
+                </Button>
+            </div>
         </Form>
 
         <ConfirmModal

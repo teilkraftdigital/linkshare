@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\StoreLinkRequest;
 use App\Http\Requests\Dashboard\UpdateLinkRequest;
+use App\Jobs\FetchFavicon;
 use App\Jobs\FetchLinkMeta;
 use App\Models\Bucket;
 use App\Models\Link;
@@ -45,7 +46,8 @@ class LinkController extends Controller
     {
         $validated = $request->validated();
         $tagIds = $validated['tag_ids'] ?? [];
-        unset($validated['tag_ids']);
+        $faviconUrl = $validated['favicon_url'] ?? null;
+        unset($validated['tag_ids'], $validated['favicon_url']);
 
         // Fall back to URL as title (same as import), job will replace it once meta loads
         $validated['title'] = ($validated['title'] ?? null) ?: $validated['url'];
@@ -53,7 +55,15 @@ class LinkController extends Controller
         $link = Link::create($validated);
         $link->tags()->sync($tagIds);
 
+        // Always enrich title/description in background
         FetchLinkMeta::dispatch($link);
+
+        // If the frontend already resolved the favicon URL during interactive meta fetch,
+        // dispatch FetchFavicon directly — avoids re-fetching the full HTML in the job.
+        // ShouldBeUnique on FetchFavicon prevents a second dispatch from FetchLinkMeta.
+        if ($faviconUrl) {
+            FetchFavicon::dispatch($link, $faviconUrl);
+        }
 
         return back();
     }

@@ -186,6 +186,7 @@ function onSuccess() {
                     </option>
                 </select>
                 <input type="hidden" name="bucket_id" :value="bucketId" />
+                <input v-if="faviconUrl" type="hidden" name="favicon_url" :value="faviconUrl" />
                 <InputError :message="errors.bucket_id" />
             </div>
 
