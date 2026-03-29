@@ -3,7 +3,9 @@ import { Form, Head } from '@inertiajs/vue3';
 import { CheckCircle2, Loader2 } from 'lucide-vue-next';
 import { onMounted, ref } from 'vue';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
+import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
 import { useMetaFetch } from '@/composables/useMetaFetch';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 import InputError from '@/components/InputError.vue';
 import TagSelect from '@/components/TagSelect.vue';
 import { Button } from '@/components/ui/button';
@@ -47,13 +49,40 @@ const {
     if (meta.description && !description.value) description.value = meta.description;
 });
 
+const {
+    exists: duplicateExists,
+    similar: duplicateSimilar,
+    check: checkDuplicate,
+    reset: resetDuplicate,
+} = useDuplicateCheck();
+
+const duplicateConfirmOpen = ref(false);
+const pendingSubmit = ref<(() => void) | null>(null);
+
 onMounted(() => {
     if (url.value) {
         fetchMeta(url.value);
+        checkDuplicate(url.value);
     }
 });
 
+function handleSubmit(submit: () => void) {
+    if (duplicateExists.value) {
+        pendingSubmit.value = submit;
+        duplicateConfirmOpen.value = true;
+    } else {
+        submit();
+    }
+}
+
+function confirmDuplicateSubmit() {
+    duplicateConfirmOpen.value = false;
+    pendingSubmit.value?.();
+    pendingSubmit.value = null;
+}
+
 function onSuccess() {
+    resetDuplicate();
     saved.value = true;
     setTimeout(() => window.close(), 1500);
 }
@@ -80,7 +109,7 @@ function onSuccess() {
             :options="{ preserveScroll: true }"
             class="flex flex-col gap-3"
             @success="onSuccess"
-            #default="{ errors, processing }"
+            #default="{ errors, processing, submit }"
         >
             <div class="flex flex-col gap-1.5">
                 <Label for="qa-url">URL</Label>
@@ -92,13 +121,19 @@ function onSuccess() {
                         type="url"
                         placeholder="https://example.com"
                         autocomplete="off"
-                        @input="fetchMeta(url)"
+                        @input="fetchMeta(url); checkDuplicate(url)"
                     />
                     <Loader2
                         v-if="metaFetching"
                         class="absolute top-2.5 right-2.5 size-4 animate-spin text-muted-foreground"
                     />
                 </div>
+                <p v-if="duplicateExists" class="text-xs text-amber-600 dark:text-amber-400">
+                    This link already exists.
+                </p>
+                <p v-else-if="duplicateSimilar" class="text-xs text-amber-600 dark:text-amber-400">
+                    A similar link already exists.
+                </p>
                 <InputError :message="errors.url" />
             </div>
 
@@ -160,9 +195,23 @@ function onSuccess() {
                 <TagSelect :tags="tags" v-model="tagIds" />
             </div>
 
-            <Button type="submit" :disabled="processing" class="mt-1">
+            <Button
+                type="button"
+                :disabled="processing"
+                class="mt-1"
+                @click="handleSubmit(submit)"
+            >
                 {{ processing ? 'Speichere…' : 'Speichern' }}
             </Button>
         </Form>
+
+        <ConfirmModal
+            :open="duplicateConfirmOpen"
+            title="Link already exists"
+            description="A link with this URL is already saved. Add it again anyway?"
+            confirm-label="Add anyway"
+            @update:open="duplicateConfirmOpen = $event"
+            @confirm="confirmDuplicateSubmit"
+        />
     </div>
 </template>
