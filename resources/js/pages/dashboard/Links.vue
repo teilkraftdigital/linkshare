@@ -183,6 +183,7 @@ function deleteLink() {
         preserveScroll: true,
         onSuccess: () => {
             deleteTarget.value = null;
+            toast('Link gelöscht', 'success');
         },
     });
 }
@@ -212,6 +213,7 @@ function forceDeleteLink() {
         preserveScroll: true,
         onSuccess: () => {
             forceDeleteTarget.value = null;
+            toast('Link endgültig gelöscht', 'success');
         },
     });
 }

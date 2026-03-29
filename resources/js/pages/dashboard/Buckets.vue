@@ -67,6 +67,7 @@ function deleteBucket() {
         preserveScroll: true,
         onSuccess: () => {
             deleteTarget.value = null;
+            toast('Bucket gelöscht', 'success');
         },
     });
 }
@@ -90,6 +91,7 @@ function forceDeleteBucket() {
         preserveScroll: true,
         onSuccess: () => {
             forceDeleteTarget.value = null;
+            toast('Bucket endgültig gelöscht', 'success');
         },
     });
 }

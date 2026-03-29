@@ -71,6 +71,7 @@ function deleteTag() {
         preserveScroll: true,
         onSuccess: () => {
             deleteTarget.value = null;
+            toast('Tag gelöscht', 'success');
         },
     });
 }
@@ -94,6 +95,7 @@ function forceDeleteTag() {
         preserveScroll: true,
         onSuccess: () => {
             forceDeleteTarget.value = null;
+            toast('Tag endgültig gelöscht', 'success');
         },
     });
 }
