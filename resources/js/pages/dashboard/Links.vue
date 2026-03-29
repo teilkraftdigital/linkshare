@@ -91,6 +91,24 @@ const {
     reset: resetDuplicate,
 } = useDuplicateCheck();
 
+const duplicateConfirmOpen = ref(false);
+const pendingSubmit = ref<(() => void) | null>(null);
+
+function handleCreateSubmit(submit: () => void) {
+    if (duplicateExists.value) {
+        pendingSubmit.value = submit;
+        duplicateConfirmOpen.value = true;
+    } else {
+        submit();
+    }
+}
+
+function confirmDuplicateSubmit() {
+    duplicateConfirmOpen.value = false;
+    pendingSubmit.value?.();
+    pendingSubmit.value = null;
+}
+
 // — Edit state —
 const editingLink = ref<Link | null>(null);
 const editBucketId = ref<number>(0);
@@ -178,7 +196,7 @@ function deleteLink() {
             v-bind="LinkController.store.form()"
             :options="{ preserveScroll: true }"
             class="flex flex-col gap-4 rounded-lg border p-4"
-            v-slot="{ errors, processing }"
+            v-slot="{ errors, processing, submit }"
             @success="
                 () => {
                     createUrl = '';
@@ -296,10 +314,24 @@ function deleteLink() {
                 </div>
             </div>
 
-            <Button type="submit" :disabled="processing" class="self-start">
+            <Button
+                type="button"
+                :disabled="processing"
+                class="self-start"
+                @click="handleCreateSubmit(submit)"
+            >
                 Add
             </Button>
         </Form>
+
+        <ConfirmModal
+            :open="duplicateConfirmOpen"
+            title="Link already exists"
+            description="A link with this URL is already saved. Add it again anyway?"
+            confirm-label="Add anyway"
+            @update:open="duplicateConfirmOpen = $event"
+            @confirm="confirmDuplicateSubmit"
+        />
 
         <!-- Filters -->
         <div class="flex flex-wrap gap-3">
