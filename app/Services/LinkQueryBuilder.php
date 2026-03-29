@@ -14,7 +14,7 @@ class LinkQueryBuilder
      */
     public function paginate(array $filters): LengthAwarePaginator
     {
-        $query = Link::with(['bucket', 'tags', 'media'])->orderByDesc('id');
+        $query = Link::with(['bucket', 'tags'])->orderByDesc('id');
 
         if (! empty($filters['bucket_id'])) {
             $query->where('bucket_id', $filters['bucket_id']);

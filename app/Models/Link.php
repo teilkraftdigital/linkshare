@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-#[Fillable(['url', 'title', 'description', 'notes', 'bucket_id'])]
+#[Fillable(['url', 'title', 'description', 'notes', 'bucket_id', 'favicon_url'])]
 class Link extends Model implements HasMedia
 {
     /** @use HasFactory<LinkFactory> */

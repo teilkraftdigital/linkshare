@@ -29,9 +29,6 @@ class LinkController extends Controller
         $filters = $request->only(['bucket_id', 'tag_id', 'search']);
 
         $links = $this->linkQueryBuilder->paginate($filters);
-        $links->through(fn (Link $link) => array_merge($link->toArray(), [
-            'favicon_url' => $link->getFirstMediaUrl('favicon') ?: null,
-        ]));
 
         return Inertia::render('dashboard/Links', [
             'links' => $links,
@@ -52,15 +49,17 @@ class LinkController extends Controller
         // Fall back to URL as title (same as import), job will replace it once meta loads
         $validated['title'] = ($validated['title'] ?? null) ?: $validated['url'];
 
+        // Store the external favicon URL immediately so the UI shows it right away,
+        // before FetchFavicon has had a chance to download and replace it with a local path.
+        if ($faviconUrl) {
+            $validated['favicon_url'] = $faviconUrl;
+        }
+
         $link = Link::create($validated);
         $link->tags()->sync($tagIds);
 
-        // Always enrich title/description in background
         FetchLinkMeta::dispatch($link);
 
-        // If the frontend already resolved the favicon URL during interactive meta fetch,
-        // dispatch FetchFavicon directly — avoids re-fetching the full HTML in the job.
-        // ShouldBeUnique on FetchFavicon prevents a second dispatch from FetchLinkMeta.
         if ($faviconUrl) {
             FetchFavicon::dispatch($link, $faviconUrl);
         }
