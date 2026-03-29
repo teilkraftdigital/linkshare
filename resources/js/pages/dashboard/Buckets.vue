@@ -13,14 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { COLOR_BG } from '@/lib/colors';
 import { index } from '@/routes/dashboard/buckets';
-
-type Bucket = {
-    id: number;
-    name: string;
-    color: string;
-    is_inbox: boolean;
-    links_count: number;
-};
+import type { Bucket } from '@/types/dashboard';
 
 type Props = {
     buckets: Bucket[];

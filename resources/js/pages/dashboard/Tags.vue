@@ -16,16 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { COLOR_BG } from '@/lib/colors';
 import { index } from '@/routes/dashboard/tags';
-
-type Tag = {
-    id: number;
-    name: string;
-    slug: string;
-    description: string | null;
-    color: string;
-    is_public: boolean;
-    links_count: number;
-};
+import type { Tag } from '@/types/dashboard';
 
 type Props = {
     tags: Tag[];
@@ -310,14 +301,14 @@ async function copyUrl(slug: string) {
                         <code
                             class="flex-1 truncate text-xs text-muted-foreground"
                         >
-                            {{ `${$page.props.appUrl}${PublicTagController.show.url(tag.slug)}` }}
+                            {{ `${$page.props.appUrl}${PublicTagController.show.url(tag.slug ?? '')}` }}
                         </code>
                         <Button
                             variant="ghost"
                             size="icon"
                             class="size-7 shrink-0"
                             :aria-label="`Copy URL for ${tag.name}`"
-                            @click="copyUrl(tag.slug)"
+                            @click="copyUrl(tag.slug ?? '')"
                         >
                             <Copy class="size-3.5" />
                         </Button>

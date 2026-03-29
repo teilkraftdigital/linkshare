@@ -17,31 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { index } from '@/routes/dashboard/links';
 import { Pagination, type Paginator } from '@/components/ui/pagination';
-
-type Bucket = {
-    id: number;
-    name: string;
-    color: string;
-    is_inbox: boolean;
-};
-
-type Tag = {
-    id: number;
-    name: string;
-    color: string;
-    is_public: boolean;
-};
-
-type Link = {
-    id: number;
-    url: string;
-    title: string;
-    description: string | null;
-    notes: string | null;
-    bucket_id: number;
-    bucket: Bucket;
-    tags: Tag[];
-};
+import type { Bucket, Link, Tag } from '@/types/dashboard';
 
 type Filters = {
     bucket_id?: string;

@@ -12,19 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-
-type Bucket = {
-    id: number;
-    name: string;
-    is_inbox: boolean;
-};
-
-type Tag = {
-    id: number;
-    name: string;
-    color: string;
-    is_public: boolean;
-};
+import type { Bucket, Tag } from '@/types/dashboard';
 
 const props = defineProps<{
     prefillUrl: string;

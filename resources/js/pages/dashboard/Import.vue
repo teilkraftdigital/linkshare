@@ -12,12 +12,7 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-
-type Bucket = {
-    id: number;
-    name: string;
-    is_inbox: boolean;
-};
+import type { Bucket } from '@/types/dashboard';
 
 const props = defineProps<{
     buckets: Bucket[];
