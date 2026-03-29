@@ -73,10 +73,14 @@ function deleteBucket() {
 }
 
 function restoreBucket(bucket: Bucket) {
-    router.post(BucketController.restore.url(bucket), {}, {
-        preserveScroll: true,
-        onSuccess: () => toast('Bucket wiederhergestellt', 'success'),
-    });
+    router.post(
+        BucketController.restore.url(bucket),
+        {},
+        {
+            preserveScroll: true,
+            onSuccess: () => toast('Bucket wiederhergestellt', 'success'),
+        },
+    );
 }
 
 function confirmForceDelete(bucket: Bucket) {
@@ -104,12 +108,14 @@ function forceDeleteBucket() {
         <div class="flex items-start justify-between gap-4">
             <Heading
                 title="Buckets"
-                description="Organise your links into buckets"
+                description="Organisiere deine Links in Buckets, um sie besser zu verwalten."
             />
             <Button
                 variant="ghost"
                 size="sm"
-                :class="showTrashed ? 'text-destructive' : 'text-muted-foreground'"
+                :class="
+                    showTrashed ? 'text-destructive' : 'text-muted-foreground'
+                "
                 @click="toggleTrashed"
             >
                 <Trash2 class="size-4" />
@@ -132,7 +138,7 @@ function forceDeleteBucket() {
             "
         >
             <div class="flex flex-1 flex-col gap-2">
-                <Label for="bucket-name">New bucket</Label>
+                <Label for="bucket-name">Neuer Bucket</Label>
                 <Input
                     id="bucket-name"
                     name="name"
@@ -150,7 +156,7 @@ function forceDeleteBucket() {
             </div>
 
             <Button type="submit" :disabled="processing" class="self-end">
-                Add
+                Hinzufügen
             </Button>
         </Form>
 
@@ -169,7 +175,9 @@ function forceDeleteBucket() {
                 />
 
                 <!-- Inline edit form (only in normal view) -->
-                <template v-if="!showTrashed && editingBucket?.id === bucket.id">
+                <template
+                    v-if="!showTrashed && editingBucket?.id === bucket.id"
+                >
                     <Form
                         v-bind="BucketController.update.form(bucket)"
                         :options="{ preserveScroll: true }"
@@ -200,7 +208,7 @@ function forceDeleteBucket() {
                                 :for="`bucket-color-${bucket.id}`"
                                 class="sr-only"
                             >
-                                Color
+                                Farbe
                             </Label>
                             <input
                                 type="hidden"
@@ -217,15 +225,16 @@ function forceDeleteBucket() {
                                 type="submit"
                                 size="sm"
                                 :disabled="processing"
-                                >Save</Button
                             >
+                                Speichern
+                            </Button>
                             <Button
                                 type="button"
                                 size="sm"
                                 variant="outline"
                                 @click="cancelEdit"
                             >
-                                Cancel
+                                Abbrechen
                             </Button>
                         </div>
                     </Form>
@@ -299,23 +308,20 @@ function forceDeleteBucket() {
             </li>
         </ul>
 
-        <p
-            v-if="buckets.length === 0"
-            class="text-sm text-muted-foreground"
-        >
+        <p v-if="buckets.length === 0" class="text-sm text-muted-foreground">
             {{
                 showTrashed
                     ? 'Keine gelöschten Buckets.'
-                    : 'No buckets yet.'
+                    : 'Keine Buckets vorhanden.'
             }}
         </p>
     </div>
 
     <ConfirmModal
         :open="deleteTarget !== null"
-        title="Delete bucket?"
-        :description="`Delete '${deleteTarget?.name}'? This action cannot be undone.`"
-        confirm-label="Delete"
+        title="Bucket löschen?"
+        :description="`'${deleteTarget?.name}' wird gelöscht. Diese Aktion kann rückgängig gemacht werden.`"
+        confirm-label="Löschen"
         @update:open="
             (val) => {
                 if (!val) deleteTarget = null;

@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { Form, Head, router } from '@inertiajs/vue3';
-import { Copy, Link as LinkIcon, Pencil, RotateCcw, Trash2 } from 'lucide-vue-next';
+import {
+    Copy,
+    Link as LinkIcon,
+    Pencil,
+    RotateCcw,
+    Trash2,
+} from 'lucide-vue-next';
 import { ref } from 'vue';
 import TagController from '@/actions/App/Http/Controllers/Dashboard/TagController';
 import PublicTagController from '@/actions/App/Http/Controllers/TagController';
@@ -77,10 +83,14 @@ function deleteTag() {
 }
 
 function restoreTag(tag: Tag) {
-    router.post(TagController.restore.url(tag), {}, {
-        preserveScroll: true,
-        onSuccess: () => toast('Tag wiederhergestellt', 'success'),
-    });
+    router.post(
+        TagController.restore.url(tag),
+        {},
+        {
+            preserveScroll: true,
+            onSuccess: () => toast('Tag wiederhergestellt', 'success'),
+        },
+    );
 }
 
 function confirmForceDelete(tag: Tag) {
@@ -113,11 +123,16 @@ async function copyUrl(slug: string) {
 
     <div class="flex flex-col gap-8 p-4">
         <div class="flex items-start justify-between gap-4">
-            <Heading title="Tags" description="Manage your shareable tags" />
+            <Heading
+                title="Tags"
+                description="Verwalte deine Tags und deren Sichtbarkeit."
+            />
             <Button
                 variant="ghost"
                 size="sm"
-                :class="showTrashed ? 'text-destructive' : 'text-muted-foreground'"
+                :class="
+                    showTrashed ? 'text-destructive' : 'text-muted-foreground'
+                "
                 @click="toggleTrashed"
             >
                 <Trash2 class="size-4" />
@@ -378,7 +393,9 @@ async function copyUrl(slug: string) {
                         <code
                             class="flex-1 truncate text-xs text-muted-foreground"
                         >
-                            {{ `${$page.props.appUrl}${PublicTagController.show.url(tag.slug ?? '')}` }}
+                            {{
+                                `${$page.props.appUrl}${PublicTagController.show.url(tag.slug ?? '')}`
+                            }}
                         </code>
                         <Button
                             variant="ghost"
@@ -396,18 +413,16 @@ async function copyUrl(slug: string) {
 
         <p v-if="tags.length === 0" class="text-sm text-muted-foreground">
             {{
-                showTrashed
-                    ? 'Keine gelöschten Tags.'
-                    : 'No tags yet.'
+                showTrashed ? 'Keine gelöschten Tags.' : 'Keine Tags vorhanden.'
             }}
         </p>
     </div>
 
     <ConfirmModal
         :open="deleteTarget !== null"
-        title="Delete tag?"
-        :description="`Delete '${deleteTarget?.name}'? This action cannot be undone.`"
-        confirm-label="Delete"
+        title="Tag Löschen?"
+        :description="`Tag '${deleteTarget?.name}' löschen? Diese Aktion kann rückgängig gemacht werden.`"
+        confirm-label="Löschen"
         @update:open="
             (val) => {
                 if (!val) deleteTarget = null;

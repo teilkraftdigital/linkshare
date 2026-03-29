@@ -58,7 +58,8 @@ const {
     reset: resetMeta,
 } = useMetaFetch((meta) => {
     if (meta.title && !title.value) title.value = meta.title;
-    if (meta.description && !description.value) description.value = meta.description;
+    if (meta.description && !description.value)
+        description.value = meta.description;
 });
 
 const {
@@ -112,8 +113,10 @@ function onSuccess() {
             class="flex flex-col items-center justify-center gap-3 py-8 text-center"
         >
             <CheckCircle2 class="size-10 text-green-500" />
-            <p class="font-medium">Link saved!</p>
-            <p class="text-sm text-muted-foreground">Dieses Fenster schließt sich automatisch…</p>
+            <p class="font-medium">Link gespeichert!</p>
+            <p class="text-sm text-muted-foreground">
+                Dieses Fenster schließt sich automatisch…
+            </p>
         </div>
 
         <Form
@@ -132,7 +135,10 @@ function onSuccess() {
                         :src="faviconUrl"
                         class="absolute top-2.5 left-2.5 size-4 rounded-sm object-contain"
                         alt=""
-                        @error="($event.target as HTMLImageElement).style.display = 'none'"
+                        @error="
+                            ($event.target as HTMLImageElement).style.display =
+                                'none'
+                        "
                     />
                     <Input
                         id="qa-url"
@@ -142,18 +148,27 @@ function onSuccess() {
                         placeholder="https://example.com"
                         autocomplete="off"
                         :class="faviconUrl ? 'pl-8' : ''"
-                        @input="fetchMeta(url); checkDuplicate(url)"
+                        @input="
+                            fetchMeta(url);
+                            checkDuplicate(url);
+                        "
                     />
                     <Loader2
                         v-if="metaFetching"
                         class="absolute top-2.5 right-2.5 size-4 animate-spin text-muted-foreground"
                     />
                 </div>
-                <p v-if="duplicateExists" class="text-xs text-amber-600 dark:text-amber-400">
-                    This link already exists.
+                <p
+                    v-if="duplicateExists"
+                    class="text-xs text-amber-600 dark:text-amber-400"
+                >
+                    Dieser Link ist bereits vorhanden.
                 </p>
-                <p v-else-if="duplicateSimilar" class="text-xs text-amber-600 dark:text-amber-400">
-                    A similar link already exists.
+                <p
+                    v-else-if="duplicateSimilar"
+                    class="text-xs text-amber-600 dark:text-amber-400"
+                >
+                    Ein ähnlicher Link ist bereits vorhanden.
                 </p>
                 <InputError :message="errors.url" />
             </div>
@@ -184,7 +199,10 @@ function onSuccess() {
             </div>
 
             <div class="flex flex-col gap-1.5">
-                <Label for="qa-notes">Notizen <span class="text-muted-foreground">(privat)</span></Label>
+                <Label for="qa-notes">
+                    Notizen
+                    <span class="text-muted-foreground">(privat)</span></Label
+                >
                 <Textarea
                     id="qa-notes"
                     v-model="notes"
@@ -202,14 +220,27 @@ function onSuccess() {
                     id="qa-bucket"
                     :value="bucketId"
                     class="rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
-                    @change="bucketId = Number(($event.target as HTMLSelectElement).value)"
+                    @change="
+                        bucketId = Number(
+                            ($event.target as HTMLSelectElement).value,
+                        )
+                    "
                 >
-                    <option v-for="bucket in buckets" :key="bucket.id" :value="bucket.id">
+                    <option
+                        v-for="bucket in buckets"
+                        :key="bucket.id"
+                        :value="bucket.id"
+                    >
                         {{ bucket.name }}
                     </option>
                 </select>
                 <input type="hidden" name="bucket_id" :value="bucketId" />
-                <input v-if="faviconUrl" type="hidden" name="favicon_url" :value="faviconUrl" />
+                <input
+                    v-if="faviconUrl"
+                    type="hidden"
+                    name="favicon_url"
+                    :value="faviconUrl"
+                />
                 <InputError :message="errors.bucket_id" />
             </div>
 
@@ -242,9 +273,9 @@ function onSuccess() {
 
         <ConfirmModal
             :open="duplicateConfirmOpen"
-            title="Link already exists"
-            description="A link with this URL is already saved. Add it again anyway?"
-            confirm-label="Add anyway"
+            title="Link bereits vorhanden"
+            description="Ein Link mit dieser URL ist bereits gespeichert. Trotzdem hinzufügen?"
+            confirm-label="Trotzdem hinzufügen"
             @update:open="duplicateConfirmOpen = $event"
             @confirm="confirmDuplicateSubmit"
         />
