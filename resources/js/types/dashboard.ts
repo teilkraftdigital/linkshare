@@ -25,4 +25,5 @@ export type Link = {
     bucket_id: number;
     bucket: Bucket;
     tags: Tag[];
+    favicon_url: string | null;
 };

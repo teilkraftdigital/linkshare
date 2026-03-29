@@ -53,7 +53,9 @@ const createTagIds = ref<number[]>([]);
 const {
     fetching: metaFetching,
     failed: metaFailed,
+    faviconUrl: createFaviconUrl,
     fetch: fetchMeta,
+    reset: resetMeta,
 } = useMetaFetch((meta) => {
     if (meta.title && !createTitle.value) createTitle.value = meta.title;
     if (meta.description && !createDescription.value)
@@ -181,6 +183,7 @@ function deleteLink() {
                     createBucketId = props.inboxBucketId;
                     createTagIds = [];
                     resetDuplicate();
+                    resetMeta();
                     toast('Link added', 'success');
                 }
             "
@@ -189,6 +192,17 @@ function deleteLink() {
                 <div class="flex flex-col gap-2">
                     <Label for="link-url">URL</Label>
                     <div class="relative">
+                        <img
+                            v-if="createFaviconUrl"
+                            :src="createFaviconUrl"
+                            class="absolute top-2.5 left-2.5 size-4 rounded-sm object-contain"
+                            alt=""
+                            @error="
+                                (
+                                    $event.target as HTMLImageElement
+                                ).style.display = 'none'
+                            "
+                        />
                         <Input
                             id="link-url"
                             v-model="createUrl"
@@ -196,20 +210,33 @@ function deleteLink() {
                             type="url"
                             placeholder="https://example.com"
                             autocomplete="off"
-                            @input="fetchMeta(createUrl); checkDuplicate(createUrl)"
+                            :class="createFaviconUrl ? 'pl-8' : ''"
+                            @input="
+                                fetchMeta(createUrl);
+                                checkDuplicate(createUrl);
+                            "
                         />
                         <Loader2
                             v-if="metaFetching"
                             class="absolute top-2.5 right-2.5 size-4 animate-spin text-muted-foreground"
                         />
                     </div>
-                    <p v-if="duplicateExists" class="text-xs text-amber-600 dark:text-amber-400">
+                    <p
+                        v-if="duplicateExists"
+                        class="text-xs text-amber-600 dark:text-amber-400"
+                    >
                         This link already exists.
                     </p>
-                    <p v-else-if="duplicateSimilar" class="text-xs text-amber-600 dark:text-amber-400">
+                    <p
+                        v-else-if="duplicateSimilar"
+                        class="text-xs text-amber-600 dark:text-amber-400"
+                    >
                         A similar link already exists.
                     </p>
-                    <p v-else-if="metaFailed" class="text-xs text-muted-foreground">
+                    <p
+                        v-else-if="metaFailed"
+                        class="text-xs text-muted-foreground"
+                    >
                         Could not load metadata for this URL.
                     </p>
                     <InputError :message="errors.url" />
@@ -290,14 +317,22 @@ function deleteLink() {
                 </div>
             </div>
 
-            <Button
-                type="button"
-                :disabled="processing"
-                class="self-start"
-                @click="handleCreateSubmit(submit)"
-            >
-                Add
-            </Button>
+            <input
+                v-if="createFaviconUrl"
+                type="hidden"
+                name="favicon_url"
+                :value="createFaviconUrl"
+            />
+
+            <div class="flex gap-6 self-start">
+                <Button
+                    type="button"
+                    :disabled="processing"
+                    @click="handleCreateSubmit(submit)"
+                >
+                    Add
+                </Button>
+            </div>
         </Form>
 
         <ConfirmModal
@@ -508,6 +543,7 @@ function deleteLink() {
                             :title="link.title"
                             :url="link.url"
                             :description="link.description"
+                            :favicon_url="link.favicon_url"
                             :bucket="link.bucket"
                             :tags="link.tags"
                         />

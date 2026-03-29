@@ -42,5 +42,9 @@ class FetchLinkMeta implements ShouldQueue
         if (! empty($updates)) {
             $link->update($updates);
         }
+
+        if ($meta['favicon_url'] && $link->getFirstMedia('favicon') === null) {
+            FetchFavicon::dispatch($link, $meta['favicon_url']);
+        }
     }
 }

@@ -22,7 +22,7 @@ test('updates description when link has none', function () {
     mock(MetaFetchService::class)
         ->shouldReceive('fetch')
         ->once()
-        ->andReturn(['title' => 'Example Page', 'description' => 'A great page']);
+        ->andReturn(['title' => 'Example Page', 'description' => 'A great page', 'favicon_url' => null]);
 
     (new FetchLinkMeta($link))->handle(app(MetaFetchService::class));
 
@@ -41,7 +41,7 @@ test('updates title when it equals the url', function () {
     mock(MetaFetchService::class)
         ->shouldReceive('fetch')
         ->once()
-        ->andReturn(['title' => 'Example Page', 'description' => null]);
+        ->andReturn(['title' => 'Example Page', 'description' => null, 'favicon_url' => null]);
 
     (new FetchLinkMeta($link))->handle(app(MetaFetchService::class));
 
@@ -59,7 +59,7 @@ test('does not overwrite existing description', function () {
     mock(MetaFetchService::class)
         ->shouldReceive('fetch')
         ->once()
-        ->andReturn(['title' => 'Example Page', 'description' => 'Fetched description']);
+        ->andReturn(['title' => 'Example Page', 'description' => 'Fetched description', 'favicon_url' => null]);
 
     (new FetchLinkMeta($link))->handle(app(MetaFetchService::class));
 
@@ -77,7 +77,7 @@ test('does nothing when meta fetch returns nulls', function () {
     mock(MetaFetchService::class)
         ->shouldReceive('fetch')
         ->once()
-        ->andReturn(['title' => null, 'description' => null]);
+        ->andReturn(['title' => null, 'description' => null, 'favicon_url' => null]);
 
     (new FetchLinkMeta($link))->handle(app(MetaFetchService::class));
 

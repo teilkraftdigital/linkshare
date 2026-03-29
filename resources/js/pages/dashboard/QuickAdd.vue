@@ -31,7 +31,9 @@ const saved = ref(false);
 
 const {
     fetching: metaFetching,
+    faviconUrl,
     fetch: fetchMeta,
+    reset: resetMeta,
 } = useMetaFetch((meta) => {
     if (meta.title && !title.value) title.value = meta.title;
     if (meta.description && !description.value) description.value = meta.description;
@@ -71,6 +73,7 @@ function confirmDuplicateSubmit() {
 
 function onSuccess() {
     resetDuplicate();
+    resetMeta();
     saved.value = true;
     setTimeout(() => window.close(), 1500);
 }
@@ -102,6 +105,13 @@ function onSuccess() {
             <div class="flex flex-col gap-1.5">
                 <Label for="qa-url">URL</Label>
                 <div class="relative">
+                    <img
+                        v-if="faviconUrl"
+                        :src="faviconUrl"
+                        class="absolute top-2.5 left-2.5 size-4 rounded-sm object-contain"
+                        alt=""
+                        @error="($event.target as HTMLImageElement).style.display = 'none'"
+                    />
                     <Input
                         id="qa-url"
                         v-model="url"
@@ -109,6 +119,7 @@ function onSuccess() {
                         type="url"
                         placeholder="https://example.com"
                         autocomplete="off"
+                        :class="faviconUrl ? 'pl-8' : ''"
                         @input="fetchMeta(url); checkDuplicate(url)"
                     />
                     <Loader2
@@ -175,6 +186,7 @@ function onSuccess() {
                     </option>
                 </select>
                 <input type="hidden" name="bucket_id" :value="bucketId" />
+                <input v-if="faviconUrl" type="hidden" name="favicon_url" :value="faviconUrl" />
                 <InputError :message="errors.bucket_id" />
             </div>
 

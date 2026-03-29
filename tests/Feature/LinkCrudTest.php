@@ -27,6 +27,16 @@ test('links index lists all links', function () {
         );
 });
 
+test('index response includes favicon_url for each link', function () {
+    Link::factory()->create(['bucket_id' => $this->inbox->id]);
+
+    $this->get(route('dashboard.links.index'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->has('links.data.0.favicon_url')
+        );
+});
+
 test('guests are redirected from links index', function () {
     auth()->logout();
 
@@ -108,14 +118,14 @@ test('dispatches FetchLinkMeta job when link is stored without title', function 
     expect(Link::first()->title)->toBe('https://example.com'); // URL used as fallback
 });
 
-test('does not dispatch FetchLinkMeta job when link has a title', function () {
+test('dispatches FetchLinkMeta job when link is stored with a title', function () {
     $this->post(route('dashboard.links.store'), [
         'url' => 'https://example.com',
         'title' => 'Example',
         'bucket_id' => $this->inbox->id,
     ]);
 
-    Queue::assertNothingPushed();
+    Queue::assertPushed(FetchLinkMeta::class, 1);
 });
 
 test('link notes are not accessible to unauthenticated users', function () {
