@@ -2,7 +2,8 @@
 
 use App\Http\Controllers\Dashboard\BucketController;
 use App\Http\Controllers\Dashboard\LinkController;
-use App\Http\Controllers\Dashboard\TagController;
+use App\Http\Controllers\Dashboard\TagController as DashboardTagController;
+use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,10 +21,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('dashboard/buckets/{bucket}', [BucketController::class, 'update'])->name('dashboard.buckets.update');
     Route::delete('dashboard/buckets/{bucket}', [BucketController::class, 'destroy'])->name('dashboard.buckets.destroy');
 
-    Route::get('dashboard/tags', [TagController::class, 'index'])->name('dashboard.tags.index');
-    Route::post('dashboard/tags', [TagController::class, 'store'])->name('dashboard.tags.store');
-    Route::patch('dashboard/tags/{tag}', [TagController::class, 'update'])->name('dashboard.tags.update');
-    Route::delete('dashboard/tags/{tag}', [TagController::class, 'destroy'])->name('dashboard.tags.destroy');
+    Route::get('dashboard/tags', [DashboardTagController::class, 'index'])->name('dashboard.tags.index');
+    Route::post('dashboard/tags', [DashboardTagController::class, 'store'])->name('dashboard.tags.store');
+    Route::patch('dashboard/tags/{tag}', [DashboardTagController::class, 'update'])->name('dashboard.tags.update');
+    Route::delete('dashboard/tags/{tag}', [DashboardTagController::class, 'destroy'])->name('dashboard.tags.destroy');
 
     Route::get('dashboard/links', [LinkController::class, 'index'])->name('dashboard.links.index');
     Route::post('dashboard/links', [LinkController::class, 'store'])->name('dashboard.links.store');
@@ -31,7 +32,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('dashboard/links/{link}', [LinkController::class, 'destroy'])->name('dashboard.links.destroy');
 });
 
-// This will be handled by issue #9 and is just a placeholder for now
-// Route::get('tags/{tag:slug}', fn () => inertia('tags/Show'))->name('tags.show');
+Route::get('tags/{tag:slug}', [TagController::class, 'show'])->name('tags.show');
 
 require __DIR__.'/settings.php';

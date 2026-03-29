@@ -3,6 +3,7 @@ import { Form, Head, router } from '@inertiajs/vue3';
 import { Copy, Link as LinkIcon, Pencil, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import TagController from '@/actions/App/Http/Controllers/Dashboard/TagController';
+import PublicTagController from '@/actions/App/Http/Controllers/TagController';
 import { useToast } from '@/composables/useToast';
 import ColorPalette from '@/components/ColorPalette.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
@@ -76,7 +77,7 @@ function deleteTag() {
 }
 
 async function copyUrl(slug: string) {
-    const url = `${window.location.origin}/tags/${slug}`;
+    const url = `${window.location.origin}${PublicTagController.show.url(slug)}`;
     await navigator.clipboard.writeText(url);
 
     toast('URL copied', 'success');
@@ -309,7 +310,7 @@ async function copyUrl(slug: string) {
                         <code
                             class="flex-1 truncate text-xs text-muted-foreground"
                         >
-                            {{ `${$page.props.appUrl}/tags/${tag.slug}` }}
+                            {{ `${$page.props.appUrl}${PublicTagController.show.url(tag.slug)}` }}
                         </code>
                         <Button
                             variant="ghost"
