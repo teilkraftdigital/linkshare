@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, setLayoutProps } from '@inertiajs/vue3';
 import LinkCard from '@/components/LinkCard.vue';
 
 type Link = {
@@ -15,10 +15,15 @@ type Tag = {
     slug: string;
 };
 
-defineProps<{
+const props = defineProps<{
     tag: Tag;
     links: Link[];
 }>();
+
+setLayoutProps({
+    title: props.tag.name,
+    description: props.tag.description ?? '',
+});
 </script>
 
 <template>
@@ -32,13 +37,6 @@ defineProps<{
     </Head>
 
     <main class="mx-auto max-w-2xl px-4 py-12">
-        <header class="mb-8">
-            <h1 class="text-2xl font-bold">{{ tag.name }}</h1>
-            <p v-if="tag.description" class="mt-2 text-muted-foreground">
-                {{ tag.description }}
-            </p>
-        </header>
-
         <ul v-if="links.length > 0" class="flex flex-col gap-2">
             <li v-for="link in links" :key="link.id">
                 <LinkCard
