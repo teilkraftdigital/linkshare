@@ -1,19 +1,7 @@
 <script setup lang="ts">
 import { ExternalLink, Globe } from 'lucide-vue-next';
 import { COLOR_BG } from '@/lib/colors';
-
-type Tag = {
-    id: number;
-    name: string;
-    color: string;
-    is_public: boolean;
-};
-
-type Bucket = {
-    id: number;
-    name: string;
-    color: string;
-};
+import type { Bucket, Tag } from '@/types/dashboard';
 
 type Props = {
     title: string;

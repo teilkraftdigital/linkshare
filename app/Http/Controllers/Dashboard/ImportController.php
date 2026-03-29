@@ -21,7 +21,7 @@ class ImportController extends Controller
     public function create(): Response
     {
         return Inertia::render('dashboard/Import', [
-            'buckets' => Bucket::orderBy('is_inbox', 'desc')->orderBy('name')->get(['id', 'name', 'is_inbox']),
+            'buckets' => Bucket::orderBy('is_inbox', 'desc')->orderBy('name')->get(['id', 'name', 'color', 'is_inbox']),
             'inboxBucketId' => $this->inboxBucketResolver->resolve()->id,
         ]);
     }

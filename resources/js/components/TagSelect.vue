@@ -14,13 +14,7 @@ import {
 } from 'reka-ui';
 import { cn } from '@/lib/utils';
 import { COLOR_BG } from '@/lib/colors';
-
-type Tag = {
-    id: number;
-    name: string;
-    color: string;
-    is_public: boolean;
-};
+import type { Tag } from '@/types/dashboard';
 
 const props = defineProps<{
     tags: Tag[];
