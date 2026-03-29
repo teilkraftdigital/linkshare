@@ -76,7 +76,10 @@ function deleteTag() {
 }
 
 function restoreTag(tag: Tag) {
-    router.post(TagController.restore.url(tag), {}, { preserveScroll: true });
+    router.post(TagController.restore.url(tag), {}, {
+        preserveScroll: true,
+        onSuccess: () => toast('Tag wiederhergestellt', 'success'),
+    });
 }
 
 function confirmForceDelete(tag: Tag) {

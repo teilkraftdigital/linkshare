@@ -196,7 +196,10 @@ function toggleTrashed() {
 }
 
 function restoreLink(link: Link) {
-    router.post(LinkController.restore.url(link), {}, { preserveScroll: true });
+    router.post(LinkController.restore.url(link), {}, {
+        preserveScroll: true,
+        onSuccess: () => toast('Link wiederhergestellt', 'success'),
+    });
 }
 
 function confirmForceDelete(link: Link) {

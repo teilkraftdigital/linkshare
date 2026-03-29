@@ -72,7 +72,10 @@ function deleteBucket() {
 }
 
 function restoreBucket(bucket: Bucket) {
-    router.post(BucketController.restore.url(bucket), {}, { preserveScroll: true });
+    router.post(BucketController.restore.url(bucket), {}, {
+        preserveScroll: true,
+        onSuccess: () => toast('Bucket wiederhergestellt', 'success'),
+    });
 }
 
 function confirmForceDelete(bucket: Bucket) {
