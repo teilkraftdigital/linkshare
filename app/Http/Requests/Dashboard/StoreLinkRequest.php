@@ -14,7 +14,7 @@ class StoreLinkRequest extends FormRequest
     {
         return [
             'url' => ['required', 'url', 'max:2048'],
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
             'notes' => ['nullable', 'string'],
             'bucket_id' => ['required', 'integer', 'exists:buckets,id'],
