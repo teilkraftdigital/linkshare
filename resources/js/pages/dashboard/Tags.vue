@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Form, Head, router } from '@inertiajs/vue3';
-import { Copy, Link as LinkIcon, Pencil, Trash2 } from 'lucide-vue-next';
+import { Copy, Link as LinkIcon, Pencil, RotateCcw, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import TagController from '@/actions/App/Http/Controllers/Dashboard/TagController';
 import PublicTagController from '@/actions/App/Http/Controllers/TagController';
@@ -20,9 +20,10 @@ import type { Tag } from '@/types/dashboard';
 
 type Props = {
     tags: Tag[];
+    showTrashed: boolean;
 };
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 defineOptions({
     layout: {
@@ -40,6 +41,13 @@ const editColor = ref<string>('gray');
 const editIsPublic = ref<boolean>(false);
 
 const deleteTarget = ref<Tag | null>(null);
+const forceDeleteTarget = ref<Tag | null>(null);
+
+function toggleTrashed() {
+    router.get(index(), props.showTrashed ? {} : { trashed: '1' }, {
+        preserveState: false,
+    });
+}
 
 function startEdit(tag: Tag) {
     editingTag.value = tag;
@@ -67,6 +75,26 @@ function deleteTag() {
     });
 }
 
+function restoreTag(tag: Tag) {
+    router.post(TagController.restore.url(tag), {}, { preserveScroll: true });
+}
+
+function confirmForceDelete(tag: Tag) {
+    forceDeleteTarget.value = tag;
+}
+
+function forceDeleteTag() {
+    if (!forceDeleteTarget.value) {
+        return;
+    }
+    router.delete(TagController.forceDelete.url(forceDeleteTarget.value), {
+        preserveScroll: true,
+        onSuccess: () => {
+            forceDeleteTarget.value = null;
+        },
+    });
+}
+
 async function copyUrl(slug: string) {
     const url = `${window.location.origin}${PublicTagController.show.url(slug)}`;
     await navigator.clipboard.writeText(url);
@@ -79,10 +107,22 @@ async function copyUrl(slug: string) {
     <Head title="Tags" />
 
     <div class="flex flex-col gap-8 p-4">
-        <Heading title="Tags" description="Manage your shareable tags" />
+        <div class="flex items-start justify-between gap-4">
+            <Heading title="Tags" description="Manage your shareable tags" />
+            <Button
+                variant="ghost"
+                size="sm"
+                :class="showTrashed ? 'text-destructive' : 'text-muted-foreground'"
+                @click="toggleTrashed"
+            >
+                <Trash2 class="size-4" />
+                Papierkorb
+            </Button>
+        </div>
 
-        <!-- Create form -->
+        <!-- Create form (hidden in trash view) -->
         <Form
+            v-if="!showTrashed"
             v-bind="TagController.store.form()"
             :options="{ preserveScroll: true }"
             class="flex flex-col gap-4 rounded-lg border p-4"
@@ -151,9 +191,10 @@ async function copyUrl(slug: string) {
                 v-for="tag in tags"
                 :key="tag.id"
                 class="flex flex-col gap-3 rounded-lg border px-4 py-3"
+                :class="showTrashed ? 'opacity-60' : ''"
             >
-                <!-- Inline edit form -->
-                <template v-if="editingTag?.id === tag.id">
+                <!-- Inline edit form (only in normal view) -->
+                <template v-if="!showTrashed && editingTag?.id === tag.id">
                     <Form
                         v-bind="TagController.update.form(tag)"
                         :options="{ preserveScroll: true }"
@@ -250,7 +291,11 @@ async function copyUrl(slug: string) {
                             :class="COLOR_BG[tag.color] ?? 'bg-gray-400'"
                         />
 
-                        <span class="flex-1 font-medium">{{ tag.name }}</span>
+                        <span
+                            class="flex-1 font-medium"
+                            :class="showTrashed ? 'line-through' : ''"
+                            >{{ tag.name }}</span
+                        >
 
                         <span
                             class="flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground"
@@ -266,33 +311,60 @@ async function copyUrl(slug: string) {
                             /{{ tag.slug }}
                         </code>
 
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            :aria-label="`Edit ${tag.name}`"
-                            @click="startEdit(tag)"
-                        >
-                            <Pencil class="size-4" />
-                        </Button>
+                        <!-- Normal actions -->
+                        <template v-if="!showTrashed">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                :aria-label="`Edit ${tag.name}`"
+                                @click="startEdit(tag)"
+                            >
+                                <Pencil class="size-4" />
+                            </Button>
 
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            :aria-label="`Delete ${tag.name}`"
-                            @click="confirmDelete(tag)"
-                        >
-                            <Trash2 class="size-4 text-destructive" />
-                        </Button>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                :aria-label="`Delete ${tag.name}`"
+                                @click="confirmDelete(tag)"
+                            >
+                                <Trash2 class="size-4 text-destructive" />
+                            </Button>
+                        </template>
+
+                        <!-- Trash actions -->
+                        <template v-else>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                :aria-label="`Restore ${tag.name}`"
+                                @click="restoreTag(tag)"
+                            >
+                                <RotateCcw class="size-4" />
+                            </Button>
+
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                :aria-label="`Permanently delete ${tag.name}`"
+                                @click="confirmForceDelete(tag)"
+                            >
+                                <Trash2 class="size-4 text-destructive" />
+                            </Button>
+                        </template>
                     </div>
 
                     <div
-                        v-if="tag.description"
+                        v-if="!showTrashed && tag.description"
                         class="text-sm text-muted-foreground"
                     >
                         {{ tag.description }}
                     </div>
 
-                    <div v-if="tag.is_public" class="flex items-center gap-2">
+                    <div
+                        v-if="!showTrashed && tag.is_public"
+                        class="flex items-center gap-2"
+                    >
                         <span
                             class="rounded bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400"
                         >
@@ -316,6 +388,14 @@ async function copyUrl(slug: string) {
                 </template>
             </li>
         </ul>
+
+        <p v-if="tags.length === 0" class="text-sm text-muted-foreground">
+            {{
+                showTrashed
+                    ? 'Keine gelöschten Tags.'
+                    : 'No tags yet.'
+            }}
+        </p>
     </div>
 
     <ConfirmModal
@@ -329,5 +409,18 @@ async function copyUrl(slug: string) {
             }
         "
         @confirm="deleteTag"
+    />
+
+    <ConfirmModal
+        :open="forceDeleteTarget !== null"
+        title="Endgültig löschen?"
+        :description="`'${forceDeleteTarget?.name}' wird permanent gelöscht und kann nicht wiederhergestellt werden.`"
+        confirm-label="Endgültig löschen"
+        @update:open="
+            (val) => {
+                if (!val) forceDeleteTarget = null;
+            }
+        "
+        @confirm="forceDeleteTag"
     />
 </template>

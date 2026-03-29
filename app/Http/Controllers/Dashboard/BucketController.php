@@ -8,6 +8,7 @@ use App\Http\Requests\Dashboard\UpdateBucketRequest;
 use App\Models\Bucket;
 use App\Services\InboxBucketResolver;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -15,10 +16,17 @@ class BucketController extends Controller
 {
     public function __construct(private readonly InboxBucketResolver $inboxBucketResolver) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $showTrashed = $request->boolean('trashed');
+
+        $buckets = $showTrashed
+            ? Bucket::onlyTrashed()->withCount('links')->orderBy('name')->get()
+            : Bucket::withCount('links')->orderBy('is_inbox', 'desc')->orderBy('name')->get();
+
         return Inertia::render('dashboard/Buckets', [
-            'buckets' => Bucket::withCount('links')->orderBy('is_inbox', 'desc')->orderBy('name')->get(),
+            'buckets' => $buckets,
+            'showTrashed' => $showTrashed,
         ]);
     }
 
@@ -44,6 +52,22 @@ class BucketController extends Controller
         $bucket->links()->update(['bucket_id' => $inbox->id]);
 
         $bucket->delete();
+
+        return back();
+    }
+
+    public function restore(Bucket $bucket): RedirectResponse
+    {
+        $bucket->restore();
+
+        return back();
+    }
+
+    public function forceDelete(Bucket $bucket): RedirectResponse
+    {
+        abort_if($bucket->is_inbox, 403, 'The inbox bucket cannot be deleted.');
+
+        $bucket->forceDelete();
 
         return back();
     }
