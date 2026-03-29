@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
-import { CheckCircle2, Loader2 } from 'lucide-vue-next';
-import { onMounted, ref } from 'vue';
+import { CheckCircle2, Loader2, RotateCcw } from 'lucide-vue-next';
+import { computed, onMounted, ref } from 'vue';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
 import { useMetaFetch } from '@/composables/useMetaFetch';
@@ -25,9 +25,31 @@ const props = defineProps<{
 const url = ref(props.prefillUrl);
 const title = ref(props.prefillTitle);
 const description = ref('');
+const notes = ref('');
 const bucketId = ref<number>(props.inboxBucketId);
 const tagIds = ref<number[]>([]);
 const saved = ref(false);
+
+const isFormDirty = computed(
+    () =>
+        url.value !== props.prefillUrl ||
+        title.value !== props.prefillTitle ||
+        description.value !== '' ||
+        notes.value !== '' ||
+        bucketId.value !== props.inboxBucketId ||
+        tagIds.value.length > 0,
+);
+
+function resetForm() {
+    url.value = props.prefillUrl;
+    title.value = props.prefillTitle;
+    description.value = '';
+    notes.value = '';
+    bucketId.value = props.inboxBucketId;
+    tagIds.value = [];
+    resetDuplicate();
+    resetMeta();
+}
 
 const {
     fetching: metaFetching,
@@ -165,6 +187,7 @@ function onSuccess() {
                 <Label for="qa-notes">Notizen <span class="text-muted-foreground">(privat)</span></Label>
                 <Textarea
                     id="qa-notes"
+                    v-model="notes"
                     name="notes"
                     placeholder="Private Notizen"
                     class="resize-none"
@@ -195,14 +218,26 @@ function onSuccess() {
                 <TagSelect :tags="tags" v-model="tagIds" />
             </div>
 
-            <Button
-                type="button"
-                :disabled="processing"
-                class="mt-1"
-                @click="handleSubmit(submit)"
-            >
-                {{ processing ? 'Speichere…' : 'Speichern' }}
-            </Button>
+            <div class="mt-1 flex gap-2">
+                <Button
+                    type="button"
+                    :disabled="processing"
+                    class="flex-1"
+                    @click="handleSubmit(submit)"
+                >
+                    {{ processing ? 'Speichere…' : 'Speichern' }}
+                </Button>
+                <Button
+                    v-if="isFormDirty"
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Formular zurücksetzen"
+                    @click="resetForm"
+                >
+                    <RotateCcw class="size-4" />
+                </Button>
+            </div>
         </Form>
 
         <ConfirmModal

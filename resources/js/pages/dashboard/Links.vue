@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Form, Head, router } from '@inertiajs/vue3';
-import { Loader2, Pencil, Search, Trash2, X } from 'lucide-vue-next';
-import { ref, watch } from 'vue';
+import { Loader2, Pencil, RotateCcw, Search, Trash2, X } from 'lucide-vue-next';
+import { computed, ref, watch } from 'vue';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
 import { useMetaFetch } from '@/composables/useMetaFetch';
@@ -47,8 +47,30 @@ const { toast } = useToast();
 const createUrl = ref('');
 const createTitle = ref('');
 const createDescription = ref('');
+const createNotes = ref('');
 const createBucketId = ref<number>(props.inboxBucketId);
 const createTagIds = ref<number[]>([]);
+
+const isCreateFormDirty = computed(
+    () =>
+        createUrl.value !== '' ||
+        createTitle.value !== '' ||
+        createDescription.value !== '' ||
+        createNotes.value !== '' ||
+        createBucketId.value !== props.inboxBucketId ||
+        createTagIds.value.length > 0,
+);
+
+function resetCreateForm() {
+    createUrl.value = '';
+    createTitle.value = '';
+    createDescription.value = '';
+    createNotes.value = '';
+    createBucketId.value = props.inboxBucketId;
+    createTagIds.value = [];
+    resetDuplicate();
+    resetMeta();
+}
 
 const {
     fetching: metaFetching,
@@ -175,18 +197,7 @@ function deleteLink() {
             :options="{ preserveScroll: true }"
             class="flex flex-col gap-4 rounded-lg border p-4"
             v-slot="{ errors, processing, submit }"
-            @success="
-                () => {
-                    createUrl = '';
-                    createTitle = '';
-                    createDescription = '';
-                    createBucketId = props.inboxBucketId;
-                    createTagIds = [];
-                    resetDuplicate();
-                    resetMeta();
-                    toast('Link added', 'success');
-                }
-            "
+            @success="() => { resetCreateForm(); toast('Link added', 'success'); }"
         >
             <div class="grid gap-4 sm:grid-cols-2">
                 <div class="flex flex-col gap-2">
@@ -276,6 +287,7 @@ function deleteLink() {
                     >
                     <Textarea
                         id="link-notes"
+                        v-model="createNotes"
                         name="notes"
                         placeholder="Private notes"
                         class="resize-none"
@@ -324,13 +336,23 @@ function deleteLink() {
                 :value="createFaviconUrl"
             />
 
-            <div class="flex gap-6 self-start">
+            <div class="flex gap-2 self-start">
                 <Button
                     type="button"
                     :disabled="processing"
                     @click="handleCreateSubmit(submit)"
                 >
                     Add
+                </Button>
+                <Button
+                    v-if="isCreateFormDirty"
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Clear form"
+                    @click="resetCreateForm"
+                >
+                    <RotateCcw class="size-4" />
                 </Button>
             </div>
         </Form>
