@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-use App\Models\Link;
+use App\Models\Bucket;
 use App\Services\BookmarkImportService;
 use App\Services\InboxBucketResolver;
 use Illuminate\Http\RedirectResponse;
@@ -20,30 +20,22 @@ class ImportController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('dashboard/Import');
+        return Inertia::render('dashboard/Import', [
+            'buckets' => Bucket::orderBy('is_inbox', 'desc')->orderBy('name')->get(['id', 'name', 'is_inbox']),
+            'inboxBucketId' => $this->inboxBucketResolver->resolve()->id,
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'file' => ['required', 'file', 'mimes:html,htm', 'max:5120'],
+            'bucket_id' => ['required', 'integer', 'exists:buckets,id'],
         ]);
 
         $html = file_get_contents($request->file('file')->getRealPath());
-        $bookmarks = $this->bookmarkImportService->parse($html);
+        $result = $this->bookmarkImportService->import($html, (int) $request->input('bucket_id'));
 
-        $inbox = $this->inboxBucketResolver->resolve();
-        $count = 0;
-
-        foreach ($bookmarks as $bookmark) {
-            Link::create([
-                'url' => $bookmark['url'],
-                'title' => $bookmark['title'],
-                'bucket_id' => $inbox->id,
-            ]);
-            $count++;
-        }
-
-        return back()->with('import_count', $count);
+        return back()->with('import_result', $result);
     }
 }

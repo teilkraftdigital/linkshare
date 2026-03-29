@@ -21,7 +21,7 @@ declare module '@inertiajs/core' {
             auth: Auth;
             sidebarOpen: boolean;
             flash: {
-                import_count: number | null;
+                import_result: { imported: number; skipped: number; hints: number } | null;
             };
             [key: string]: unknown;
         };
