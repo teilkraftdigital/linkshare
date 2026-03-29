@@ -1,10 +1,13 @@
 <?php
 
+use App\Jobs\FetchLinkMeta;
 use App\Models\Bucket;
 use App\Models\Link;
 use App\Services\BookmarkImportService;
+use Illuminate\Support\Facades\Queue;
 
 beforeEach(function () {
+    Queue::fake();
     $this->service = app(BookmarkImportService::class);
     $this->inbox = Bucket::factory()->inbox()->create();
 });
@@ -148,4 +151,27 @@ test('import with empty html returns zeros', function () {
     $result = $this->service->import('', $this->inbox->id);
 
     expect($result)->toBe(['imported' => 0, 'skipped' => 0, 'hints' => 0]);
+});
+
+test('dispatches FetchLinkMeta job for each imported link', function () {
+    $html = <<<'HTML'
+        <DL>
+            <DT><A HREF="https://laravel.com">Laravel</A>
+            <DT><A HREF="https://vuejs.org">Vue.js</A>
+        </DL>
+        HTML;
+
+    $this->service->import($html, $this->inbox->id);
+
+    Queue::assertPushed(FetchLinkMeta::class, 2);
+});
+
+test('does not dispatch FetchLinkMeta job for skipped links', function () {
+    Link::factory()->create(['url' => 'https://laravel.com', 'bucket_id' => $this->inbox->id]);
+
+    $html = '<DL><DT><A HREF="https://laravel.com">Laravel</A></DL>';
+
+    $this->service->import($html, $this->inbox->id);
+
+    Queue::assertNothingPushed();
 });

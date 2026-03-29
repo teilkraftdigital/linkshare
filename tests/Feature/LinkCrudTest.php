@@ -1,11 +1,14 @@
 <?php
 
+use App\Jobs\FetchLinkMeta;
 use App\Models\Bucket;
 use App\Models\Link;
 use App\Models\Tag;
 use App\Models\User;
+use Illuminate\Support\Facades\Queue;
 
 beforeEach(function () {
+    Queue::fake();
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
     $this->inbox = Bucket::factory()->inbox()->create();
@@ -65,7 +68,7 @@ test('authenticated user can create a link without optional fields', function ()
 
 test('store validates required fields', function () {
     $this->post(route('dashboard.links.store'), [])
-        ->assertSessionHasErrors(['url', 'title', 'bucket_id']);
+        ->assertSessionHasErrors(['url', 'bucket_id']);
 });
 
 test('authenticated user can update a link', function () {
@@ -93,6 +96,26 @@ test('authenticated user can delete a link (soft delete)', function () {
 
     expect($link->fresh()->deleted_at)->not->toBeNull();
     $this->assertDatabaseHas('links', ['id' => $link->id]);
+});
+
+test('dispatches FetchLinkMeta job when link is stored without title', function () {
+    $this->post(route('dashboard.links.store'), [
+        'url' => 'https://example.com',
+        'bucket_id' => $this->inbox->id,
+    ])->assertRedirect();
+
+    Queue::assertPushed(FetchLinkMeta::class, 1);
+    expect(Link::first()->title)->toBe('https://example.com'); // URL used as fallback
+});
+
+test('does not dispatch FetchLinkMeta job when link has a title', function () {
+    $this->post(route('dashboard.links.store'), [
+        'url' => 'https://example.com',
+        'title' => 'Example',
+        'bucket_id' => $this->inbox->id,
+    ]);
+
+    Queue::assertNothingPushed();
 });
 
 test('link notes are not accessible to unauthenticated users', function () {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Dashboard\StoreLinkRequest;
 use App\Http\Requests\Dashboard\UpdateLinkRequest;
+use App\Jobs\FetchLinkMeta;
 use App\Models\Bucket;
 use App\Models\Link;
 use App\Models\Tag;
@@ -41,8 +42,15 @@ class LinkController extends Controller
         $tagIds = $validated['tag_ids'] ?? [];
         unset($validated['tag_ids']);
 
+        // Fall back to URL as title (same as import), job will replace it once meta loads
+        $validated['title'] = ($validated['title'] ?? null) ?: $validated['url'];
+
         $link = Link::create($validated);
         $link->tags()->sync($tagIds);
+
+        if ($link->title === $link->url) {
+            FetchLinkMeta::dispatch($link);
+        }
 
         return back();
     }
