@@ -27,21 +27,27 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
-    {
-        title: 'Buckets',
-        href: bucketsIndex(),
-        icon: Inbox,
-    },
+];
+
+const libraryNavItems: NavItem[] = [
     {
         title: 'Links',
         href: linksIndex(),
         icon: LinkIcon,
     },
     {
+        title: 'Buckets',
+        href: bucketsIndex(),
+        icon: Inbox,
+    },
+    {
         title: 'Tags',
         href: tagsIndex(),
         icon: Tag,
     },
+];
+
+const toolNavItems: NavItem[] = [
     {
         title: 'Import',
         href: importCreate(),
@@ -79,6 +85,8 @@ const footerNavItems: NavItem[] = [
 
         <SidebarContent>
             <NavMain :items="mainNavItems" />
+            <NavMain :items="libraryNavItems" label="Bibliothek" />
+            <NavMain :items="toolNavItems" label="Werkzeuge" />
         </SidebarContent>
 
         <SidebarFooter>
