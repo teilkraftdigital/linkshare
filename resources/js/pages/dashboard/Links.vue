@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Form, Head, Link as InertiaLink, router } from '@inertiajs/vue3';
+import { Form, Head, router } from '@inertiajs/vue3';
 import { Loader2, Pencil, Search, Trash2, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { index } from '@/routes/dashboard/links';
+import { Pagination, type Paginator } from '@/components/ui/pagination';
 
 type Bucket = {
     id: number;
@@ -39,23 +40,6 @@ type Link = {
     bucket_id: number;
     bucket: Bucket;
     tags: Tag[];
-};
-
-type PaginatorLink = {
-    url: string | null;
-    label: string;
-    active: boolean;
-};
-
-type Paginator<T> = {
-    data: T[];
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
-    from: number | null;
-    to: number | null;
-    links: PaginatorLink[];
 };
 
 type Filters = {
@@ -89,9 +73,14 @@ const createDescription = ref('');
 const createBucketId = ref<number>(props.inboxBucketId);
 const createTagIds = ref<number[]>([]);
 
-const { fetching: metaFetching, failed: metaFailed, fetch: fetchMeta } = useMetaFetch((meta) => {
+const {
+    fetching: metaFetching,
+    failed: metaFailed,
+    fetch: fetchMeta,
+} = useMetaFetch((meta) => {
     if (meta.title && !createTitle.value) createTitle.value = meta.title;
-    if (meta.description && !createDescription.value) createDescription.value = meta.description;
+    if (meta.description && !createDescription.value)
+        createDescription.value = meta.description;
 });
 
 // — Edit state —
@@ -208,7 +197,7 @@ function deleteLink() {
                         />
                         <Loader2
                             v-if="metaFetching"
-                            class="absolute right-2.5 top-2.5 size-4 animate-spin text-muted-foreground"
+                            class="absolute top-2.5 right-2.5 size-4 animate-spin text-muted-foreground"
                         />
                     </div>
                     <p v-if="metaFailed" class="text-xs text-muted-foreground">
@@ -243,7 +232,12 @@ function deleteLink() {
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <Label for="link-notes">Notes <span class="text-muted-foreground">(private)</span></Label>
+                    <Label for="link-notes"
+                        >Notes
+                        <span class="text-muted-foreground"
+                            >(private)</span
+                        ></Label
+                    >
                     <Textarea
                         id="link-notes"
                         name="notes"
@@ -262,10 +256,18 @@ function deleteLink() {
                         id="link-bucket"
                         name="bucket_id"
                         :value="createBucketId"
-                        class="border-input bg-background rounded-md border px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
-                        @change="createBucketId = Number(($event.target as HTMLSelectElement).value)"
+                        class="rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
+                        @change="
+                            createBucketId = Number(
+                                ($event.target as HTMLSelectElement).value,
+                            )
+                        "
                     >
-                        <option v-for="bucket in buckets" :key="bucket.id" :value="bucket.id">
+                        <option
+                            v-for="bucket in buckets"
+                            :key="bucket.id"
+                            :value="bucket.id"
+                        >
                             {{ bucket.name }}
                         </option>
                     </select>
@@ -286,8 +288,10 @@ function deleteLink() {
 
         <!-- Filters -->
         <div class="flex flex-wrap gap-3">
-            <div class="relative flex-1 min-w-48">
-                <Search class="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
+            <div class="relative min-w-48 flex-1">
+                <Search
+                    class="absolute top-2.5 left-2.5 size-4 text-muted-foreground"
+                />
                 <Input
                     v-model="filterSearch"
                     placeholder="Search links…"
@@ -297,11 +301,15 @@ function deleteLink() {
 
             <select
                 v-model="filterBucketId"
-                class="border-input bg-background rounded-md border px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
+                class="rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
                 aria-label="Filter by bucket"
             >
                 <option value="">All buckets</option>
-                <option v-for="bucket in buckets" :key="bucket.id" :value="String(bucket.id)">
+                <option
+                    v-for="bucket in buckets"
+                    :key="bucket.id"
+                    :value="String(bucket.id)"
+                >
                     {{ bucket.name }}
                 </option>
             </select>
@@ -309,11 +317,15 @@ function deleteLink() {
             <select
                 v-if="tags.length > 0"
                 v-model="filterTagId"
-                class="border-input bg-background rounded-md border px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
+                class="rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
                 aria-label="Filter by tag"
             >
                 <option value="">All tags</option>
-                <option v-for="tag in tags" :key="tag.id" :value="String(tag.id)">
+                <option
+                    v-for="tag in tags"
+                    :key="tag.id"
+                    :value="String(tag.id)"
+                >
                     {{ tag.name }}
                 </option>
             </select>
@@ -329,6 +341,9 @@ function deleteLink() {
             </Button>
         </div>
 
+        <!-- Pagination -->
+        <Pagination v-if="links.last_page > 1" :items="links" />
+
         <!-- Link list -->
         <ul class="flex flex-col gap-2">
             <li v-for="link in links.data" :key="link.id">
@@ -343,7 +358,11 @@ function deleteLink() {
                     >
                         <div class="grid gap-4 sm:grid-cols-2">
                             <div class="flex flex-col gap-2">
-                                <Label :for="`edit-url-${link.id}`" class="sr-only">URL</Label>
+                                <Label
+                                    :for="`edit-url-${link.id}`"
+                                    class="sr-only"
+                                    >URL</Label
+                                >
                                 <Input
                                     :id="`edit-url-${link.id}`"
                                     name="url"
@@ -355,7 +374,11 @@ function deleteLink() {
                             </div>
 
                             <div class="flex flex-col gap-2">
-                                <Label :for="`edit-title-${link.id}`" class="sr-only">Title</Label>
+                                <Label
+                                    :for="`edit-title-${link.id}`"
+                                    class="sr-only"
+                                    >Title</Label
+                                >
                                 <Input
                                     :id="`edit-title-${link.id}`"
                                     name="title"
@@ -366,7 +389,11 @@ function deleteLink() {
                             </div>
 
                             <div class="flex flex-col gap-2">
-                                <Label :for="`edit-desc-${link.id}`" class="sr-only">Description</Label>
+                                <Label
+                                    :for="`edit-desc-${link.id}`"
+                                    class="sr-only"
+                                    >Description</Label
+                                >
                                 <Textarea
                                     :id="`edit-desc-${link.id}`"
                                     name="description"
@@ -379,7 +406,11 @@ function deleteLink() {
                             </div>
 
                             <div class="flex flex-col gap-2">
-                                <Label :for="`edit-notes-${link.id}`" class="sr-only">Notes</Label>
+                                <Label
+                                    :for="`edit-notes-${link.id}`"
+                                    class="sr-only"
+                                    >Notes</Label
+                                >
                                 <Textarea
                                     :id="`edit-notes-${link.id}`"
                                     name="notes"
@@ -394,30 +425,54 @@ function deleteLink() {
 
                         <div class="flex flex-wrap gap-6">
                             <div class="flex flex-col gap-2">
-                                <Label :for="`edit-bucket-${link.id}`">Bucket</Label>
+                                <Label :for="`edit-bucket-${link.id}`"
+                                    >Bucket</Label
+                                >
                                 <select
                                     :id="`edit-bucket-${link.id}`"
                                     name="bucket_id"
                                     :value="editBucketId"
-                                    class="border-input bg-background rounded-md border px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
-                                    @change="editBucketId = Number(($event.target as HTMLSelectElement).value)"
+                                    class="rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
+                                    @change="
+                                        editBucketId = Number(
+                                            ($event.target as HTMLSelectElement)
+                                                .value,
+                                        )
+                                    "
                                 >
-                                    <option v-for="bucket in buckets" :key="bucket.id" :value="bucket.id">
+                                    <option
+                                        v-for="bucket in buckets"
+                                        :key="bucket.id"
+                                        :value="bucket.id"
+                                    >
                                         {{ bucket.name }}
                                     </option>
                                 </select>
                                 <InputError :message="errors.bucket_id" />
                             </div>
 
-                            <div v-if="tags.length > 0" class="flex flex-col gap-2">
+                            <div
+                                v-if="tags.length > 0"
+                                class="flex flex-col gap-2"
+                            >
                                 <Label>Tags</Label>
                                 <TagSelect :tags="tags" v-model="editTagIds" />
                             </div>
                         </div>
 
                         <div class="flex gap-2">
-                            <Button type="submit" size="sm" :disabled="processing">Save</Button>
-                            <Button type="button" size="sm" variant="outline" @click="cancelEdit">
+                            <Button
+                                type="submit"
+                                size="sm"
+                                :disabled="processing"
+                                >Save</Button
+                            >
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                @click="cancelEdit"
+                            >
                                 Cancel
                             </Button>
                         </div>
@@ -433,7 +488,9 @@ function deleteLink() {
                             :bucket="link.bucket"
                             :tags="link.tags"
                         />
-                        <div class="absolute right-3 top-3 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                        <div
+                            class="absolute top-3 right-3 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100"
+                        >
                             <Button
                                 variant="ghost"
                                 size="icon"
@@ -459,33 +516,15 @@ function deleteLink() {
         </ul>
 
         <p v-if="links.data.length === 0" class="text-sm text-muted-foreground">
-            {{ hasActiveFilters() ? 'No links match your filters.' : 'No links yet. Add your first link above.' }}
+            {{
+                hasActiveFilters()
+                    ? 'No links match your filters.'
+                    : 'No links yet. Add your first link above.'
+            }}
         </p>
 
         <!-- Pagination -->
-        <div v-if="links.last_page > 1" class="flex items-center justify-between gap-2">
-            <p class="text-sm text-muted-foreground">
-                {{ links.from }}–{{ links.to }} of {{ links.total }}
-            </p>
-            <div class="flex gap-1">
-                <InertiaLink
-                    v-for="link in links.links"
-                    :key="link.label"
-                    :href="link.url ?? '#'"
-                    :aria-label="link.label"
-                    :aria-current="link.active ? 'page' : undefined"
-                    :class="[
-                        'inline-flex size-8 items-center justify-center rounded-md text-sm',
-                        link.active
-                            ? 'bg-primary text-primary-foreground'
-                            : 'hover:bg-accent',
-                        !link.url && 'pointer-events-none opacity-40',
-                    ]"
-                    preserve-state
-                    v-html="link.label"
-                />
-            </div>
-        </div>
+        <Pagination v-if="links.last_page > 1" :items="links" />
     </div>
 
     <ConfirmModal
@@ -493,7 +532,11 @@ function deleteLink() {
         title="Delete link?"
         :description="`Delete '${deleteTarget?.title}'? This action cannot be undone.`"
         confirm-label="Delete"
-        @update:open="(val) => { if (!val) deleteTarget = null; }"
+        @update:open="
+            (val) => {
+                if (!val) deleteTarget = null;
+            }
+        "
         @confirm="deleteLink"
     />
 </template>
