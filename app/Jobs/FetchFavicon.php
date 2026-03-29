@@ -53,11 +53,9 @@ class FetchFavicon implements ShouldBeUnique, ShouldQueue
 
             $extension = $this->guessExtension($response->header('Content-Type'), $this->faviconUrl);
 
-            $media = $link->addMediaFromString($content)
+            $link->addMediaFromString($content)
                 ->usingFileName("favicon.{$extension}")
                 ->toMediaCollection('favicon');
-
-            $link->update(['favicon_url' => $media->getUrl()]);
         } catch (ConnectionException) {
             // Silently skip — favicon is non-critical
         } catch (\Exception) {
