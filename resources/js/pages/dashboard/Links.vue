@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Form, Head, router } from '@inertiajs/vue3';
-import { Loader2, Pencil, Trash2 } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { Form, Head, Link as InertiaLink, router } from '@inertiajs/vue3';
+import { Loader2, Pencil, Search, Trash2, X } from 'lucide-vue-next';
+import { ref, watch } from 'vue';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import { useMetaFetch } from '@/composables/useMetaFetch';
 import { useToast } from '@/composables/useToast';
@@ -41,11 +41,35 @@ type Link = {
     tags: Tag[];
 };
 
+type PaginatorLink = {
+    url: string | null;
+    label: string;
+    active: boolean;
+};
+
+type Paginator<T> = {
+    data: T[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    from: number | null;
+    to: number | null;
+    links: PaginatorLink[];
+};
+
+type Filters = {
+    bucket_id?: string;
+    tag_id?: string;
+    search?: string;
+};
+
 type Props = {
-    links: Link[];
+    links: Paginator<Link>;
     buckets: Bucket[];
     tags: Tag[];
     inboxBucketId: number;
+    filters: Filters;
 };
 
 const props = defineProps<Props>();
@@ -58,6 +82,7 @@ defineOptions({
 
 const { toast } = useToast();
 
+// — Create form state —
 const createUrl = ref('');
 const createTitle = ref('');
 const createDescription = ref('');
@@ -69,13 +94,57 @@ const { fetching: metaFetching, failed: metaFailed, fetch: fetchMeta } = useMeta
     if (meta.description && !createDescription.value) createDescription.value = meta.description;
 });
 
+// — Edit state —
 const editingLink = ref<Link | null>(null);
 const editBucketId = ref<number>(0);
 const editTagIds = ref<number[]>([]);
 
 const deleteTarget = ref<Link | null>(null);
 
+// — Filters —
+const filterSearch = ref(props.filters.search ?? '');
+const filterBucketId = ref(props.filters.bucket_id ?? '');
+const filterTagId = ref(props.filters.tag_id ?? '');
 
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
+
+function applyFilters(immediate = false) {
+    if (searchTimer) clearTimeout(searchTimer);
+
+    const doApply = () => {
+        router.get(
+            index(),
+            {
+                search: filterSearch.value || undefined,
+                bucket_id: filterBucketId.value || undefined,
+                tag_id: filterTagId.value || undefined,
+            },
+            { preserveState: true, replace: true },
+        );
+    };
+
+    if (immediate) {
+        doApply();
+    } else {
+        searchTimer = setTimeout(doApply, 400);
+    }
+}
+
+function clearFilters() {
+    filterSearch.value = '';
+    filterBucketId.value = '';
+    filterTagId.value = '';
+    applyFilters(true);
+}
+
+watch(filterBucketId, () => applyFilters(true));
+watch(filterTagId, () => applyFilters(true));
+watch(filterSearch, () => applyFilters(false));
+
+const hasActiveFilters = () =>
+    filterSearch.value || filterBucketId.value || filterTagId.value;
+
+// — CRUD —
 function startEdit(link: Link) {
     editingLink.value = link;
     editBucketId.value = link.bucket_id;
@@ -86,15 +155,12 @@ function cancelEdit() {
     editingLink.value = null;
 }
 
-
 function confirmDelete(link: Link) {
     deleteTarget.value = link;
 }
 
 function deleteLink() {
-    if (!deleteTarget.value) {
-        return;
-    }
+    if (!deleteTarget.value) return;
     router.delete(LinkController.destroy.url(deleteTarget.value), {
         preserveScroll: true,
         onSuccess: () => {
@@ -196,8 +262,8 @@ function deleteLink() {
                         id="link-bucket"
                         name="bucket_id"
                         :value="createBucketId"
-                        @change="createBucketId = Number(($event.target as HTMLSelectElement).value)"
                         class="border-input bg-background rounded-md border px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
+                        @change="createBucketId = Number(($event.target as HTMLSelectElement).value)"
                     >
                         <option v-for="bucket in buckets" :key="bucket.id" :value="bucket.id">
                             {{ bucket.name }}
@@ -208,10 +274,7 @@ function deleteLink() {
 
                 <div v-if="tags.length > 0" class="flex flex-col gap-2">
                     <Label>Tags</Label>
-                    <TagSelect
-                        :tags="tags"
-                        v-model="createTagIds"
-                    />
+                    <TagSelect :tags="tags" v-model="createTagIds" />
                     <InputError :message="errors['tag_ids']" />
                 </div>
             </div>
@@ -221,12 +284,54 @@ function deleteLink() {
             </Button>
         </Form>
 
+        <!-- Filters -->
+        <div class="flex flex-wrap gap-3">
+            <div class="relative flex-1 min-w-48">
+                <Search class="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
+                <Input
+                    v-model="filterSearch"
+                    placeholder="Search links…"
+                    class="pl-8"
+                />
+            </div>
+
+            <select
+                v-model="filterBucketId"
+                class="border-input bg-background rounded-md border px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
+                aria-label="Filter by bucket"
+            >
+                <option value="">All buckets</option>
+                <option v-for="bucket in buckets" :key="bucket.id" :value="String(bucket.id)">
+                    {{ bucket.name }}
+                </option>
+            </select>
+
+            <select
+                v-if="tags.length > 0"
+                v-model="filterTagId"
+                class="border-input bg-background rounded-md border px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
+                aria-label="Filter by tag"
+            >
+                <option value="">All tags</option>
+                <option v-for="tag in tags" :key="tag.id" :value="String(tag.id)">
+                    {{ tag.name }}
+                </option>
+            </select>
+
+            <Button
+                v-if="hasActiveFilters()"
+                variant="ghost"
+                size="icon"
+                aria-label="Clear filters"
+                @click="clearFilters"
+            >
+                <X class="size-4" />
+            </Button>
+        </div>
+
         <!-- Link list -->
         <ul class="flex flex-col gap-2">
-            <li
-                v-for="link in links"
-                :key="link.id"
-            >
+            <li v-for="link in links.data" :key="link.id">
                 <!-- Inline edit form -->
                 <template v-if="editingLink?.id === link.id">
                     <Form
@@ -294,8 +399,8 @@ function deleteLink() {
                                     :id="`edit-bucket-${link.id}`"
                                     name="bucket_id"
                                     :value="editBucketId"
-                                    @change="editBucketId = Number(($event.target as HTMLSelectElement).value)"
                                     class="border-input bg-background rounded-md border px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
+                                    @change="editBucketId = Number(($event.target as HTMLSelectElement).value)"
                                 >
                                     <option v-for="bucket in buckets" :key="bucket.id" :value="bucket.id">
                                         {{ bucket.name }}
@@ -306,10 +411,7 @@ function deleteLink() {
 
                             <div v-if="tags.length > 0" class="flex flex-col gap-2">
                                 <Label>Tags</Label>
-                                <TagSelect
-                                    :tags="tags"
-                                    v-model="editTagIds"
-                                />
+                                <TagSelect :tags="tags" v-model="editTagIds" />
                             </div>
                         </div>
 
@@ -356,9 +458,34 @@ function deleteLink() {
             </li>
         </ul>
 
-        <p v-if="links.length === 0" class="text-sm text-muted-foreground">
-            No links yet. Add your first link above.
+        <p v-if="links.data.length === 0" class="text-sm text-muted-foreground">
+            {{ hasActiveFilters() ? 'No links match your filters.' : 'No links yet. Add your first link above.' }}
         </p>
+
+        <!-- Pagination -->
+        <div v-if="links.last_page > 1" class="flex items-center justify-between gap-2">
+            <p class="text-sm text-muted-foreground">
+                {{ links.from }}–{{ links.to }} of {{ links.total }}
+            </p>
+            <div class="flex gap-1">
+                <InertiaLink
+                    v-for="link in links.links"
+                    :key="link.label"
+                    :href="link.url ?? '#'"
+                    :aria-label="link.label"
+                    :aria-current="link.active ? 'page' : undefined"
+                    :class="[
+                        'inline-flex size-8 items-center justify-center rounded-md text-sm',
+                        link.active
+                            ? 'bg-primary text-primary-foreground'
+                            : 'hover:bg-accent',
+                        !link.url && 'pointer-events-none opacity-40',
+                    ]"
+                    preserve-state
+                    v-html="link.label"
+                />
+            </div>
+        </div>
     </div>
 
     <ConfirmModal

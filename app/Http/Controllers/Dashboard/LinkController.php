@@ -9,21 +9,29 @@ use App\Models\Bucket;
 use App\Models\Link;
 use App\Models\Tag;
 use App\Services\InboxBucketResolver;
+use App\Services\LinkQueryBuilder;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class LinkController extends Controller
 {
-    public function __construct(private readonly InboxBucketResolver $inboxBucketResolver) {}
+    public function __construct(
+        private readonly InboxBucketResolver $inboxBucketResolver,
+        private readonly LinkQueryBuilder $linkQueryBuilder,
+    ) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $filters = $request->only(['bucket_id', 'tag_id', 'search']);
+
         return Inertia::render('dashboard/Links', [
-            'links' => Link::with(['bucket', 'tags'])->orderByDesc('id')->get(),
+            'links' => $this->linkQueryBuilder->paginate($filters),
             'buckets' => Bucket::orderBy('is_inbox', 'desc')->orderBy('name')->get(),
             'tags' => Tag::orderBy('name')->get(),
             'inboxBucketId' => $this->inboxBucketResolver->resolve()->id,
+            'filters' => $filters,
         ]);
     }
 

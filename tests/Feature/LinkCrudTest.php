@@ -18,7 +18,7 @@ test('links index lists all links', function () {
         ->assertOk()
         ->assertInertia(fn ($page) => $page
             ->component('dashboard/Links')
-            ->has('links', 3)
+            ->has('links.data', 3)
             ->has('buckets')
             ->has('tags')
         );
