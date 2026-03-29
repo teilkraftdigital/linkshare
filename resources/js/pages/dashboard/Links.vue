@@ -53,7 +53,9 @@ const createTagIds = ref<number[]>([]);
 const {
     fetching: metaFetching,
     failed: metaFailed,
+    faviconUrl: createFaviconUrl,
     fetch: fetchMeta,
+    reset: resetMeta,
 } = useMetaFetch((meta) => {
     if (meta.title && !createTitle.value) createTitle.value = meta.title;
     if (meta.description && !createDescription.value)
@@ -181,6 +183,7 @@ function deleteLink() {
                     createBucketId = props.inboxBucketId;
                     createTagIds = [];
                     resetDuplicate();
+                    resetMeta();
                     toast('Link added', 'success');
                 }
             "
@@ -189,6 +192,13 @@ function deleteLink() {
                 <div class="flex flex-col gap-2">
                     <Label for="link-url">URL</Label>
                     <div class="relative">
+                        <img
+                            v-if="createFaviconUrl"
+                            :src="createFaviconUrl"
+                            class="absolute top-2.5 left-2.5 size-4 rounded-sm object-contain"
+                            alt=""
+                            @error="($event.target as HTMLImageElement).style.display = 'none'"
+                        />
                         <Input
                             id="link-url"
                             v-model="createUrl"
@@ -196,6 +206,7 @@ function deleteLink() {
                             type="url"
                             placeholder="https://example.com"
                             autocomplete="off"
+                            :class="createFaviconUrl ? 'pl-8' : ''"
                             @input="fetchMeta(createUrl); checkDuplicate(createUrl)"
                         />
                         <Loader2
@@ -508,6 +519,7 @@ function deleteLink() {
                             :title="link.title"
                             :url="link.url"
                             :description="link.description"
+                            :favicon_url="link.favicon_url"
                             :bucket="link.bucket"
                             :tags="link.tags"
                         />

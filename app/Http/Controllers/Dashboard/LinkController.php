@@ -27,8 +27,13 @@ class LinkController extends Controller
     {
         $filters = $request->only(['bucket_id', 'tag_id', 'search']);
 
+        $links = $this->linkQueryBuilder->paginate($filters);
+        $links->through(fn (Link $link) => array_merge($link->toArray(), [
+            'favicon_url' => $link->getFirstMediaUrl('favicon') ?: null,
+        ]));
+
         return Inertia::render('dashboard/Links', [
-            'links' => $this->linkQueryBuilder->paginate($filters),
+            'links' => $links,
             'buckets' => Bucket::orderBy('is_inbox', 'desc')->orderBy('name')->get(),
             'tags' => Tag::orderBy('name')->get(),
             'inboxBucketId' => $this->inboxBucketResolver->resolve()->id,
@@ -48,9 +53,7 @@ class LinkController extends Controller
         $link = Link::create($validated);
         $link->tags()->sync($tagIds);
 
-        if ($link->title === $link->url) {
-            FetchLinkMeta::dispatch($link);
-        }
+        FetchLinkMeta::dispatch($link);
 
         return back();
     }
