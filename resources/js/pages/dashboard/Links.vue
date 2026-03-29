@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { Form, Head, router } from '@inertiajs/vue3';
-import { Pencil, Trash2 } from 'lucide-vue-next';
+import { Loader2, Pencil, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
+import { useMetaFetch } from '@/composables/useMetaFetch';
 import { useToast } from '@/composables/useToast';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import Heading from '@/components/Heading.vue';
@@ -57,8 +58,16 @@ defineOptions({
 
 const { toast } = useToast();
 
+const createUrl = ref('');
+const createTitle = ref('');
+const createDescription = ref('');
 const createBucketId = ref<number>(props.inboxBucketId);
 const createTagIds = ref<number[]>([]);
+
+const { fetching: metaFetching, failed: metaFailed, fetch: fetchMeta } = useMetaFetch((meta) => {
+    if (meta.title && !createTitle.value) createTitle.value = meta.title;
+    if (meta.description && !createDescription.value) createDescription.value = meta.description;
+});
 
 const editingLink = ref<Link | null>(null);
 const editBucketId = ref<number>(0);
@@ -109,6 +118,9 @@ function deleteLink() {
             v-slot="{ errors, processing }"
             @success="
                 () => {
+                    createUrl = '';
+                    createTitle = '';
+                    createDescription = '';
                     createBucketId = props.inboxBucketId;
                     createTagIds = [];
                     toast('Link added', 'success');
@@ -118,13 +130,24 @@ function deleteLink() {
             <div class="grid gap-4 sm:grid-cols-2">
                 <div class="flex flex-col gap-2">
                     <Label for="link-url">URL</Label>
-                    <Input
-                        id="link-url"
-                        name="url"
-                        type="url"
-                        placeholder="https://example.com"
-                        autocomplete="off"
-                    />
+                    <div class="relative">
+                        <Input
+                            id="link-url"
+                            v-model="createUrl"
+                            name="url"
+                            type="url"
+                            placeholder="https://example.com"
+                            autocomplete="off"
+                            @input="fetchMeta(createUrl)"
+                        />
+                        <Loader2
+                            v-if="metaFetching"
+                            class="absolute right-2.5 top-2.5 size-4 animate-spin text-muted-foreground"
+                        />
+                    </div>
+                    <p v-if="metaFailed" class="text-xs text-muted-foreground">
+                        Could not load metadata for this URL.
+                    </p>
                     <InputError :message="errors.url" />
                 </div>
 
@@ -132,6 +155,7 @@ function deleteLink() {
                     <Label for="link-title">Title</Label>
                     <Input
                         id="link-title"
+                        v-model="createTitle"
                         name="title"
                         placeholder="Link title"
                         autocomplete="off"
@@ -143,6 +167,7 @@ function deleteLink() {
                     <Label for="link-description">Description</Label>
                     <Textarea
                         id="link-description"
+                        v-model="createDescription"
                         name="description"
                         placeholder="Optional description"
                         class="resize-none"
