@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Dashboard\BucketController;
+use App\Http\Controllers\Dashboard\CheckDuplicateController;
 use App\Http\Controllers\Dashboard\ImportController;
 use App\Http\Controllers\Dashboard\LinkController;
 use App\Http\Controllers\Dashboard\MetaFetchController;
@@ -32,6 +33,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('dashboard/import', [ImportController::class, 'store'])->name('dashboard.import.store');
 
     Route::post('dashboard/links/fetch-meta', MetaFetchController::class)->name('dashboard.links.fetch-meta');
+    Route::post('dashboard/links/check-duplicate', CheckDuplicateController::class)->name('dashboard.links.check-duplicate');
 
     Route::get('dashboard/links', [LinkController::class, 'index'])->name('dashboard.links.index');
     Route::post('dashboard/links', [LinkController::class, 'store'])->name('dashboard.links.store');
