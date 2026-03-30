@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bucket;
+use App\Models\Tag;
 use App\Services\BookmarkImportService;
 use App\Services\InboxBucketResolver;
 use Illuminate\Http\RedirectResponse;
@@ -22,6 +23,7 @@ class ImportController extends Controller
     {
         return Inertia::render('dashboard/Import', [
             'buckets' => Bucket::orderBy('is_inbox', 'desc')->orderBy('name')->get(['id', 'name', 'color', 'is_inbox']),
+            'tags' => Tag::orderBy('name')->get(['id', 'name', 'color']),
             'inboxBucketId' => $this->inboxBucketResolver->resolve()->id,
         ]);
     }

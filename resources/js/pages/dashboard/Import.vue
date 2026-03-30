@@ -11,12 +11,15 @@ import QuickAddController from '@/actions/App/Http/Controllers/Dashboard/QuickAd
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { Bucket } from '@/types/dashboard';
+import { COLOR_BG } from '@/lib/colors';
+import type { Bucket, Tag } from '@/types/dashboard';
 
 const props = defineProps<{
     buckets: Bucket[];
+    tags: Tag[];
     inboxBucketId: number;
 }>();
 
@@ -24,7 +27,7 @@ defineOptions({
     layout: {
         breadcrumbs: [
             {
-                title: 'Import',
+                title: 'Import & Export',
                 href: importRoute(),
             },
         ],
@@ -54,6 +57,27 @@ function copyBookmarklet() {
     });
 }
 
+// Export selections — all checked by default
+const selectedBucketIds = ref<Set<number>>(new Set(props.buckets.map((b) => b.id)));
+const selectedTagIds = ref<Set<number>>(new Set(props.tags.map((t) => t.id)));
+const includesNotes = ref(false);
+
+function toggleBucket(id: number, checked: boolean) {
+    if (checked) {
+        selectedBucketIds.value.add(id);
+    } else {
+        selectedBucketIds.value.delete(id);
+    }
+}
+
+function toggleTag(id: number, checked: boolean) {
+    if (checked) {
+        selectedTagIds.value.add(id);
+    } else {
+        selectedTagIds.value.delete(id);
+    }
+}
+
 const exporting = ref(false);
 
 async function downloadExport() {
@@ -63,9 +87,15 @@ async function downloadExport() {
         const response = await fetch(ExportController.url(), {
             method: 'POST',
             headers: {
+                'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken,
                 'X-Inertia': 'false',
             },
+            body: JSON.stringify({
+                bucket_ids: [...selectedBucketIds.value],
+                tag_ids: [...selectedTagIds.value],
+                includes_notes: includesNotes.value,
+            }),
         });
 
         if (!response.ok) {
@@ -99,13 +129,74 @@ async function downloadExport() {
         />
 
         <!-- Export section -->
-        <div class="space-y-3">
+        <div class="space-y-4">
             <div>
                 <h2 class="text-sm font-semibold">Exportieren</h2>
                 <p class="mt-0.5 text-sm text-muted-foreground">
-                    Alle aktiven Links, Buckets und Tags als JSON-Datei herunterladen. Einträge im Papierkorb sind nicht enthalten.
+                    Wähle aus, welche Buckets und Tags exportiert werden sollen. Einträge im Papierkorb sind nicht enthalten.
                 </p>
             </div>
+
+            <!-- Bucket selection -->
+            <div v-if="buckets.length" class="space-y-2">
+                <p class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Buckets</p>
+                <div class="flex flex-wrap gap-x-6 gap-y-2">
+                    <div
+                        v-for="bucket in buckets"
+                        :key="bucket.id"
+                        class="flex items-center gap-2"
+                    >
+                        <Checkbox
+                            :id="`export-bucket-${bucket.id}`"
+                            :model-value="selectedBucketIds.has(bucket.id)"
+                            @update:model-value="toggleBucket(bucket.id, $event as boolean)"
+                        />
+                        <Label :for="`export-bucket-${bucket.id}`" class="flex cursor-pointer items-center gap-1.5 font-normal">
+                            <span
+                                v-if="bucket.color"
+                                class="size-2.5 rounded-full"
+                                :class="COLOR_BG[bucket.color]"
+                            />
+                            {{ bucket.name }}
+                        </Label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tag selection -->
+            <div v-if="tags.length" class="space-y-2">
+                <p class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Tags</p>
+                <div class="flex flex-wrap gap-x-6 gap-y-2">
+                    <div
+                        v-for="tag in tags"
+                        :key="tag.id"
+                        class="flex items-center gap-2"
+                    >
+                        <Checkbox
+                            :id="`export-tag-${tag.id}`"
+                            :model-value="selectedTagIds.has(tag.id)"
+                            @update:model-value="toggleTag(tag.id, $event as boolean)"
+                        />
+                        <Label :for="`export-tag-${tag.id}`" class="flex cursor-pointer items-center gap-1.5 font-normal">
+                            <span
+                                v-if="tag.color"
+                                class="size-2.5 rounded-full"
+                                :class="COLOR_BG[tag.color]"
+                            />
+                            {{ tag.name }}
+                        </Label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Private notes option -->
+            <div class="flex items-center gap-2">
+                <Checkbox id="export-includes-notes" v-model="includesNotes" />
+                <Label for="export-includes-notes" class="cursor-pointer font-normal">
+                    Private Notizen einschließen
+                </Label>
+            </div>
+
             <Button variant="outline" :disabled="exporting" @click="downloadExport">
                 <Download class="mr-2 size-4" />
                 {{ exporting ? 'Exportiere…' : 'Exportieren' }}
@@ -172,6 +263,7 @@ async function downloadExport() {
                 </Button>
             </div>
         </Form>
+
         <div class="space-y-3">
             <div>
                 <h2 class="text-sm font-semibold">Quick-Add Bookmarklet</h2>
