@@ -108,7 +108,7 @@ class JsonImportService
         $skipped = 0;
         $seenNormalized = [];
 
-        $existingUrls = Link::withTrashed()
+        $existingUrls = Link::query()
             ->pluck('url')
             ->map(fn (string $url) => $this->urlNormalizer->normalize($url))
             ->flip()

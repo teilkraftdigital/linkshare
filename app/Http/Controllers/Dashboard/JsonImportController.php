@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Services\JsonImportService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class JsonImportController extends Controller
@@ -61,7 +60,7 @@ class JsonImportController extends Controller
     /**
      * Execute the import with the user's bucket/tag selection.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): JsonResponse
     {
         $request->validate([
             'file' => ['required', 'file', 'extensions:json', 'max:10240'],
@@ -75,7 +74,7 @@ class JsonImportController extends Controller
         $data = json_decode($contents, true);
 
         if (! is_array($data) || ($data['version'] ?? null) !== 1) {
-            return back()->withErrors(['file' => 'Ungültige oder nicht unterstützte JSON-Datei.']);
+            return response()->json(['error' => 'Ungültige oder nicht unterstützte JSON-Datei.'], 422);
         }
 
         $result = $this->jsonImportService->import(
@@ -84,6 +83,6 @@ class JsonImportController extends Controller
             $request->input('tag_names', []),
         );
 
-        return redirect()->route('dashboard.import.create')->with('json_import_result', $result);
+        return response()->json($result);
     }
 }

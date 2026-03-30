@@ -61,7 +61,7 @@ test('store imports link bucket and tag', function () {
         'file' => makeImportFile(validImportExport()),
         'bucket_names' => ['Work'],
         'tag_names' => ['php'],
-    ])->assertRedirect(route('dashboard.import.create'));
+    ])->assertOk();
 
     expect(Bucket::where('name', 'Work')->exists())->toBeTrue();
     expect(Tag::where('name', 'php')->exists())->toBeTrue();
@@ -72,26 +72,17 @@ test('store imports link bucket and tag', function () {
     expect($link->tags->pluck('name')->toArray())->toContain('php');
 });
 
-test('store flashes json_import_result', function () {
-    Queue::fake();
-
-    $this->post(route('dashboard.import.json.store'), [
-        'file' => makeImportFile(validImportExport()),
-        'bucket_names' => ['Work'],
-        'tag_names' => ['php'],
-    ])->assertSessionHas('json_import_result');
-});
-
 test('store returns correct counts', function () {
     Queue::fake();
 
-    $this->post(route('dashboard.import.json.store'), [
+    $response = $this->post(route('dashboard.import.json.store'), [
         'file' => makeImportFile(validImportExport()),
         'bucket_names' => ['Work'],
         'tag_names' => ['php'],
     ]);
 
-    $result = session('json_import_result');
+    $response->assertOk();
+    $result = json_decode($response->getContent(), true);
     expect($result['imported'])->toBe(1);
     expect($result['skipped'])->toBe(0);
     expect($result['buckets_created'])->toBe(1);
@@ -103,13 +94,13 @@ test('store skips duplicate links', function () {
 
     Link::factory()->create(['url' => 'https://example.com']);
 
-    $this->post(route('dashboard.import.json.store'), [
+    $response = $this->post(route('dashboard.import.json.store'), [
         'file' => makeImportFile(validImportExport()),
         'bucket_names' => ['Work'],
         'tag_names' => ['php'],
     ]);
 
-    $result = session('json_import_result');
+    $result = json_decode($response->getContent(), true);
     expect($result['imported'])->toBe(0);
     expect($result['skipped'])->toBe(1);
     expect(Link::where('url', 'https://example.com')->count())->toBe(1);
@@ -120,13 +111,13 @@ test('store merges existing bucket by name', function () {
 
     Bucket::factory()->create(['name' => 'Work', 'color' => 'red']);
 
-    $this->post(route('dashboard.import.json.store'), [
+    $response = $this->post(route('dashboard.import.json.store'), [
         'file' => makeImportFile(validImportExport()),
         'bucket_names' => ['Work'],
         'tag_names' => ['php'],
     ]);
 
-    $result = session('json_import_result');
+    $result = json_decode($response->getContent(), true);
     expect($result['buckets_created'])->toBe(0);
     expect(Bucket::where('name', 'Work')->count())->toBe(1);
 });
@@ -136,13 +127,13 @@ test('store merges existing tag by name', function () {
 
     Tag::factory()->create(['name' => 'php', 'slug' => 'php']);
 
-    $this->post(route('dashboard.import.json.store'), [
+    $response = $this->post(route('dashboard.import.json.store'), [
         'file' => makeImportFile(validImportExport()),
         'bucket_names' => ['Work'],
         'tag_names' => ['php'],
     ]);
 
-    $result = session('json_import_result');
+    $result = json_decode($response->getContent(), true);
     expect($result['tags_created'])->toBe(0);
     expect(Tag::where('name', 'php')->count())->toBe(1);
 });
@@ -197,7 +188,8 @@ test('store strips excluded tags from links', function () {
 });
 
 test('store rejects invalid json', function () {
-    $this->post(route('dashboard.import.json.store'), [
-        'file' => makeImportFile(['version' => 2]),
-    ])->assertSessionHasErrors('file');
+    $this->withHeaders(['Accept' => 'application/json'])
+        ->post(route('dashboard.import.json.store'), [
+            'file' => makeImportFile(['version' => 2]),
+        ])->assertStatus(422);
 });

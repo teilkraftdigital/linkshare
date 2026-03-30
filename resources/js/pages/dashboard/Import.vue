@@ -2,6 +2,7 @@
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { BookmarkPlus, Copy, Download, Upload } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
+import { useToast } from '@/composables/useToast';
 import {
     create as importRoute,
     store as storeRoute,
@@ -36,6 +37,7 @@ defineOptions({
 
 const page = usePage();
 const importResult = computed(() => page.props.flash?.import_result ?? null);
+const { toast } = useToast();
 const selectedBucketId = ref<number>(props.inboxBucketId);
 const exportModalOpen = ref(false);
 
@@ -66,22 +68,12 @@ type ParsePreview = {
     link_count: number;
 };
 
-type JsonImportResult = {
-    imported: number;
-    skipped: number;
-    buckets_created: number;
-    tags_created: number;
-};
-
 const jsonFile = ref<File | null>(null);
 const jsonParseError = ref<string | null>(null);
 const jsonParsing = ref(false);
 const jsonImporting = ref(false);
 const jsonImportModalOpen = ref(false);
 const jsonPreview = ref<ParsePreview | null>(null);
-const jsonImportResult = computed(
-    () => (page.props.flash?.json_import_result as JsonImportResult) ?? null,
-);
 
 function onJsonImportModalClose() {
     // Keep the file selected so the user can re-open the modal without re-uploading
@@ -155,15 +147,23 @@ async function executeJsonImport(
     try {
         const response = await fetch(JsonImportController.store.url(), {
             method: 'POST',
-            headers: { 'X-CSRF-TOKEN': csrfToken },
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                Accept: 'application/json',
+            },
             body: formData,
-            redirect: 'follow',
         });
 
-        if (response.ok || response.redirected) {
-            // Reload page via Inertia to pick up flash data
-            const { router } = await import('@inertiajs/vue3');
-            router.reload({ only: ['flash'] });
+        if (response.ok) {
+            const result = await response.json();
+            const { imported, skipped, buckets_created, tags_created } = result;
+
+            let message = `${imported} ${imported === 1 ? 'Link' : 'Links'} importiert`;
+            if (skipped > 0) message += ` · ${skipped} übersprungen`;
+            if (buckets_created > 0) message += ` · ${buckets_created} ${buckets_created === 1 ? 'Bucket' : 'Buckets'} erstellt`;
+            if (tags_created > 0) message += ` · ${tags_created} ${tags_created === 1 ? 'Tag' : 'Tags'} erstellt`;
+
+            toast(message, 'success');
             jsonFile.value = null;
         } else {
             jsonParseError.value = 'Fehler beim Importieren der Datei.';
@@ -304,28 +304,6 @@ async function executeJsonImport(
             <p class="mt-0.5 text-sm text-muted-foreground">
                 Importiere eine zuvor exportierte Linkshare JSON-Datei.
             </p>
-        </div>
-
-        <div
-            v-if="jsonImportResult"
-            class="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-200"
-        >
-            <span class="font-medium">
-                {{ jsonImportResult.imported }}
-                {{ jsonImportResult.imported === 1 ? 'Link' : 'Links' }}
-                importiert
-            </span>
-            <span v-if="jsonImportResult.skipped > 0">
-                · {{ jsonImportResult.skipped }} übersprungen
-            </span>
-            <span v-if="jsonImportResult.buckets_created > 0">
-                · {{ jsonImportResult.buckets_created }}
-                {{ jsonImportResult.buckets_created === 1 ? 'Bucket' : 'Buckets' }} erstellt
-            </span>
-            <span v-if="jsonImportResult.tags_created > 0">
-                · {{ jsonImportResult.tags_created }}
-                {{ jsonImportResult.tags_created === 1 ? 'Tag' : 'Tags' }} erstellt
-            </span>
         </div>
 
         <div class="space-y-4">
