@@ -4,6 +4,7 @@ use App\Http\Controllers\Dashboard\BucketController;
 use App\Http\Controllers\Dashboard\CheckDuplicateController;
 use App\Http\Controllers\Dashboard\ExportController;
 use App\Http\Controllers\Dashboard\ImportController;
+use App\Http\Controllers\Dashboard\JsonImportController;
 use App\Http\Controllers\Dashboard\LinkController;
 use App\Http\Controllers\Dashboard\MetaFetchController;
 use App\Http\Controllers\Dashboard\QuickAddController;
@@ -39,6 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('dashboard/export', ExportController::class)->name('dashboard.export');
     Route::get('dashboard/import', [ImportController::class, 'create'])->name('dashboard.import.create');
     Route::post('dashboard/import', [ImportController::class, 'store'])->name('dashboard.import.store');
+    Route::post('dashboard/import/json/parse', [JsonImportController::class, 'parse'])->name('dashboard.import.json.parse');
 
     Route::post('dashboard/links/fetch-meta', MetaFetchController::class)->name('dashboard.links.fetch-meta');
     Route::post('dashboard/links/check-duplicate', CheckDuplicateController::class)->name('dashboard.links.check-duplicate');
