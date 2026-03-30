@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Form, Head, usePage } from '@inertiajs/vue3';
-import { ArrowLeft, BookmarkPlus, Copy, Download, Upload } from 'lucide-vue-next';
+import { BookmarkPlus, Copy, Download, Upload } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
 import {
     create as importRoute,
@@ -9,13 +9,12 @@ import {
 import JsonImportController from '@/actions/App/Http/Controllers/Dashboard/JsonImportController';
 import QuickAddController from '@/actions/App/Http/Controllers/Dashboard/QuickAddController';
 import ExportModal from '@/components/ExportModal.vue';
+import JsonImportModal from '@/components/JsonImportModal.vue';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { COLOR_BG } from '@/lib/colors';
 import type { Bucket, Tag } from '@/types/dashboard';
 
 const props = defineProps<{
@@ -72,18 +71,13 @@ type ParsePreview = {
 const jsonFile = ref<File | null>(null);
 const jsonParseError = ref<string | null>(null);
 const jsonParsing = ref(false);
+const jsonImportModalOpen = ref(false);
 const jsonPreview = ref<ParsePreview | null>(null);
 
-const selectedJsonBucketNames = ref<Set<string>>(new Set());
-const selectedJsonTagNames = ref<Set<string>>(new Set());
-
-function resetJsonImport() {
-    jsonFile.value = null;
-    jsonParseError.value = null;
-    jsonParsing.value = false;
+function onJsonImportModalClose() {
+    // Keep the file selected so the user can re-open the modal without re-uploading
+    jsonImportModalOpen.value = false;
     jsonPreview.value = null;
-    selectedJsonBucketNames.value = new Set();
-    selectedJsonTagNames.value = new Set();
 }
 
 async function parseJsonFile() {
@@ -114,8 +108,7 @@ async function parseJsonFile() {
         }
 
         jsonPreview.value = data as ParsePreview;
-        selectedJsonBucketNames.value = new Set(data.buckets.map((b: ParsedBucket) => b.name));
-        selectedJsonTagNames.value = new Set(data.tags.map((t: ParsedTag) => t.name));
+        jsonImportModalOpen.value = true;
     } catch {
         jsonParseError.value = 'Fehler beim Hochladen der Datei.';
     } finally {
@@ -131,6 +124,12 @@ async function parseJsonFile() {
         v-model:open="exportModalOpen"
         :buckets="buckets"
         :tags="tags"
+    />
+
+    <JsonImportModal
+        :open="jsonImportModalOpen"
+        :preview="jsonPreview"
+        @update:open="onJsonImportModalClose"
     />
 
     <div class="flex flex-col gap-8 p-4">
@@ -225,8 +224,7 @@ async function parseJsonFile() {
             </p>
         </div>
 
-        <!-- Step 1: file upload -->
-        <div v-if="!jsonPreview" class="space-y-4">
+        <div class="space-y-4">
             <div class="space-y-1.5">
                 <Label for="json-file">JSON-Datei (.json)</Label>
                 <Input
@@ -247,71 +245,6 @@ async function parseJsonFile() {
                 <Upload class="mr-2 size-4" />
                 {{ jsonParsing ? 'Lese Datei…' : 'Datei analysieren' }}
             </Button>
-        </div>
-
-        <!-- Step 2: preview & selection -->
-        <div v-else class="space-y-5">
-            <p class="text-sm text-muted-foreground">
-                <span class="font-medium text-foreground">{{ jsonPreview.link_count }}</span>
-                {{ jsonPreview.link_count === 1 ? 'Link' : 'Links' }} gefunden.
-                Wähle aus, was importiert werden soll.
-            </p>
-
-            <!-- Buckets -->
-            <div v-if="jsonPreview.buckets.length" class="space-y-2">
-                <p class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Buckets</p>
-                <div class="flex flex-wrap gap-x-6 gap-y-2">
-                    <div
-                        v-for="bucket in jsonPreview.buckets"
-                        :key="bucket.name"
-                        class="flex items-center gap-2"
-                    >
-                        <Checkbox
-                            :id="`json-bucket-${bucket.name}`"
-                            :model-value="selectedJsonBucketNames.has(bucket.name)"
-                            @update:model-value="$event ? selectedJsonBucketNames.add(bucket.name) : selectedJsonBucketNames.delete(bucket.name)"
-                        />
-                        <Label :for="`json-bucket-${bucket.name}`" class="flex cursor-pointer items-center gap-1.5 font-normal">
-                            <span class="size-2.5 rounded-full" :class="COLOR_BG[bucket.color] ?? 'bg-gray-400'" />
-                            {{ bucket.name }}
-                        </Label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tags -->
-            <div v-if="jsonPreview.tags.length" class="space-y-2">
-                <p class="text-xs font-medium uppercase tracking-wide text-muted-foreground">Tags</p>
-                <div class="flex flex-wrap gap-x-6 gap-y-2">
-                    <div
-                        v-for="tag in jsonPreview.tags"
-                        :key="tag.name"
-                        class="flex items-center gap-2"
-                    >
-                        <Checkbox
-                            :id="`json-tag-${tag.name}`"
-                            :model-value="selectedJsonTagNames.has(tag.name)"
-                            @update:model-value="$event ? selectedJsonTagNames.add(tag.name) : selectedJsonTagNames.delete(tag.name)"
-                        />
-                        <Label :for="`json-tag-${tag.name}`" class="flex cursor-pointer items-center gap-1.5 font-normal">
-                            <span class="size-2.5 rounded-full" :class="COLOR_BG[tag.color] ?? 'bg-gray-400'" />
-                            {{ tag.name }}
-                        </Label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex gap-2">
-                <Button variant="outline" @click="resetJsonImport">
-                    <ArrowLeft class="mr-2 size-4" />
-                    Zurück
-                </Button>
-                <!-- Import button will be wired in #37 -->
-                <Button disabled>
-                    <Upload class="mr-2 size-4" />
-                    Importieren
-                </Button>
-            </div>
         </div>
 
         <hr class="border-border" />
