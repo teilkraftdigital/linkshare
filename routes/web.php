@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Dashboard\BucketController;
 use App\Http\Controllers\Dashboard\CheckDuplicateController;
+use App\Http\Controllers\Dashboard\ExportController;
 use App\Http\Controllers\Dashboard\ImportController;
 use App\Http\Controllers\Dashboard\LinkController;
 use App\Http\Controllers\Dashboard\MetaFetchController;
@@ -35,6 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('dashboard/tags/{tag}/force', [DashboardTagController::class, 'forceDelete'])->withTrashed()->name('dashboard.tags.force-delete');
 
     Route::get('dashboard/quick-add', QuickAddController::class)->name('dashboard.quick-add');
+    Route::post('dashboard/export', ExportController::class)->name('dashboard.export');
     Route::get('dashboard/import', [ImportController::class, 'create'])->name('dashboard.import.create');
     Route::post('dashboard/import', [ImportController::class, 'store'])->name('dashboard.import.store');
 
