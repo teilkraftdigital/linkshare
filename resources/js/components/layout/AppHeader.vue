@@ -2,7 +2,7 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
 import { computed } from 'vue';
-import AppLogo from '@/components/AppLogo.vue';
+import AppLogo from '@/components/layout/AppLogo.vue';
 import AppLogoIcon from '@/components/layout/AppLogoIcon.vue';
 import Breadcrumbs from '@/components/layout/Breadcrumbs.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

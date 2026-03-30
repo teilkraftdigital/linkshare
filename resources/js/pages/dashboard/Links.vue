@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { Form, Head, router, usePage } from '@inertiajs/vue3';
-import { Loader2, Pencil, RefreshCw, RotateCcw, Search, Trash2, X } from 'lucide-vue-next';
+import {
+    Loader2,
+    Pencil,
+    RefreshCw,
+    RotateCcw,
+    Search,
+    Trash2,
+    X,
+} from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
@@ -18,6 +26,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { index } from '@/routes/dashboard/links';
 import Pagination from '@/components/shared/Pagination.vue';
 import type { Bucket, Link, Paginator, Tag } from '@/types/dashboard';
+import LinkSimilarMessage from '@/components/links/LinkSimilarMessage.vue';
 
 type Filters = {
     bucket_id?: string;
@@ -318,22 +327,11 @@ function forceDeleteLink() {
                             class="absolute top-2.5 right-2.5 size-4 animate-spin text-muted-foreground"
                         />
                     </div>
-                    <p
-                        v-if="duplicateExists"
-                        class="text-xs text-amber-600 dark:text-amber-400"
-                    >
-                        Dieser Link ist bereits vorhanden.
-                    </p>
-                    <p
-                        v-else-if="duplicateSimilar"
-                        class="text-xs text-amber-600 dark:text-amber-400"
-                    >
-                        Ein ähnlicher Link ist bereits vorhanden.
-                    </p>
-                    <p
-                        v-else-if="metaFailed"
-                        class="text-xs text-muted-foreground"
-                    >
+                    <LinkSimilarMessage
+                        :similar="duplicateSimilar"
+                        :existis="duplicateExists"
+                    />
+                    <p v-if="metaFailed" class="text-xs text-muted-foreground">
                         Metadaten für diese URL konnten nicht geladen werden.
                     </p>
                     <InputError :message="errors.url" />
@@ -676,7 +674,11 @@ function forceDeleteLink() {
                                 >
                                     <RefreshCw
                                         class="size-3.5"
-                                        :class="refetchingLinkId === link.id ? 'animate-spin' : ''"
+                                        :class="
+                                            refetchingLinkId === link.id
+                                                ? 'animate-spin'
+                                                : ''
+                                        "
                                     />
                                 </Button>
                                 <Button

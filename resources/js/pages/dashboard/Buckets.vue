@@ -277,7 +277,7 @@ function forceDeleteBucket() {
                             v-if="!bucket.is_inbox"
                             variant="ghost"
                             size="icon"
-                            :aria-label="`Delete ${bucket.name}`"
+                            :aria-label="`Lösche ${bucket.name}`"
                             @click="confirmDelete(bucket)"
                         >
                             <Trash2 class="size-4 text-destructive" />
@@ -289,7 +289,7 @@ function forceDeleteBucket() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            :aria-label="`Restore ${bucket.name}`"
+                            :aria-label="`Wiederherstellen ${bucket.name}`"
                             @click="restoreBucket(bucket)"
                         >
                             <RotateCcw class="size-4" />
@@ -298,7 +298,7 @@ function forceDeleteBucket() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            :aria-label="`Permanently delete ${bucket.name}`"
+                            :aria-label="`Endgültig löschen ${bucket.name}`"
                             @click="confirmForceDelete(bucket)"
                         >
                             <Trash2 class="size-4 text-destructive" />

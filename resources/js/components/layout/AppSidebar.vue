@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, Inbox, LayoutGrid, Link as LinkIcon, Tag, Upload } from 'lucide-vue-next';
-import AppLogo from '@/components/AppLogo.vue';
+import {
+    BookOpen,
+    FolderGit2,
+    Inbox,
+    LayoutGrid,
+    Link as LinkIcon,
+    Tag,
+    Upload,
+} from 'lucide-vue-next';
+import AppLogo from '@/components/layout/AppLogo.vue';
 import NavFooter from '@/components/layout/NavFooter.vue';
 import NavMain from '@/components/layout/NavMain.vue';
 import NavUser from '@/components/layout/NavUser.vue';

@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import type { Bucket, Tag } from '@/types/dashboard';
+import LinkSimilarMessage from '@/components/links/LinkSimilarMessage.vue';
 
 const props = defineProps<{
     prefillUrl: string;
@@ -158,18 +159,10 @@ function onSuccess() {
                         class="absolute top-2.5 right-2.5 size-4 animate-spin text-muted-foreground"
                     />
                 </div>
-                <p
-                    v-if="duplicateExists"
-                    class="text-xs text-amber-600 dark:text-amber-400"
-                >
-                    Dieser Link ist bereits vorhanden.
-                </p>
-                <p
-                    v-else-if="duplicateSimilar"
-                    class="text-xs text-amber-600 dark:text-amber-400"
-                >
-                    Ein ähnlicher Link ist bereits vorhanden.
-                </p>
+                <LinkSimilarMessage
+                    :similar="duplicateSimilar"
+                    :existis="duplicateExists"
+                />
                 <InputError :message="errors.url" />
             </div>
 
