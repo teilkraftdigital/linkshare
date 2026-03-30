@@ -2,6 +2,7 @@
 import { Form, Head, usePage } from '@inertiajs/vue3';
 import { BookmarkPlus, Copy, Download, Upload } from 'lucide-vue-next';
 import { ref, computed } from 'vue';
+import { useToast } from '@/composables/useToast';
 import {
     create as importRoute,
     store as storeRoute,
@@ -36,6 +37,7 @@ defineOptions({
 
 const page = usePage();
 const importResult = computed(() => page.props.flash?.import_result ?? null);
+const { toast } = useToast();
 const selectedBucketId = ref<number>(props.inboxBucketId);
 const exportModalOpen = ref(false);
 
@@ -69,6 +71,7 @@ type ParsePreview = {
 const jsonFile = ref<File | null>(null);
 const jsonParseError = ref<string | null>(null);
 const jsonParsing = ref(false);
+const jsonImporting = ref(false);
 const jsonImportModalOpen = ref(false);
 const jsonPreview = ref<ParsePreview | null>(null);
 
@@ -119,6 +122,58 @@ async function parseJsonFile() {
         jsonParsing.value = false;
     }
 }
+
+async function executeJsonImport(
+    bucketNames: string[],
+    tagNames: string[],
+) {
+    if (!jsonFile.value) return;
+
+    jsonImporting.value = true;
+    jsonImportModalOpen.value = false;
+    jsonPreview.value = null;
+
+    const csrfToken =
+        (
+            document.querySelector(
+                'meta[name="csrf-token"]',
+            ) as HTMLMetaElement
+        )?.content ?? '';
+    const formData = new FormData();
+    formData.append('file', jsonFile.value);
+    bucketNames.forEach((n) => formData.append('bucket_names[]', n));
+    tagNames.forEach((n) => formData.append('tag_names[]', n));
+
+    try {
+        const response = await fetch(JsonImportController.store.url(), {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                Accept: 'application/json',
+            },
+            body: formData,
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            const { imported, skipped, buckets_created, tags_created } = result;
+
+            let message = `${imported} ${imported === 1 ? 'Link' : 'Links'} importiert`;
+            if (skipped > 0) message += ` · ${skipped} übersprungen`;
+            if (buckets_created > 0) message += ` · ${buckets_created} ${buckets_created === 1 ? 'Bucket' : 'Buckets'} erstellt`;
+            if (tags_created > 0) message += ` · ${tags_created} ${tags_created === 1 ? 'Tag' : 'Tags'} erstellt`;
+
+            toast(message, 'success');
+            jsonFile.value = null;
+        } else {
+            jsonParseError.value = 'Fehler beim Importieren der Datei.';
+        }
+    } catch {
+        jsonParseError.value = 'Fehler beim Importieren der Datei.';
+    } finally {
+        jsonImporting.value = false;
+    }
+}
 </script>
 
 <template>
@@ -133,7 +188,9 @@ async function parseJsonFile() {
     <JsonImportModal
         :open="jsonImportModalOpen"
         :preview="jsonPreview"
+        :importing="jsonImporting"
         @update:open="onJsonImportModalClose"
+        @confirm="executeJsonImport"
     />
 
     <div class="flex flex-col gap-8 p-4">
@@ -271,11 +328,11 @@ async function parseJsonFile() {
 
             <Button
                 variant="outline"
-                :disabled="!jsonFile || jsonParsing"
+                :disabled="!jsonFile || jsonParsing || jsonImporting"
                 @click="parseJsonFile"
             >
                 <Upload class="mr-2 size-4" />
-                {{ jsonParsing ? 'Lese Datei…' : 'Datei analysieren' }}
+                {{ jsonImporting ? 'Importiere…' : jsonParsing ? 'Lese Datei…' : 'Datei analysieren' }}
             </Button>
         </div>
 

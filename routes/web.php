@@ -41,6 +41,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard/import', [ImportController::class, 'create'])->name('dashboard.import.create');
     Route::post('dashboard/import', [ImportController::class, 'store'])->name('dashboard.import.store');
     Route::post('dashboard/import/json/parse', [JsonImportController::class, 'parse'])->name('dashboard.import.json.parse');
+    Route::post('dashboard/import/json', [JsonImportController::class, 'store'])->name('dashboard.import.json.store');
 
     Route::post('dashboard/links/fetch-meta', MetaFetchController::class)->name('dashboard.links.fetch-meta');
     Route::post('dashboard/links/check-duplicate', CheckDuplicateController::class)->name('dashboard.links.check-duplicate');

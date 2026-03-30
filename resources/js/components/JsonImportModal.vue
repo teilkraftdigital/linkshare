@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Upload } from 'lucide-vue-next';
+import { Globe, Upload } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -23,6 +23,7 @@ type Preview = {
 const props = defineProps<{
     open: boolean;
     preview: Preview | null;
+    importing?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -168,8 +169,6 @@ watch(
                                 />
                                 {{ tag.name }}
 
-                                {{ tag }}
-
                                 <Globe
                                     v-if="tag.is_public"
                                     class="size-3 opacity-60"
@@ -186,7 +185,6 @@ watch(
                     Abbrechen
                 </Button>
                 <Button
-                    disabled
                     @click="
                         emit(
                             'confirm',
