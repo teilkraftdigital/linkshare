@@ -95,7 +95,7 @@ watch(
                 <Globe
                     v-if="tag.is_public"
                     class="size-3 opacity-60"
-                    :aria-label="`${tag.name} is public`"
+                    :aria-label="`${tag.name} ist öffentlich`"
                 />
             </span>
         </div>

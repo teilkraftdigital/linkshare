@@ -1,19 +1,7 @@
 <script setup lang="ts">
 import { Head, setLayoutProps } from '@inertiajs/vue3';
 import LinkCard from '@/components/LinkCard.vue';
-
-type Link = {
-    id: number;
-    url: string;
-    title: string;
-    description: string | null;
-};
-
-type Tag = {
-    name: string;
-    description: string | null;
-    slug: string;
-};
+import type { Link, Tag } from '@/types/dashboard';
 
 const props = defineProps<{
     tag: Tag;
