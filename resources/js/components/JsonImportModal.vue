@@ -12,13 +12,11 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { COLOR_BG } from '@/lib/colors';
-
-type ParsedBucket = { name: string; color: string; is_inbox: boolean };
-type ParsedTag = { name: string; color: string };
+import type { Bucket, Tag } from '@/types/dashboard';
 
 type Preview = {
-    buckets: ParsedBucket[];
-    tags: ParsedTag[];
+    buckets: Bucket[];
+    tags: Tag[];
     link_count: number;
 };
 
@@ -42,9 +40,13 @@ watch(
     (opened) => {
         if (opened && props.preview) {
             allBuckets.value = true;
-            selectedBucketNames.value = new Set(props.preview.buckets.map((b) => b.name));
+            selectedBucketNames.value = new Set(
+                props.preview.buckets.map((b) => b.name),
+            );
             allTags.value = true;
-            selectedTagNames.value = new Set(props.preview.tags.map((t) => t.name));
+            selectedTagNames.value = new Set(
+                props.preview.tags.map((t) => t.name),
+            );
         }
     },
 );
@@ -59,7 +61,9 @@ watch(
 
             <div v-if="preview" class="space-y-5 py-2">
                 <p class="text-sm text-muted-foreground">
-                    <span class="font-medium text-foreground">{{ preview.link_count }}</span>
+                    <span class="mr-0.5 font-medium text-foreground">{{
+                        preview.link_count
+                    }}</span>
                     {{ preview.link_count === 1 ? 'Link' : 'Links' }} gefunden.
                     Wähle aus, was importiert werden soll.
                 </p>
@@ -72,7 +76,10 @@ watch(
                             :model-value="allBuckets"
                             @update:model-value="allBuckets = $event as boolean"
                         />
-                        <Label for="json-import-all-buckets" class="cursor-pointer">
+                        <Label
+                            for="json-import-all-buckets"
+                            class="cursor-pointer"
+                        >
                             Alle Buckets importieren
                         </Label>
                     </div>
@@ -88,8 +95,16 @@ watch(
                         >
                             <Checkbox
                                 :id="`json-import-bucket-${bucket.name}`"
-                                :model-value="selectedBucketNames.has(bucket.name)"
-                                @update:model-value="$event ? selectedBucketNames.add(bucket.name) : selectedBucketNames.delete(bucket.name)"
+                                :model-value="
+                                    selectedBucketNames.has(bucket.name)
+                                "
+                                @update:model-value="
+                                    $event
+                                        ? selectedBucketNames.add(bucket.name)
+                                        : selectedBucketNames.delete(
+                                              bucket.name,
+                                          )
+                                "
                             />
                             <Label
                                 :for="`json-import-bucket-${bucket.name}`"
@@ -97,7 +112,9 @@ watch(
                             >
                                 <span
                                     class="size-2.5 rounded-full"
-                                    :class="COLOR_BG[bucket.color] ?? 'bg-gray-400'"
+                                    :class="
+                                        COLOR_BG[bucket.color] ?? 'bg-gray-400'
+                                    "
                                 />
                                 {{ bucket.name }}
                             </Label>
@@ -113,7 +130,10 @@ watch(
                             :model-value="allTags"
                             @update:model-value="allTags = $event as boolean"
                         />
-                        <Label for="json-import-all-tags" class="cursor-pointer">
+                        <Label
+                            for="json-import-all-tags"
+                            class="cursor-pointer"
+                        >
                             Alle Tags importieren
                         </Label>
                     </div>
@@ -130,7 +150,11 @@ watch(
                             <Checkbox
                                 :id="`json-import-tag-${tag.name}`"
                                 :model-value="selectedTagNames.has(tag.name)"
-                                @update:model-value="$event ? selectedTagNames.add(tag.name) : selectedTagNames.delete(tag.name)"
+                                @update:model-value="
+                                    $event
+                                        ? selectedTagNames.add(tag.name)
+                                        : selectedTagNames.delete(tag.name)
+                                "
                             />
                             <Label
                                 :for="`json-import-tag-${tag.name}`"
@@ -138,9 +162,19 @@ watch(
                             >
                                 <span
                                     class="size-2.5 rounded-full"
-                                    :class="COLOR_BG[tag.color] ?? 'bg-gray-400'"
+                                    :class="
+                                        COLOR_BG[tag.color] ?? 'bg-gray-400'
+                                    "
                                 />
                                 {{ tag.name }}
+
+                                {{ tag }}
+
+                                <Globe
+                                    v-if="tag.is_public"
+                                    class="size-3 opacity-60"
+                                    :aria-label="`${tag.name} ist öffentlich`"
+                                />
                             </Label>
                         </div>
                     </div>
@@ -153,7 +187,17 @@ watch(
                 </Button>
                 <Button
                     disabled
-                    @click="emit('confirm', allBuckets ? preview!.buckets.map(b => b.name) : [...selectedBucketNames], allTags ? preview!.tags.map(t => t.name) : [...selectedTagNames])"
+                    @click="
+                        emit(
+                            'confirm',
+                            allBuckets
+                                ? preview!.buckets.map((b) => b.name)
+                                : [...selectedBucketNames],
+                            allTags
+                                ? preview!.tags.map((t) => t.name)
+                                : [...selectedTagNames],
+                        )
+                    "
                 >
                     <Upload class="mr-2 size-4" />
                     Importieren

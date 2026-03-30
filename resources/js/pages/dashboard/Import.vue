@@ -60,11 +60,9 @@ function copyBookmarklet() {
 
 // — JSON Import Two-Step —
 
-type ParsedBucket = { name: string; color: string; is_inbox: boolean };
-type ParsedTag = { name: string; color: string };
 type ParsePreview = {
-    buckets: ParsedBucket[];
-    tags: ParsedTag[];
+    buckets: Bucket[];
+    tags: Tag[];
     link_count: number;
 };
 
@@ -87,7 +85,12 @@ async function parseJsonFile() {
     jsonParseError.value = null;
 
     try {
-        const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? '';
+        const csrfToken =
+            (
+                document.querySelector(
+                    'meta[name="csrf-token"]',
+                ) as HTMLMetaElement
+            )?.content ?? '';
         const formData = new FormData();
         formData.append('file', jsonFile.value);
 
@@ -103,7 +106,8 @@ async function parseJsonFile() {
         const data = await response.json();
 
         if (!response.ok) {
-            jsonParseError.value = data.error ?? data.message ?? 'Fehler beim Parsen der Datei.';
+            jsonParseError.value =
+                data.error ?? data.message ?? 'Fehler beim Parsen der Datei.';
             return;
         }
 
@@ -143,7 +147,8 @@ async function parseJsonFile() {
             <div>
                 <h2 class="text-sm font-semibold">Exportieren</h2>
                 <p class="mt-0.5 text-sm text-muted-foreground">
-                    Alle aktiven Links, Buckets und Tags als JSON-Datei herunterladen. Einträge im Papierkorb sind nicht enthalten.
+                    Alle aktiven Links, Buckets und Tags als JSON-Datei
+                    herunterladen. Einträge im Papierkorb sind nicht enthalten.
                 </p>
             </div>
             <Button variant="outline" @click="exportModalOpen = true">
@@ -158,7 +163,8 @@ async function parseJsonFile() {
         <div>
             <h2 class="text-sm font-semibold">Netscape HTML importieren</h2>
             <p class="mt-0.5 text-sm text-muted-foreground">
-                Browser-Bookmarks im Netscape HTML Format (Chrome, Firefox, Safari).
+                Browser-Bookmarks im Netscape HTML Format (Chrome, Firefox,
+                Safari).
             </p>
         </div>
 
@@ -166,9 +172,19 @@ async function parseJsonFile() {
             v-if="importResult"
             class="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-200"
         >
-            <span class="font-medium">{{ importResult.imported }} {{ importResult.imported === 1 ? 'Link' : 'Links' }} importiert</span>
-            <span v-if="importResult.skipped > 0"> · {{ importResult.skipped }} übersprungen</span>
-            <span v-if="importResult.hints > 0"> · {{ importResult.hints }} ähnliche URL{{ importResult.hints === 1 ? '' : 's' }} gefunden</span>
+            <span class="font-medium">
+                {{ importResult.imported }}
+                {{ importResult.imported === 1 ? 'Link' : 'Links' }}
+                importiert
+            </span>
+            <span v-if="importResult.skipped > 0">
+                · {{ importResult.skipped }} übersprungen
+            </span>
+            <span v-if="importResult.hints > 0">
+                · {{ importResult.hints }} ähnliche URL
+                {{ importResult.hints === 1 ? '' : 's' }}
+                gefunden
+            </span>
         </div>
 
         <Form
@@ -186,10 +202,19 @@ async function parseJsonFile() {
                         id="bucket"
                         :value="selectedBucketId"
                         class="rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
-                        @change="selectedBucketId = Number(($event.target as HTMLSelectElement).value)"
+                        @change="
+                            selectedBucketId = Number(
+                                ($event.target as HTMLSelectElement).value,
+                            )
+                        "
                     >
-                        <option v-for="bucket in buckets" :key="bucket.id" :value="bucket.id">
-                            {{ bucket.name }}{{ bucket.is_inbox ? ' (Standard)' : '' }}
+                        <option
+                            v-for="bucket in buckets"
+                            :key="bucket.id"
+                            :value="bucket.id"
+                        >
+                            {{ bucket.name
+                            }}{{ bucket.is_inbox ? ' (Standard)' : '' }}
                         </option>
                     </select>
                     <InputError :message="errors.bucket_id" />
@@ -232,9 +257,16 @@ async function parseJsonFile() {
                     type="file"
                     accept=".json"
                     class="cursor-pointer"
-                    @change="jsonFile = ($event.target as HTMLInputElement).files?.[0] ?? null; jsonParseError = null"
+                    @change="
+                        jsonFile =
+                            ($event.target as HTMLInputElement).files?.[0] ??
+                            null;
+                        jsonParseError = null;
+                    "
                 />
-                <p v-if="jsonParseError" class="text-sm text-destructive">{{ jsonParseError }}</p>
+                <p v-if="jsonParseError" class="text-sm text-destructive">
+                    {{ jsonParseError }}
+                </p>
             </div>
 
             <Button
@@ -254,7 +286,8 @@ async function parseJsonFile() {
             <div>
                 <h2 class="text-sm font-semibold">Quick-Add Bookmarklet</h2>
                 <p class="mt-0.5 text-sm text-muted-foreground">
-                    Ziehe den Button in deine Lesezeichen-Leiste oder kopiere den Code manuell.
+                    Ziehe den Button in deine Lesezeichen-Leiste oder kopiere
+                    den Code manuell.
                 </p>
             </div>
 
@@ -267,12 +300,22 @@ async function parseJsonFile() {
                     <BookmarkPlus class="size-4" />
                     Link speichern
                 </a>
-                <span class="text-xs text-muted-foreground">← In Lesezeichen-Leiste ziehen</span>
+                <span class="text-xs text-muted-foreground"
+                    >← In Lesezeichen-Leiste ziehen</span
+                >
             </div>
 
             <div class="flex items-start gap-2">
-                <code class="flex-1 overflow-x-auto rounded-md border bg-muted px-3 py-2 text-xs break-all select-all">{{ bookmarkletCode }}</code>
-                <Button variant="outline" size="sm" class="shrink-0 gap-1.5" @click="copyBookmarklet">
+                <code
+                    class="flex-1 overflow-x-auto rounded-md border bg-muted px-3 py-2 text-xs break-all select-all"
+                    >{{ bookmarkletCode }}</code
+                >
+                <Button
+                    variant="outline"
+                    size="sm"
+                    class="shrink-0 gap-1.5"
+                    @click="copyBookmarklet"
+                >
                     <Copy class="size-3.5" />
                     {{ copied ? 'Kopiert!' : 'Kopieren' }}
                 </Button>
