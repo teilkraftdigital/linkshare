@@ -3,11 +3,17 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Services\JsonImportService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class JsonImportController extends Controller
 {
+    public function __construct(
+        private readonly JsonImportService $jsonImportService,
+    ) {}
+
     /**
      * Parse an uploaded JSON export file and return a preview.
      */
@@ -50,5 +56,34 @@ class JsonImportController extends Controller
             'tags' => $tags,
             'link_count' => $linkCount,
         ]);
+    }
+
+    /**
+     * Execute the import with the user's bucket/tag selection.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'file' => ['required', 'file', 'extensions:json', 'max:10240'],
+            'bucket_names' => ['nullable', 'array'],
+            'bucket_names.*' => ['string'],
+            'tag_names' => ['nullable', 'array'],
+            'tag_names.*' => ['string'],
+        ]);
+
+        $contents = file_get_contents($request->file('file')->getRealPath());
+        $data = json_decode($contents, true);
+
+        if (! is_array($data) || ($data['version'] ?? null) !== 1) {
+            return back()->withErrors(['file' => 'Ungültige oder nicht unterstützte JSON-Datei.']);
+        }
+
+        $result = $this->jsonImportService->import(
+            $data,
+            $request->input('bucket_names', []),
+            $request->input('tag_names', []),
+        );
+
+        return redirect()->route('dashboard.import.create')->with('json_import_result', $result);
     }
 }

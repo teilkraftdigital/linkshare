@@ -66,11 +66,22 @@ type ParsePreview = {
     link_count: number;
 };
 
+type JsonImportResult = {
+    imported: number;
+    skipped: number;
+    buckets_created: number;
+    tags_created: number;
+};
+
 const jsonFile = ref<File | null>(null);
 const jsonParseError = ref<string | null>(null);
 const jsonParsing = ref(false);
+const jsonImporting = ref(false);
 const jsonImportModalOpen = ref(false);
 const jsonPreview = ref<ParsePreview | null>(null);
+const jsonImportResult = computed(
+    () => (page.props.flash?.json_import_result as JsonImportResult) ?? null,
+);
 
 function onJsonImportModalClose() {
     // Keep the file selected so the user can re-open the modal without re-uploading
@@ -119,6 +130,50 @@ async function parseJsonFile() {
         jsonParsing.value = false;
     }
 }
+
+async function executeJsonImport(
+    bucketNames: string[],
+    tagNames: string[],
+) {
+    if (!jsonFile.value) return;
+
+    jsonImporting.value = true;
+    jsonImportModalOpen.value = false;
+    jsonPreview.value = null;
+
+    const csrfToken =
+        (
+            document.querySelector(
+                'meta[name="csrf-token"]',
+            ) as HTMLMetaElement
+        )?.content ?? '';
+    const formData = new FormData();
+    formData.append('file', jsonFile.value);
+    bucketNames.forEach((n) => formData.append('bucket_names[]', n));
+    tagNames.forEach((n) => formData.append('tag_names[]', n));
+
+    try {
+        const response = await fetch(JsonImportController.store.url(), {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': csrfToken },
+            body: formData,
+            redirect: 'follow',
+        });
+
+        if (response.ok || response.redirected) {
+            // Reload page via Inertia to pick up flash data
+            const { router } = await import('@inertiajs/vue3');
+            router.reload({ only: ['flash'] });
+            jsonFile.value = null;
+        } else {
+            jsonParseError.value = 'Fehler beim Importieren der Datei.';
+        }
+    } catch {
+        jsonParseError.value = 'Fehler beim Importieren der Datei.';
+    } finally {
+        jsonImporting.value = false;
+    }
+}
 </script>
 
 <template>
@@ -133,7 +188,9 @@ async function parseJsonFile() {
     <JsonImportModal
         :open="jsonImportModalOpen"
         :preview="jsonPreview"
+        :importing="jsonImporting"
         @update:open="onJsonImportModalClose"
+        @confirm="executeJsonImport"
     />
 
     <div class="flex flex-col gap-8 p-4">
@@ -249,6 +306,28 @@ async function parseJsonFile() {
             </p>
         </div>
 
+        <div
+            v-if="jsonImportResult"
+            class="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-200"
+        >
+            <span class="font-medium">
+                {{ jsonImportResult.imported }}
+                {{ jsonImportResult.imported === 1 ? 'Link' : 'Links' }}
+                importiert
+            </span>
+            <span v-if="jsonImportResult.skipped > 0">
+                · {{ jsonImportResult.skipped }} übersprungen
+            </span>
+            <span v-if="jsonImportResult.buckets_created > 0">
+                · {{ jsonImportResult.buckets_created }}
+                {{ jsonImportResult.buckets_created === 1 ? 'Bucket' : 'Buckets' }} erstellt
+            </span>
+            <span v-if="jsonImportResult.tags_created > 0">
+                · {{ jsonImportResult.tags_created }}
+                {{ jsonImportResult.tags_created === 1 ? 'Tag' : 'Tags' }} erstellt
+            </span>
+        </div>
+
         <div class="space-y-4">
             <div class="space-y-1.5">
                 <Label for="json-file">JSON-Datei (.json)</Label>
@@ -271,11 +350,11 @@ async function parseJsonFile() {
 
             <Button
                 variant="outline"
-                :disabled="!jsonFile || jsonParsing"
+                :disabled="!jsonFile || jsonParsing || jsonImporting"
                 @click="parseJsonFile"
             >
                 <Upload class="mr-2 size-4" />
-                {{ jsonParsing ? 'Lese Datei…' : 'Datei analysieren' }}
+                {{ jsonImporting ? 'Importiere…' : jsonParsing ? 'Lese Datei…' : 'Datei analysieren' }}
             </Button>
         </div>
 
