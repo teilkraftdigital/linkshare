@@ -110,7 +110,7 @@ class LinkController extends Controller
 
         if ($meta['favicon_url']) {
             $link->clearMediaCollection('favicon');
-            FetchFavicon::dispatch($link, $meta['favicon_url']);
+            FetchFavicon::dispatchSync($link, $meta['favicon_url']);
         }
 
         $metaFound = $meta['title'] || $meta['description'] || $meta['favicon_url'];
