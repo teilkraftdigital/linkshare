@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import type { Paginator } from '@/components/ui/pagination';
+import type { Paginator } from '@/types/dashboard';
 
-interface PaginationProps {
+defineProps<{
     items: Paginator<any>;
-}
-
-
-defineProps<PaginationProps>();
+}>();
 </script>
 
 <template>

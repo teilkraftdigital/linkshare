@@ -16,8 +16,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { index } from '@/routes/dashboard/links';
-import { Pagination, type Paginator } from '@/components/ui/pagination';
-import type { Bucket, Link, Tag } from '@/types/dashboard';
+import Pagination from '@/components/shared/Pagination.vue';
+import type { Bucket, Link, Paginator, Tag } from '@/types/dashboard';
 
 type Filters = {
     bucket_id?: string;
