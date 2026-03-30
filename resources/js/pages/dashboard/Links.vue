@@ -6,11 +6,11 @@ import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkControl
 import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
 import { useMetaFetch } from '@/composables/useMetaFetch';
 import { useToast } from '@/composables/useToast';
-import ConfirmModal from '@/components/ConfirmModal.vue';
-import Heading from '@/components/Heading.vue';
-import InputError from '@/components/InputError.vue';
-import LinkCard from '@/components/LinkCard.vue';
-import TagSelect from '@/components/TagSelect.vue';
+import ConfirmModal from '@/components/shared/ConfirmModal.vue';
+import Heading from '@/components/shared/Heading.vue';
+import InputError from '@/components/shared/InputError.vue';
+import LinkCard from '@/components/links/LinkCard.vue';
+import TagSelect from '@/components/links/TagSelect.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

@@ -1,45 +1,23 @@
 <script setup lang="ts">
 import { ExternalLink, Globe } from 'lucide-vue-next';
-import { ref, watch } from 'vue';
 import { COLOR_BG } from '@/lib/colors';
 import type { Bucket, Tag } from '@/types/dashboard';
+import LinkFavicon from './LinkFavicon.vue';
 
-type Props = {
+defineProps<{
     title: string;
     url: string;
     description?: string | null;
     favicon_url?: string | null;
     bucket?: Bucket;
     tags?: Tag[];
-};
-
-const props = defineProps<Props>();
-
-const faviconError = ref(false);
-
-watch(
-    () => props.favicon_url,
-    () => {
-        faviconError.value = false;
-    },
-);
+}>();
 </script>
 
 <template>
     <div class="flex flex-col gap-2 rounded-lg border px-4 py-3">
         <div class="flex items-start gap-3">
-            <img
-                v-if="favicon_url && !faviconError"
-                :src="favicon_url"
-                class="mt-1 size-4 shrink-0 rounded-sm object-contain"
-                alt=""
-                @error="faviconError = true"
-            />
-            <Globe
-                v-else
-                aria-hidden="true"
-                class="mt-1 size-4 shrink-0 text-muted-foreground/40"
-            />
+            <LinkFavicon :src="favicon_url" />
             <div class="min-w-0 flex-1">
                 <a
                     :href="url"
