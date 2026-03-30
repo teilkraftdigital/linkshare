@@ -23,6 +23,7 @@ type Filters = {
     bucket_id?: string;
     tag_id?: string;
     search?: string;
+    trashed?: string;
 };
 
 type Props = {
@@ -31,6 +32,7 @@ type Props = {
     tags: Tag[];
     inboxBucketId: number;
     filters: Filters;
+    showTrashed: boolean;
 };
 
 const props = defineProps<Props>();
@@ -115,6 +117,7 @@ const editBucketId = ref<number>(0);
 const editTagIds = ref<number[]>([]);
 
 const deleteTarget = ref<Link | null>(null);
+const forceDeleteTarget = ref<Link | null>(null);
 
 // — Filters —
 const filterSearch = ref(props.filters.search ?? '');
@@ -180,6 +183,39 @@ function deleteLink() {
         preserveScroll: true,
         onSuccess: () => {
             deleteTarget.value = null;
+            toast('Link gelöscht', 'success');
+        },
+    });
+}
+
+function toggleTrashed() {
+    router.get(index(), props.showTrashed ? {} : { trashed: '1' }, {
+        preserveState: false,
+    });
+}
+
+function restoreLink(link: Link) {
+    router.post(
+        LinkController.restore.url(link),
+        {},
+        {
+            preserveScroll: true,
+            onSuccess: () => toast('Link wiederhergestellt', 'success'),
+        },
+    );
+}
+
+function confirmForceDelete(link: Link) {
+    forceDeleteTarget.value = link;
+}
+
+function forceDeleteLink() {
+    if (!forceDeleteTarget.value) return;
+    router.delete(LinkController.forceDelete.url(forceDeleteTarget.value), {
+        preserveScroll: true,
+        onSuccess: () => {
+            forceDeleteTarget.value = null;
+            toast('Link endgültig gelöscht', 'success');
         },
     });
 }
@@ -189,15 +225,37 @@ function deleteLink() {
     <Head title="Links" />
 
     <div class="flex flex-col gap-8 p-4">
-        <Heading title="Links" description="Manage your saved links" />
+        <div class="flex items-start justify-between gap-4">
+            <Heading
+                title="Links"
+                description="Verwalte deine gespeicherten Links"
+            />
+            <Button
+                variant="ghost"
+                size="sm"
+                :class="
+                    showTrashed ? 'text-destructive' : 'text-muted-foreground'
+                "
+                @click="toggleTrashed"
+            >
+                <Trash2 class="size-4" />
+                Papierkorb
+            </Button>
+        </div>
 
         <!-- Create form -->
         <Form
+            v-if="!showTrashed"
             v-bind="LinkController.store.form()"
             :options="{ preserveScroll: true }"
             class="flex flex-col gap-4 rounded-lg border p-4"
             v-slot="{ errors, processing, submit }"
-            @success="() => { resetCreateForm(); toast('Link added', 'success'); }"
+            @success="
+                () => {
+                    resetCreateForm();
+                    toast('Link gespeichert', 'success');
+                }
+            "
         >
             <div class="grid gap-4 sm:grid-cols-2">
                 <div class="flex flex-col gap-2">
@@ -236,42 +294,42 @@ function deleteLink() {
                         v-if="duplicateExists"
                         class="text-xs text-amber-600 dark:text-amber-400"
                     >
-                        This link already exists.
+                        Dieser Link ist bereits vorhanden.
                     </p>
                     <p
                         v-else-if="duplicateSimilar"
                         class="text-xs text-amber-600 dark:text-amber-400"
                     >
-                        A similar link already exists.
+                        Ein ähnlicher Link ist bereits vorhanden.
                     </p>
                     <p
                         v-else-if="metaFailed"
                         class="text-xs text-muted-foreground"
                     >
-                        Could not load metadata for this URL.
+                        Metadaten für diese URL konnten nicht geladen werden.
                     </p>
                     <InputError :message="errors.url" />
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <Label for="link-title">Title</Label>
+                    <Label for="link-title">Titel</Label>
                     <Input
                         id="link-title"
                         v-model="createTitle"
                         name="title"
-                        placeholder="Link title"
+                        placeholder="Link-Titel"
                         autocomplete="off"
                     />
                     <InputError :message="errors.title" />
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <Label for="link-description">Description</Label>
+                    <Label for="link-description">Beschreibung</Label>
                     <Textarea
                         id="link-description"
                         v-model="createDescription"
                         name="description"
-                        placeholder="Optional description"
+                        placeholder="Optionale Beschreibung"
                         class="resize-none"
                         rows="2"
                     />
@@ -279,17 +337,15 @@ function deleteLink() {
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <Label for="link-notes"
-                        >Notes
-                        <span class="text-muted-foreground"
-                            >(private)</span
-                        ></Label
-                    >
+                    <Label for="link-notes">
+                        Notizen
+                        <span class="text-muted-foreground"> (privat)</span>
+                    </Label>
                     <Textarea
                         id="link-notes"
                         v-model="createNotes"
                         name="notes"
-                        placeholder="Private notes"
+                        placeholder="Private Notizen"
                         class="resize-none"
                         rows="2"
                     />
@@ -359,22 +415,22 @@ function deleteLink() {
 
         <ConfirmModal
             :open="duplicateConfirmOpen"
-            title="Link already exists"
-            description="A link with this URL is already saved. Add it again anyway?"
-            confirm-label="Add anyway"
+            title="Link bereits vorhanden"
+            description="Ein Link mit dieser URL ist bereits gespeichert. Trotzdem hinzufügen?"
+            confirm-label="Trotzdem hinzufügen"
             @update:open="duplicateConfirmOpen = $event"
             @confirm="confirmDuplicateSubmit"
         />
 
-        <!-- Filters -->
-        <div class="flex flex-wrap gap-3">
+        <!-- Filters (hidden in trash view) -->
+        <div v-if="!showTrashed" class="flex flex-wrap gap-3">
             <div class="relative min-w-48 flex-1">
                 <Search
                     class="absolute top-2.5 left-2.5 size-4 text-muted-foreground"
                 />
                 <Input
                     v-model="filterSearch"
-                    placeholder="Search links…"
+                    placeholder="Suche in deinen Links…"
                     class="pl-8"
                 />
             </div>
@@ -382,9 +438,9 @@ function deleteLink() {
             <select
                 v-model="filterBucketId"
                 class="rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
-                aria-label="Filter by bucket"
+                aria-label="Filter nach Bucket"
             >
-                <option value="">All buckets</option>
+                <option value="">Alle Buckets</option>
                 <option
                     v-for="bucket in buckets"
                     :key="bucket.id"
@@ -398,9 +454,9 @@ function deleteLink() {
                 v-if="tags.length > 0"
                 v-model="filterTagId"
                 class="rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
-                aria-label="Filter by tag"
+                aria-label="Filter nach Tag"
             >
-                <option value="">All tags</option>
+                <option value="">Alle Tags</option>
                 <option
                     v-for="tag in tags"
                     :key="tag.id"
@@ -414,7 +470,7 @@ function deleteLink() {
                 v-if="hasActiveFilters()"
                 variant="ghost"
                 size="icon"
-                aria-label="Clear filters"
+                aria-label="Filter zurücksetzen"
                 @click="clearFilters"
             >
                 <X class="size-4" />
@@ -427,8 +483,8 @@ function deleteLink() {
         <!-- Link list -->
         <ul class="flex flex-col gap-2">
             <li v-for="link in links.data" :key="link.id">
-                <!-- Inline edit form -->
-                <template v-if="editingLink?.id === link.id">
+                <!-- Inline edit form (only in normal view) -->
+                <template v-if="!showTrashed && editingLink?.id === link.id">
                     <Form
                         v-bind="LinkController.update.form(link)"
                         :options="{ preserveScroll: true }"
@@ -441,8 +497,9 @@ function deleteLink() {
                                 <Label
                                     :for="`edit-url-${link.id}`"
                                     class="sr-only"
-                                    >URL</Label
                                 >
+                                    URL
+                                </Label>
                                 <Input
                                     :id="`edit-url-${link.id}`"
                                     name="url"
@@ -457,13 +514,14 @@ function deleteLink() {
                                 <Label
                                     :for="`edit-title-${link.id}`"
                                     class="sr-only"
-                                    >Title</Label
                                 >
+                                    Titel
+                                </Label>
                                 <Input
                                     :id="`edit-title-${link.id}`"
                                     name="title"
                                     :default-value="link.title"
-                                    placeholder="Link title"
+                                    placeholder="Link Titel"
                                 />
                                 <InputError :message="errors.title" />
                             </div>
@@ -472,13 +530,14 @@ function deleteLink() {
                                 <Label
                                     :for="`edit-desc-${link.id}`"
                                     class="sr-only"
-                                    >Description</Label
                                 >
+                                    Beschreibung
+                                </Label>
                                 <Textarea
                                     :id="`edit-desc-${link.id}`"
                                     name="description"
                                     :default-value="link.description ?? ''"
-                                    placeholder="Optional description"
+                                    placeholder="Optionale Beschreibung"
                                     class="resize-none"
                                     rows="2"
                                 />
@@ -489,13 +548,14 @@ function deleteLink() {
                                 <Label
                                     :for="`edit-notes-${link.id}`"
                                     class="sr-only"
-                                    >Notes</Label
                                 >
+                                    Notizen (privat)
+                                </Label>
                                 <Textarea
                                     :id="`edit-notes-${link.id}`"
                                     name="notes"
                                     :default-value="link.notes ?? ''"
-                                    placeholder="Private notes"
+                                    placeholder="Private Notizen"
                                     class="resize-none"
                                     rows="2"
                                 />
@@ -505,9 +565,9 @@ function deleteLink() {
 
                         <div class="flex flex-wrap gap-6">
                             <div class="flex flex-col gap-2">
-                                <Label :for="`edit-bucket-${link.id}`"
-                                    >Bucket</Label
-                                >
+                                <Label :for="`edit-bucket-${link.id}`">
+                                    Bucket
+                                </Label>
                                 <select
                                     :id="`edit-bucket-${link.id}`"
                                     name="bucket_id"
@@ -545,22 +605,26 @@ function deleteLink() {
                                 type="submit"
                                 size="sm"
                                 :disabled="processing"
-                                >Save</Button
                             >
+                                Speichern
+                            </Button>
                             <Button
                                 type="button"
                                 size="sm"
                                 variant="outline"
                                 @click="cancelEdit"
                             >
-                                Cancel
+                                Abbrechen
                             </Button>
                         </div>
                     </Form>
                 </template>
 
                 <template v-else>
-                    <div class="group relative">
+                    <div
+                        class="group relative"
+                        :class="showTrashed ? 'opacity-60' : ''"
+                    >
                         <LinkCard
                             :title="link.title"
                             :url="link.url"
@@ -572,24 +636,49 @@ function deleteLink() {
                         <div
                             class="absolute top-3 right-3 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100"
                         >
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                class="size-7"
-                                :aria-label="`Edit ${link.title}`"
-                                @click="startEdit(link)"
-                            >
-                                <Pencil class="size-3.5" />
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                class="size-7"
-                                :aria-label="`Delete ${link.title}`"
-                                @click="confirmDelete(link)"
-                            >
-                                <Trash2 class="size-3.5 text-destructive" />
-                            </Button>
+                            <!-- Normal actions -->
+                            <template v-if="!showTrashed">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    class="size-7"
+                                    :aria-label="`Edit ${link.title}`"
+                                    @click="startEdit(link)"
+                                >
+                                    <Pencil class="size-3.5" />
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    class="size-7"
+                                    :aria-label="`Delete ${link.title}`"
+                                    @click="confirmDelete(link)"
+                                >
+                                    <Trash2 class="size-3.5 text-destructive" />
+                                </Button>
+                            </template>
+
+                            <!-- Trash actions -->
+                            <template v-else>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    class="size-7"
+                                    :aria-label="`Restore ${link.title}`"
+                                    @click="restoreLink(link)"
+                                >
+                                    <RotateCcw class="size-3.5" />
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    class="size-7"
+                                    :aria-label="`Permanently delete ${link.title}`"
+                                    @click="confirmForceDelete(link)"
+                                >
+                                    <Trash2 class="size-3.5 text-destructive" />
+                                </Button>
+                            </template>
                         </div>
                     </div>
                 </template>
@@ -598,9 +687,11 @@ function deleteLink() {
 
         <p v-if="links.data.length === 0" class="text-sm text-muted-foreground">
             {{
-                hasActiveFilters()
-                    ? 'No links match your filters.'
-                    : 'No links yet. Add your first link above.'
+                showTrashed
+                    ? 'Keine gelöschten Links.'
+                    : hasActiveFilters()
+                      ? 'Keine Links entsprechen deinen Filtern.'
+                      : 'Noch keine Links. Füge deinen ersten Link oben hinzu.'
             }}
         </p>
 
@@ -610,14 +701,27 @@ function deleteLink() {
 
     <ConfirmModal
         :open="deleteTarget !== null"
-        title="Delete link?"
-        :description="`Delete '${deleteTarget?.title}'? This action cannot be undone.`"
-        confirm-label="Delete"
+        title="Link löschen?"
+        :description="`'${deleteTarget?.title}' wird gelöscht. Diese Aktion kann rückgängig gemacht werden.`"
+        confirm-label="Löschen"
         @update:open="
             (val) => {
                 if (!val) deleteTarget = null;
             }
         "
         @confirm="deleteLink"
+    />
+
+    <ConfirmModal
+        :open="forceDeleteTarget !== null"
+        title="Endgültig löschen?"
+        :description="`'${forceDeleteTarget?.title}' wird permanent gelöscht und kann nicht wiederhergestellt werden.`"
+        confirm-label="Endgültig löschen"
+        @update:open="
+            (val) => {
+                if (!val) forceDeleteTarget = null;
+            }
+        "
+        @confirm="forceDeleteLink"
     />
 </template>

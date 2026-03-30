@@ -4,6 +4,7 @@ export type Bucket = {
     color: string;
     is_inbox: boolean;
     links_count?: number;
+    deleted_at?: string | null;
 };
 
 export type Tag = {
@@ -14,6 +15,7 @@ export type Tag = {
     slug?: string;
     description?: string | null;
     links_count?: number;
+    deleted_at?: string | null;
 };
 
 export type Link = {
@@ -26,4 +28,5 @@ export type Link = {
     bucket: Bucket;
     tags: Tag[];
     favicon_url: string | null;
+    deleted_at?: string | null;
 };

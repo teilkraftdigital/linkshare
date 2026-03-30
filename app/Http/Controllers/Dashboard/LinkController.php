@@ -26,7 +26,7 @@ class LinkController extends Controller
 
     public function index(Request $request): Response
     {
-        $filters = $request->only(['bucket_id', 'tag_id', 'search']);
+        $filters = $request->only(['bucket_id', 'tag_id', 'search', 'trashed']);
 
         $links = $this->linkQueryBuilder->paginate($filters);
         $links->through(fn (Link $link) => array_merge($link->toArray(), [
@@ -39,6 +39,7 @@ class LinkController extends Controller
             'tags' => Tag::orderBy('name')->get(),
             'inboxBucketId' => $this->inboxBucketResolver->resolve()->id,
             'filters' => $filters,
+            'showTrashed' => $request->boolean('trashed'),
         ]);
     }
 
@@ -83,6 +84,20 @@ class LinkController extends Controller
     public function destroy(Link $link): RedirectResponse
     {
         $link->delete();
+
+        return back();
+    }
+
+    public function restore(Link $link): RedirectResponse
+    {
+        $link->restore();
+
+        return back();
+    }
+
+    public function forceDelete(Link $link): RedirectResponse
+    {
+        $link->forceDelete();
 
         return back();
     }

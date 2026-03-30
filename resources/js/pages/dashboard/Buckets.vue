@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Form, Head, router } from '@inertiajs/vue3';
-import { Link as LinkIcon, Pencil, Trash2 } from 'lucide-vue-next';
+import { Link as LinkIcon, Pencil, RotateCcw, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import BucketController from '@/actions/App/Http/Controllers/Dashboard/BucketController';
 import { useToast } from '@/composables/useToast';
@@ -17,9 +17,10 @@ import type { Bucket } from '@/types/dashboard';
 
 type Props = {
     buckets: Bucket[];
+    showTrashed: boolean;
 };
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 defineOptions({
     layout: {
@@ -37,6 +38,13 @@ const createColor = ref<string>('gray');
 const editingBucket = ref<Bucket | null>(null);
 const editColor = ref<string>('gray');
 const deleteTarget = ref<Bucket | null>(null);
+const forceDeleteTarget = ref<Bucket | null>(null);
+
+function toggleTrashed() {
+    router.get(index(), props.showTrashed ? {} : { trashed: '1' }, {
+        preserveState: false,
+    });
+}
 
 function startEdit(bucket: Bucket) {
     editingBucket.value = bucket;
@@ -59,6 +67,35 @@ function deleteBucket() {
         preserveScroll: true,
         onSuccess: () => {
             deleteTarget.value = null;
+            toast('Bucket gelöscht', 'success');
+        },
+    });
+}
+
+function restoreBucket(bucket: Bucket) {
+    router.post(
+        BucketController.restore.url(bucket),
+        {},
+        {
+            preserveScroll: true,
+            onSuccess: () => toast('Bucket wiederhergestellt', 'success'),
+        },
+    );
+}
+
+function confirmForceDelete(bucket: Bucket) {
+    forceDeleteTarget.value = bucket;
+}
+
+function forceDeleteBucket() {
+    if (!forceDeleteTarget.value) {
+        return;
+    }
+    router.delete(BucketController.forceDelete.url(forceDeleteTarget.value), {
+        preserveScroll: true,
+        onSuccess: () => {
+            forceDeleteTarget.value = null;
+            toast('Bucket endgültig gelöscht', 'success');
         },
     });
 }
@@ -68,13 +105,27 @@ function deleteBucket() {
     <Head title="Buckets" />
 
     <div class="flex flex-col gap-8 p-4">
-        <Heading
-            title="Buckets"
-            description="Organise your links into buckets"
-        />
+        <div class="flex items-start justify-between gap-4">
+            <Heading
+                title="Buckets"
+                description="Organisiere deine Links in Buckets, um sie besser zu verwalten."
+            />
+            <Button
+                variant="ghost"
+                size="sm"
+                :class="
+                    showTrashed ? 'text-destructive' : 'text-muted-foreground'
+                "
+                @click="toggleTrashed"
+            >
+                <Trash2 class="size-4" />
+                Papierkorb
+            </Button>
+        </div>
 
-        <!-- Create form -->
+        <!-- Create form (hidden in trash view) -->
         <Form
+            v-if="!showTrashed"
             v-bind="BucketController.store.form()"
             :options="{ preserveScroll: true }"
             class="flex flex-col gap-4 rounded-lg border p-4 sm:flex-row sm:items-start"
@@ -87,7 +138,7 @@ function deleteBucket() {
             "
         >
             <div class="flex flex-1 flex-col gap-2">
-                <Label for="bucket-name">New bucket</Label>
+                <Label for="bucket-name">Neuer Bucket</Label>
                 <Input
                     id="bucket-name"
                     name="name"
@@ -105,7 +156,7 @@ function deleteBucket() {
             </div>
 
             <Button type="submit" :disabled="processing" class="self-end">
-                Add
+                Hinzufügen
             </Button>
         </Form>
 
@@ -115,6 +166,7 @@ function deleteBucket() {
                 v-for="bucket in buckets"
                 :key="bucket.id"
                 class="flex items-center gap-3 rounded-lg border px-4 py-3"
+                :class="showTrashed ? 'opacity-60' : ''"
             >
                 <!-- Color dot -->
                 <span
@@ -122,8 +174,10 @@ function deleteBucket() {
                     :class="COLOR_BG[bucket.color] ?? 'bg-gray-400'"
                 />
 
-                <!-- Inline edit form -->
-                <template v-if="editingBucket?.id === bucket.id">
+                <!-- Inline edit form (only in normal view) -->
+                <template
+                    v-if="!showTrashed && editingBucket?.id === bucket.id"
+                >
                     <Form
                         v-bind="BucketController.update.form(bucket)"
                         :options="{ preserveScroll: true }"
@@ -154,7 +208,7 @@ function deleteBucket() {
                                 :for="`bucket-color-${bucket.id}`"
                                 class="sr-only"
                             >
-                                Color
+                                Farbe
                             </Label>
                             <input
                                 type="hidden"
@@ -171,22 +225,27 @@ function deleteBucket() {
                                 type="submit"
                                 size="sm"
                                 :disabled="processing"
-                                >Save</Button
                             >
+                                Speichern
+                            </Button>
                             <Button
                                 type="button"
                                 size="sm"
                                 variant="outline"
                                 @click="cancelEdit"
                             >
-                                Cancel
+                                Abbrechen
                             </Button>
                         </div>
                     </Form>
                 </template>
 
                 <template v-else>
-                    <span class="flex-1 font-medium">{{ bucket.name }}</span>
+                    <span
+                        class="flex-1 font-medium"
+                        :class="showTrashed ? 'line-through' : ''"
+                        >{{ bucket.name }}</span
+                    >
 
                     <span
                         class="flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground"
@@ -197,45 +256,90 @@ function deleteBucket() {
                     </span>
 
                     <span
-                        v-if="bucket.is_inbox"
+                        v-if="!showTrashed && bucket.is_inbox"
                         class="text-xs text-muted-foreground"
                     >
                         Inbox
                     </span>
 
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        :aria-label="`Edit ${bucket.name}`"
-                        @click="startEdit(bucket)"
-                    >
-                        <Pencil class="size-4" />
-                    </Button>
+                    <!-- Normal actions -->
+                    <template v-if="!showTrashed">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            :aria-label="`Edit ${bucket.name}`"
+                            @click="startEdit(bucket)"
+                        >
+                            <Pencil class="size-4" />
+                        </Button>
 
-                    <Button
-                        v-if="!bucket.is_inbox"
-                        variant="ghost"
-                        size="icon"
-                        :aria-label="`Delete ${bucket.name}`"
-                        @click="confirmDelete(bucket)"
-                    >
-                        <Trash2 class="size-4 text-destructive" />
-                    </Button>
+                        <Button
+                            v-if="!bucket.is_inbox"
+                            variant="ghost"
+                            size="icon"
+                            :aria-label="`Delete ${bucket.name}`"
+                            @click="confirmDelete(bucket)"
+                        >
+                            <Trash2 class="size-4 text-destructive" />
+                        </Button>
+                    </template>
+
+                    <!-- Trash actions -->
+                    <template v-else>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            :aria-label="`Restore ${bucket.name}`"
+                            @click="restoreBucket(bucket)"
+                        >
+                            <RotateCcw class="size-4" />
+                        </Button>
+
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            :aria-label="`Permanently delete ${bucket.name}`"
+                            @click="confirmForceDelete(bucket)"
+                        >
+                            <Trash2 class="size-4 text-destructive" />
+                        </Button>
+                    </template>
                 </template>
             </li>
         </ul>
+
+        <p v-if="buckets.length === 0" class="text-sm text-muted-foreground">
+            {{
+                showTrashed
+                    ? 'Keine gelöschten Buckets.'
+                    : 'Keine Buckets vorhanden.'
+            }}
+        </p>
     </div>
 
     <ConfirmModal
         :open="deleteTarget !== null"
-        title="Delete bucket?"
-        :description="`Delete '${deleteTarget?.name}'? This action cannot be undone.`"
-        confirm-label="Delete"
+        title="Bucket löschen?"
+        :description="`'${deleteTarget?.name}' wird gelöscht. Diese Aktion kann rückgängig gemacht werden.`"
+        confirm-label="Löschen"
         @update:open="
             (val) => {
                 if (!val) deleteTarget = null;
             }
         "
         @confirm="deleteBucket"
+    />
+
+    <ConfirmModal
+        :open="forceDeleteTarget !== null"
+        title="Endgültig löschen?"
+        :description="`'${forceDeleteTarget?.name}' wird permanent gelöscht und kann nicht wiederhergestellt werden.`"
+        confirm-label="Endgültig löschen"
+        @update:open="
+            (val) => {
+                if (!val) forceDeleteTarget = null;
+            }
+        "
+        @confirm="forceDeleteBucket"
     />
 </template>

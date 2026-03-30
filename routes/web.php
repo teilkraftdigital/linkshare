@@ -24,11 +24,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('dashboard/buckets', [BucketController::class, 'store'])->name('dashboard.buckets.store');
     Route::patch('dashboard/buckets/{bucket}', [BucketController::class, 'update'])->name('dashboard.buckets.update');
     Route::delete('dashboard/buckets/{bucket}', [BucketController::class, 'destroy'])->name('dashboard.buckets.destroy');
+    Route::post('dashboard/buckets/{bucket}/restore', [BucketController::class, 'restore'])->withTrashed()->name('dashboard.buckets.restore');
+    Route::delete('dashboard/buckets/{bucket}/force', [BucketController::class, 'forceDelete'])->withTrashed()->name('dashboard.buckets.force-delete');
 
     Route::get('dashboard/tags', [DashboardTagController::class, 'index'])->name('dashboard.tags.index');
     Route::post('dashboard/tags', [DashboardTagController::class, 'store'])->name('dashboard.tags.store');
     Route::patch('dashboard/tags/{tag}', [DashboardTagController::class, 'update'])->name('dashboard.tags.update');
     Route::delete('dashboard/tags/{tag}', [DashboardTagController::class, 'destroy'])->name('dashboard.tags.destroy');
+    Route::post('dashboard/tags/{tag}/restore', [DashboardTagController::class, 'restore'])->withTrashed()->name('dashboard.tags.restore');
+    Route::delete('dashboard/tags/{tag}/force', [DashboardTagController::class, 'forceDelete'])->withTrashed()->name('dashboard.tags.force-delete');
 
     Route::get('dashboard/quick-add', QuickAddController::class)->name('dashboard.quick-add');
     Route::get('dashboard/import', [ImportController::class, 'create'])->name('dashboard.import.create');
@@ -41,6 +45,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('dashboard/links', [LinkController::class, 'store'])->name('dashboard.links.store');
     Route::patch('dashboard/links/{link}', [LinkController::class, 'update'])->name('dashboard.links.update');
     Route::delete('dashboard/links/{link}', [LinkController::class, 'destroy'])->name('dashboard.links.destroy');
+    Route::post('dashboard/links/{link}/restore', [LinkController::class, 'restore'])->withTrashed()->name('dashboard.links.restore');
+    Route::delete('dashboard/links/{link}/force', [LinkController::class, 'forceDelete'])->withTrashed()->name('dashboard.links.force-delete');
 });
 
 Route::get('tags/{tag:slug}', [TagController::class, 'show'])->name('tags.show');

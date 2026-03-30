@@ -8,6 +8,7 @@ use App\Http\Requests\Dashboard\UpdateTagRequest;
 use App\Models\Tag;
 use App\Services\SlugGenerator;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -15,10 +16,17 @@ class TagController extends Controller
 {
     public function __construct(private readonly SlugGenerator $slugGenerator) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $showTrashed = $request->boolean('trashed');
+
+        $tags = $showTrashed
+            ? Tag::onlyTrashed()->withCount('links')->orderBy('name')->get()
+            : Tag::withCount('links')->orderBy('name')->get();
+
         return Inertia::render('dashboard/Tags', [
-            'tags' => Tag::withCount('links')->orderBy('name')->get(),
+            'tags' => $tags,
+            'showTrashed' => $showTrashed,
         ]);
     }
 
@@ -44,10 +52,22 @@ class TagController extends Controller
 
     public function destroy(Tag $tag): RedirectResponse
     {
-        // When a Link model exists, detach tag from all links:
-        // $tag->links()->detach();
-
         $tag->delete();
+
+        return back();
+    }
+
+    public function restore(Tag $tag): RedirectResponse
+    {
+        $tag->restore();
+
+        return back();
+    }
+
+    public function forceDelete(Tag $tag): RedirectResponse
+    {
+        $tag->links()->detach();
+        $tag->forceDelete();
 
         return back();
     }

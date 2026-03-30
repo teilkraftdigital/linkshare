@@ -10,17 +10,21 @@ class LinkQueryBuilder
     public const PER_PAGE = 25;
 
     /**
-     * @param  array{bucket_id?: int|string|null, tag_id?: int|string|null, search?: string|null}  $filters
+     * @param  array{bucket_id?: int|string|null, tag_id?: int|string|null, search?: string|null, trashed?: mixed}  $filters
      */
     public function paginate(array $filters): LengthAwarePaginator
     {
-        $query = Link::with(['bucket', 'tags', 'media'])->orderByDesc('id');
+        $trashed = ! empty($filters['trashed']);
 
-        if (! empty($filters['bucket_id'])) {
+        $query = $trashed
+            ? Link::onlyTrashed()->with(['bucket', 'tags', 'media'])->orderByDesc('deleted_at')
+            : Link::with(['bucket', 'tags', 'media'])->orderByDesc('id');
+
+        if (! $trashed && ! empty($filters['bucket_id'])) {
             $query->where('bucket_id', $filters['bucket_id']);
         }
 
-        if (! empty($filters['tag_id'])) {
+        if (! $trashed && ! empty($filters['tag_id'])) {
             $query->whereHas('tags', fn ($q) => $q->where('tags.id', $filters['tag_id']));
         }
 
