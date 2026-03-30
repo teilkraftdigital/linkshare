@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { Form, Head, usePage } from '@inertiajs/vue3';
-import { BookmarkPlus, Copy, Upload } from 'lucide-vue-next';
+import { BookmarkPlus, Copy, Download, Upload } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 import {
     create as importRoute,
     store as storeRoute,
 } from '@/routes/dashboard/import';
+import ExportController from '@/actions/App/Http/Controllers/Dashboard/ExportController';
 import QuickAddController from '@/actions/App/Http/Controllers/Dashboard/QuickAddController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
@@ -52,16 +53,73 @@ function copyBookmarklet() {
         setTimeout(() => (copied.value = false), 2000);
     });
 }
+
+const exporting = ref(false);
+
+async function downloadExport() {
+    exporting.value = true;
+    try {
+        const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? '';
+        const response = await fetch(ExportController.url(), {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Inertia': 'false',
+            },
+        });
+
+        if (!response.ok) {
+            return;
+        }
+
+        const blob = await response.blob();
+        const disposition = response.headers.get('Content-Disposition') ?? '';
+        const match = disposition.match(/filename="([^"]+)"/);
+        const filename = match ? match[1] : `linkshare-export-${new Date().toISOString().slice(0, 10)}.json`;
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+    } finally {
+        exporting.value = false;
+    }
+}
 </script>
 
 <template>
-    <Head title="Import" />
+    <Head title="Import & Export" />
 
     <div class="flex flex-col gap-8 p-4">
         <Heading
-            title="Import"
-            description="Importiere Browser-Bookmarks im Netscape HTML Format (Chrome, Firefox, Safari)."
+            title="Import & Export"
+            description="Exportiere oder importiere deine Links, Buckets und Tags."
         />
+
+        <!-- Export section -->
+        <div class="space-y-3">
+            <div>
+                <h2 class="text-sm font-semibold">Exportieren</h2>
+                <p class="mt-0.5 text-sm text-muted-foreground">
+                    Alle aktiven Links, Buckets und Tags als JSON-Datei herunterladen. Einträge im Papierkorb sind nicht enthalten.
+                </p>
+            </div>
+            <Button variant="outline" :disabled="exporting" @click="downloadExport">
+                <Download class="mr-2 size-4" />
+                {{ exporting ? 'Exportiere…' : 'Exportieren' }}
+            </Button>
+        </div>
+
+        <hr class="border-border" />
+
+        <div>
+            <h2 class="text-sm font-semibold">Netscape HTML importieren</h2>
+            <p class="mt-0.5 text-sm text-muted-foreground">
+                Browser-Bookmarks im Netscape HTML Format (Chrome, Firefox, Safari).
+            </p>
+        </div>
 
         <div
             v-if="importResult"
