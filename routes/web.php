@@ -45,6 +45,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('dashboard/links', [LinkController::class, 'store'])->name('dashboard.links.store');
     Route::patch('dashboard/links/{link}', [LinkController::class, 'update'])->name('dashboard.links.update');
     Route::delete('dashboard/links/{link}', [LinkController::class, 'destroy'])->name('dashboard.links.destroy');
+    Route::post('dashboard/links/{link}/refetch-meta', [LinkController::class, 'refetchMeta'])->name('dashboard.links.refetch-meta');
     Route::post('dashboard/links/{link}/restore', [LinkController::class, 'restore'])->withTrashed()->name('dashboard.links.restore');
     Route::delete('dashboard/links/{link}/force', [LinkController::class, 'forceDelete'])->withTrashed()->name('dashboard.links.force-delete');
 });

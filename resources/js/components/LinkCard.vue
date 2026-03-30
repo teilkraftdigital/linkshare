@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ExternalLink, Globe } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { COLOR_BG } from '@/lib/colors';
 import type { Bucket, Tag } from '@/types/dashboard';
 
@@ -13,9 +13,16 @@ type Props = {
     tags?: Tag[];
 };
 
+const props = defineProps<Props>();
+
 const faviconError = ref(false);
 
-defineProps<Props>();
+watch(
+    () => props.favicon_url,
+    () => {
+        faviconError.value = false;
+    },
+);
 </script>
 
 <template>

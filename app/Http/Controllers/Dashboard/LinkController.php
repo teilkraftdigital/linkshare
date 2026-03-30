@@ -12,6 +12,7 @@ use App\Models\Link;
 use App\Models\Tag;
 use App\Services\InboxBucketResolver;
 use App\Services\LinkQueryBuilder;
+use App\Services\MetaFetchService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -22,6 +23,7 @@ class LinkController extends Controller
     public function __construct(
         private readonly InboxBucketResolver $inboxBucketResolver,
         private readonly LinkQueryBuilder $linkQueryBuilder,
+        private readonly MetaFetchService $metaFetchService,
     ) {}
 
     public function index(Request $request): Response
@@ -86,6 +88,37 @@ class LinkController extends Controller
         $link->delete();
 
         return back();
+    }
+
+    public function refetchMeta(Link $link): RedirectResponse
+    {
+        $meta = $this->metaFetchService->fetch($link->url);
+
+        $updates = [];
+
+        if ($meta['title']) {
+            $updates['title'] = $meta['title'];
+        }
+
+        if ($meta['description']) {
+            $updates['description'] = $meta['description'];
+        }
+
+        if (! empty($updates)) {
+            $link->update($updates);
+        }
+
+        if ($meta['favicon_url']) {
+            $link->clearMediaCollection('favicon');
+            FetchFavicon::dispatchSync($link, $meta['favicon_url']);
+        }
+
+        $metaFound = $meta['title'] || $meta['description'] || $meta['favicon_url'];
+
+        return back()->with(
+            $metaFound ? 'refetch_success' : 'refetch_failed',
+            true,
+        );
     }
 
     public function restore(Link $link): RedirectResponse

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Form, Head, router } from '@inertiajs/vue3';
-import { Loader2, Pencil, RotateCcw, Search, Trash2, X } from 'lucide-vue-next';
+import { Form, Head, router, usePage } from '@inertiajs/vue3';
+import { Loader2, Pencil, RefreshCw, RotateCcw, Search, Trash2, X } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
@@ -118,6 +118,34 @@ const editTagIds = ref<number[]>([]);
 
 const deleteTarget = ref<Link | null>(null);
 const forceDeleteTarget = ref<Link | null>(null);
+const refetchingLinkId = ref<number | null>(null);
+
+const page = usePage();
+
+watch(
+    () => page.props.flash,
+    (flash) => {
+        if ((flash as Record<string, unknown>)?.refetch_success) {
+            toast('Metadaten aktualisiert', 'success');
+        } else if ((flash as Record<string, unknown>)?.refetch_failed) {
+            toast('Metadaten konnten nicht abgerufen werden', 'error');
+        }
+    },
+);
+
+function refetchMeta(link: Link) {
+    refetchingLinkId.value = link.id;
+    router.post(
+        LinkController.refetchMeta.url(link),
+        {},
+        {
+            preserveScroll: true,
+            onFinish: () => {
+                refetchingLinkId.value = null;
+            },
+        },
+    );
+}
 
 // — Filters —
 const filterSearch = ref(props.filters.search ?? '');
@@ -638,6 +666,19 @@ function forceDeleteLink() {
                         >
                             <!-- Normal actions -->
                             <template v-if="!showTrashed">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    class="size-7"
+                                    :aria-label="`Metadaten neu abrufen für ${link.title}`"
+                                    :disabled="refetchingLinkId === link.id"
+                                    @click="refetchMeta(link)"
+                                >
+                                    <RefreshCw
+                                        class="size-3.5"
+                                        :class="refetchingLinkId === link.id ? 'animate-spin' : ''"
+                                    />
+                                </Button>
                                 <Button
                                     variant="ghost"
                                     size="icon"
