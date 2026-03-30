@@ -6,17 +6,18 @@ import {
     create as importRoute,
     store as storeRoute,
 } from '@/routes/dashboard/import';
-import ExportController from '@/actions/App/Http/Controllers/Dashboard/ExportController';
 import QuickAddController from '@/actions/App/Http/Controllers/Dashboard/QuickAddController';
+import ExportModal from '@/components/ExportModal.vue';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import type { Bucket } from '@/types/dashboard';
+import type { Bucket, Tag } from '@/types/dashboard';
 
 const props = defineProps<{
     buckets: Bucket[];
+    tags: Tag[];
     inboxBucketId: number;
 }>();
 
@@ -24,7 +25,7 @@ defineOptions({
     layout: {
         breadcrumbs: [
             {
-                title: 'Import',
+                title: 'Import & Export',
                 href: importRoute(),
             },
         ],
@@ -34,6 +35,7 @@ defineOptions({
 const page = usePage();
 const importResult = computed(() => page.props.flash?.import_result ?? null);
 const selectedBucketId = ref<number>(props.inboxBucketId);
+const exportModalOpen = ref(false);
 
 const quickAddUrl = computed(() => {
     const base = page.props.appUrl.replace(/\/$/, '');
@@ -53,44 +55,16 @@ function copyBookmarklet() {
         setTimeout(() => (copied.value = false), 2000);
     });
 }
-
-const exporting = ref(false);
-
-async function downloadExport() {
-    exporting.value = true;
-    try {
-        const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? '';
-        const response = await fetch(ExportController.url(), {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'X-Inertia': 'false',
-            },
-        });
-
-        if (!response.ok) {
-            return;
-        }
-
-        const blob = await response.blob();
-        const disposition = response.headers.get('Content-Disposition') ?? '';
-        const match = disposition.match(/filename="([^"]+)"/);
-        const filename = match ? match[1] : `linkshare-export-${new Date().toISOString().slice(0, 10)}.json`;
-
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.click();
-        URL.revokeObjectURL(url);
-    } finally {
-        exporting.value = false;
-    }
-}
 </script>
 
 <template>
     <Head title="Import & Export" />
+
+    <ExportModal
+        v-model:open="exportModalOpen"
+        :buckets="buckets"
+        :tags="tags"
+    />
 
     <div class="flex flex-col gap-8 p-4">
         <Heading
@@ -106,9 +80,9 @@ async function downloadExport() {
                     Alle aktiven Links, Buckets und Tags als JSON-Datei herunterladen. Einträge im Papierkorb sind nicht enthalten.
                 </p>
             </div>
-            <Button variant="outline" :disabled="exporting" @click="downloadExport">
+            <Button variant="outline" @click="exportModalOpen = true">
                 <Download class="mr-2 size-4" />
-                {{ exporting ? 'Exportiere…' : 'Exportieren' }}
+                Exportieren
             </Button>
         </div>
 
@@ -172,6 +146,7 @@ async function downloadExport() {
                 </Button>
             </div>
         </Form>
+
         <div class="space-y-3">
             <div>
                 <h2 class="text-sm font-semibold">Quick-Add Bookmarklet</h2>
