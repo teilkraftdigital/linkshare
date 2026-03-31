@@ -54,3 +54,21 @@ export type Filters = {
     search?: string;
     trashed?: string;
 };
+
+export type SortKey = 'updated_at' | 'name' | 'links_count';
+
+export const TAG_SEARCH_THRESHOLD = 8;
+
+export type DashboardTag = Tag & {
+    links_count: number;
+    updated_at: string;
+};
+
+export type DashboardLink = {
+    id: number;
+    url: string;
+    title: string;
+    favicon_url: string | null;
+    bucket: Bucket | null;
+    tags: Tag[];
+};
