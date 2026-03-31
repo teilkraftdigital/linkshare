@@ -62,16 +62,15 @@ async function copyUrl(slug: string) {
         :class="showTrashed ? 'opacity-60' : ''"
     >
         <!-- Inline edit form (only in normal view) -->
-        <template v-if="!showTrashed && editingTag?.id === tag.id">
-            <TagInlineEditForm
-                :tag="editingTag"
-                v-model:color="tag.color"
-                v-model:is_public="tag.is_public"
-                v-model:name="tag.name"
-                v-model:description="tag.description"
-                @cancel="cancelEdit"
-            />
-        </template>
+        <TagInlineEditForm
+            v-if="!showTrashed && editingTag?.id === tag.id"
+            :tag="editingTag"
+            v-model:color="tag.color"
+            v-model:is_public="tag.is_public"
+            v-model:name="tag.name"
+            v-model:description="tag.description"
+            @cancel="cancelEdit"
+        />
 
         <template v-else>
             <div class="flex items-center gap-3">
@@ -132,7 +131,7 @@ async function copyUrl(slug: string) {
                 <span
                     class="rounded bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400"
                 >
-                    public
+                    Öffentlich
                 </span>
                 <code class="flex-1 truncate text-xs text-muted-foreground">
                     {{

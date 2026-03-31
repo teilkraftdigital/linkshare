@@ -13,7 +13,7 @@ export type Tag = {
     color: string;
     is_public: boolean;
     slug?: string;
-    description?: string | null;
+    description?: string;
     links_count?: number;
     deleted_at?: string | null;
 };
@@ -22,8 +22,8 @@ export type Link = {
     id: number;
     url: string;
     title: string;
-    description: string | null;
-    notes: string | null;
+    description?: string;
+    notes?: string;
     bucket_id: number;
     bucket: Bucket;
     tags: Tag[];
@@ -46,4 +46,11 @@ export type Paginator<T> = {
     from: number | null;
     to: number | null;
     links: PaginatorLink[];
+};
+
+export type Filters = {
+    bucket_id?: string;
+    tag_id?: string;
+    search?: string;
+    trashed?: string;
 };
