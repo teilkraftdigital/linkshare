@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, setLayoutProps } from '@inertiajs/vue3';
+import TagExportController from '@/actions/App/Http/Controllers/TagExportController';
 import LinkCard from '@/components/links/LinkCard.vue';
 import type { Link, Tag } from '@/types/dashboard';
 
@@ -11,6 +12,7 @@ const props = defineProps<{
 setLayoutProps({
     title: props.tag.name,
     description: props.tag.description ?? '',
+    exportUrl: TagExportController.url(props.tag.slug ?? ''),
 });
 </script>
 
@@ -28,6 +30,10 @@ setLayoutProps({
     </Head>
 
     <main class="mx-auto max-w-2xl px-4 py-12">
+        <!-- <div class="mb-6 flex items-center justify-between gap-4">
+            <h2 class="text-2xl font-bold">{{ tag.name }}</h2>
+        </div> -->
+
         <ul v-if="links.length > 0" class="flex flex-col gap-2">
             <li v-for="link in links" :key="link.id">
                 <LinkCard
