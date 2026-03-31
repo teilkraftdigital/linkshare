@@ -9,6 +9,7 @@ use App\Http\Controllers\Dashboard\LinkController;
 use App\Http\Controllers\Dashboard\MetaFetchController;
 use App\Http\Controllers\Dashboard\QuickAddController;
 use App\Http\Controllers\Dashboard\TagController as DashboardTagController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TagExportController;
 use Illuminate\Support\Facades\Route;
@@ -19,9 +20,8 @@ Route::get('/', function () {
         : redirect()->route('login');
 })->name('home');
 
-// Placeholder until Issue #6 builds the full admin area
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', fn () => inertia('Dashboard'))->name('dashboard.index');
+    Route::get('dashboard', DashboardController::class)->name('dashboard.index');
 
     Route::get('dashboard/buckets', [BucketController::class, 'index'])->name('dashboard.buckets.index');
     Route::post('dashboard/buckets', [BucketController::class, 'store'])->name('dashboard.buckets.store');

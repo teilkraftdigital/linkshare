@@ -57,6 +57,7 @@ class LinkController extends Controller
 
         $link = Link::create($validated);
         $link->tags()->sync($tagIds);
+        $this->touchSyncedTags($tagIds);
 
         // Always enrich title/description in background
         FetchLinkMeta::dispatch($link);
@@ -77,10 +78,20 @@ class LinkController extends Controller
         $tagIds = $validated['tag_ids'] ?? [];
         unset($validated['tag_ids']);
 
+        $previousTagIds = $link->tags()->pluck('id')->all();
         $link->update($validated);
         $link->tags()->sync($tagIds);
+        $this->touchSyncedTags(array_unique(array_merge($tagIds, $previousTagIds)));
 
         return back();
+    }
+
+    /** @param array<int> $tagIds */
+    private function touchSyncedTags(array $tagIds): void
+    {
+        if ($tagIds) {
+            Tag::whereIn('id', $tagIds)->each(fn (Tag $tag) => $tag->touch());
+        }
     }
 
     public function destroy(Link $link): RedirectResponse
