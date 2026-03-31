@@ -22,7 +22,7 @@ const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
             :title="color.name"
             class="size-6 cursor-pointer rounded-full ring-offset-2 transition-all focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             :class="[
-                color.bg,
+                color.color,
                 modelValue === color.name ? 'ring-2 ring-foreground' : '',
             ]"
         >

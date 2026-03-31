@@ -1,0 +1,242 @@
+<script setup lang="ts">
+import { Form } from '@inertiajs/vue3';
+import { RotateCcw, Loader2 } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
+import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
+import LinkSimilarMessage from '@/components/links/LinkSimilarMessage.vue';
+import TagSelect from '@/components/links/TagSelect.vue';
+import InputError from '@/components/shared/InputError.vue';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
+import { useMetaFetch } from '@/composables/useMetaFetch';
+import { useToast } from '@/composables/useToast';
+import type { Bucket, Tag } from '@/types/dashboard';
+
+const props = defineProps<{
+    buckets: Bucket[];
+    tags: Tag[];
+    inboxBucketId: number;
+}>();
+
+const { toast } = useToast();
+
+const createUrl = ref('');
+const createTitle = ref('');
+const createDescription = ref('');
+const createNotes = ref('');
+const createBucketId = ref<number>(props.inboxBucketId);
+const createTagIds = ref<number[]>([]);
+
+const isCreateFormDirty = computed(
+    () =>
+        createUrl.value !== '' ||
+        createTitle.value !== '' ||
+        createDescription.value !== '' ||
+        createNotes.value !== '' ||
+        createBucketId.value !== props.inboxBucketId ||
+        createTagIds.value.length > 0,
+);
+
+const {
+    exists: duplicateExists,
+    similar: duplicateSimilar,
+    check: checkDuplicate,
+    reset: resetDuplicate,
+} = useDuplicateCheck();
+
+const {
+    fetching: metaFetching,
+    failed: metaFailed,
+    faviconUrl: createFaviconUrl,
+    fetch: fetchMeta,
+    reset: resetMeta,
+} = useMetaFetch((meta) => {
+    if (meta.title && !createTitle.value) {
+createTitle.value = meta.title;
+}
+
+    if (meta.description && !createDescription.value) {
+createDescription.value = meta.description;
+}
+});
+
+function resetCreateForm() {
+    createUrl.value = '';
+    createTitle.value = '';
+    createDescription.value = '';
+    createNotes.value = '';
+    createBucketId.value = props.inboxBucketId;
+    createTagIds.value = [];
+    resetDuplicate();
+    resetMeta();
+}
+
+const events = defineEmits<{
+    created: [value: any];
+}>();
+
+const handleCreateSubmit = (value: any) => {
+    events('created', value);
+};
+</script>
+
+<template>
+    <Form
+        v-bind="LinkController.store.form()"
+        :options="{ preserveScroll: true }"
+        class="flex flex-col gap-4 rounded-lg border p-4"
+        v-slot="{ errors, processing, submit }"
+        @success="
+            () => {
+                resetCreateForm();
+                toast('Link gespeichert', 'success');
+            }
+        "
+    >
+        <div class="grid gap-4 sm:grid-cols-2">
+            <div class="flex flex-col gap-2">
+                <Label for="link-url">URL</Label>
+                <div class="relative">
+                    <img
+                        v-if="createFaviconUrl"
+                        :src="createFaviconUrl"
+                        class="absolute top-2.5 left-2.5 size-4 rounded-sm object-contain"
+                        alt=""
+                        @error="
+                            ($event.target as HTMLImageElement).style.display =
+                                'none'
+                        "
+                    />
+                    <Input
+                        id="link-url"
+                        v-model="createUrl"
+                        name="url"
+                        type="url"
+                        placeholder="https://example.com"
+                        autocomplete="off"
+                        :class="createFaviconUrl ? 'pl-8' : ''"
+                        @input="
+                            fetchMeta(createUrl);
+                            checkDuplicate(createUrl);
+                        "
+                    />
+                    <Loader2
+                        v-if="metaFetching"
+                        class="absolute top-2.5 right-2.5 size-4 animate-spin text-muted-foreground"
+                    />
+                </div>
+                <LinkSimilarMessage
+                    :similar="duplicateSimilar"
+                    :existis="duplicateExists"
+                />
+                <p v-if="metaFailed" class="text-xs text-muted-foreground">
+                    Metadaten für diese URL konnten nicht geladen werden.
+                </p>
+                <InputError :message="errors.url" />
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <Label for="link-title">Titel</Label>
+                <Input
+                    id="link-title"
+                    v-model="createTitle"
+                    name="title"
+                    placeholder="Link-Titel"
+                    autocomplete="off"
+                />
+                <InputError :message="errors.title" />
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <Label for="link-description">Beschreibung</Label>
+                <Textarea
+                    id="link-description"
+                    v-model="createDescription"
+                    name="description"
+                    placeholder="Optionale Beschreibung"
+                    class="resize-none"
+                    rows="2"
+                />
+                <InputError :message="errors.description" />
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <Label for="link-notes">
+                    Notizen
+                    <span class="text-muted-foreground"> (privat)</span>
+                </Label>
+                <Textarea
+                    id="link-notes"
+                    v-model="createNotes"
+                    name="notes"
+                    placeholder="Private Notizen"
+                    class="resize-none"
+                    rows="2"
+                />
+                <InputError :message="errors.notes" />
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-6">
+            <div class="flex flex-col gap-2">
+                <Label for="link-bucket">Bucket</Label>
+                <select
+                    id="link-bucket"
+                    name="bucket_id"
+                    :value="createBucketId"
+                    class="rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
+                    @change="
+                        createBucketId = Number(
+                            ($event.target as HTMLSelectElement).value,
+                        )
+                    "
+                >
+                    <option
+                        v-for="bucket in buckets"
+                        :key="bucket.id"
+                        :value="bucket.id"
+                    >
+                        {{ bucket.name }}
+                    </option>
+                </select>
+                <InputError :message="errors.bucket_id" />
+            </div>
+
+            <div v-if="tags.length > 0" class="flex flex-col gap-2">
+                <Label>Tags</Label>
+                <TagSelect :tags="tags" v-model="createTagIds" />
+                <InputError :message="errors['tag_ids']" />
+            </div>
+        </div>
+
+        <input
+            v-if="createFaviconUrl"
+            type="hidden"
+            name="favicon_url"
+            :value="createFaviconUrl"
+        />
+
+        <div class="flex gap-2 self-start">
+            <Button
+                type="button"
+                :disabled="processing"
+                @click="handleCreateSubmit(submit)"
+            >
+                Speichern
+            </Button>
+            <Button
+                v-if="isCreateFormDirty"
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label="Clear form"
+                @click="resetCreateForm"
+            >
+                <RotateCcw class="size-4" />
+            </Button>
+        </div>
+    </Form>
+</template>

@@ -3,15 +3,16 @@ import { Form, Head } from '@inertiajs/vue3';
 import { CheckCircle2, Loader2, RotateCcw } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
-import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
-import { useMetaFetch } from '@/composables/useMetaFetch';
-import ConfirmModal from '@/components/ConfirmModal.vue';
-import InputError from '@/components/InputError.vue';
-import TagSelect from '@/components/TagSelect.vue';
+import LinkSimilarMessage from '@/components/links/LinkSimilarMessage.vue';
+import TagSelect from '@/components/links/TagSelect.vue';
+import ConfirmModal from '@/components/shared/ConfirmModal.vue';
+import InputError from '@/components/shared/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
+import { useMetaFetch } from '@/composables/useMetaFetch';
 import type { Bucket, Tag } from '@/types/dashboard';
 
 const props = defineProps<{
@@ -57,9 +58,13 @@ const {
     fetch: fetchMeta,
     reset: resetMeta,
 } = useMetaFetch((meta) => {
-    if (meta.title && !title.value) title.value = meta.title;
-    if (meta.description && !description.value)
-        description.value = meta.description;
+    if (meta.title && !title.value) {
+title.value = meta.title;
+}
+
+    if (meta.description && !description.value) {
+description.value = meta.description;
+}
 });
 
 const {
@@ -158,18 +163,10 @@ function onSuccess() {
                         class="absolute top-2.5 right-2.5 size-4 animate-spin text-muted-foreground"
                     />
                 </div>
-                <p
-                    v-if="duplicateExists"
-                    class="text-xs text-amber-600 dark:text-amber-400"
-                >
-                    Dieser Link ist bereits vorhanden.
-                </p>
-                <p
-                    v-else-if="duplicateSimilar"
-                    class="text-xs text-amber-600 dark:text-amber-400"
-                >
-                    Ein ähnlicher Link ist bereits vorhanden.
-                </p>
+                <LinkSimilarMessage
+                    :similar="duplicateSimilar"
+                    :existis="duplicateExists"
+                />
                 <InputError :message="errors.url" />
             </div>
 

@@ -13,7 +13,7 @@ export type Tag = {
     color: string;
     is_public: boolean;
     slug?: string;
-    description?: string | null;
+    description?: string;
     links_count?: number;
     deleted_at?: string | null;
 };
@@ -22,11 +22,35 @@ export type Link = {
     id: number;
     url: string;
     title: string;
-    description: string | null;
-    notes: string | null;
+    description?: string;
+    notes?: string;
     bucket_id: number;
     bucket: Bucket;
     tags: Tag[];
     favicon_url: string | null;
     deleted_at?: string | null;
+};
+
+export type PaginatorLink = {
+    url: string | null;
+    label: string;
+    active: boolean;
+};
+
+export type Paginator<T> = {
+    data: T[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    from: number | null;
+    to: number | null;
+    links: PaginatorLink[];
+};
+
+export type Filters = {
+    bucket_id?: string;
+    tag_id?: string;
+    search?: string;
+    trashed?: string;
 };

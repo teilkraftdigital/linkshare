@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, setLayoutProps } from '@inertiajs/vue3';
-import LinkCard from '@/components/LinkCard.vue';
+import LinkCard from '@/components/links/LinkCard.vue';
 import type { Link, Tag } from '@/types/dashboard';
 
 const props = defineProps<{
@@ -34,12 +34,13 @@ setLayoutProps({
                     :title="link.title"
                     :url="link.url"
                     :description="link.description"
+                    :favicon_url="link.favicon_url"
                 />
             </li>
         </ul>
 
         <p v-else class="text-sm text-muted-foreground">
-            No links in this collection yet.
+            Es wurden noch keine Links mit diesem Tag versehen.
         </p>
     </main>
 </template>
