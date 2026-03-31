@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { Copy } from 'lucide-vue-next';
-import { Button } from '@/components/ui/button';
 import { Link as LinkIcon } from 'lucide-vue-next';
-import { COLOR_BG } from '@/lib/colors';
-import type { Tag } from '@/types/dashboard';
-import { useToast } from '@/composables/useToast';
+import { ref } from 'vue';
 import PublicTagController from '@/actions/App/Http/Controllers/TagController';
 import TagInlineEditForm from '@/components/tags/TagInlineEditForm.vue';
 import TagNormalActions from '@/components/tags/TagNormalActions.vue';
 import TagTrashAction from '@/components/tags/TagTrashAction.vue';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/composables/useToast';
+import { COLOR_BG } from '@/lib/colors';
+import type { Tag } from '@/types/dashboard';
 
 const { toast } = useToast();
 
@@ -17,12 +17,12 @@ type Props = {
     tag: Tag;
     showTrashed: boolean;
 };
-const props = defineProps<Props>();
+defineProps<Props>();
 
 const editingTag = ref<Tag | null>(null);
 
 function startEdit(tag: Tag) {
-    editingTag.value = tag;
+    editingTag.value = { ...tag };
 }
 
 function cancelEdit() {
@@ -64,11 +64,11 @@ async function copyUrl(slug: string) {
         <!-- Inline edit form (only in normal view) -->
         <TagInlineEditForm
             v-if="!showTrashed && editingTag?.id === tag.id"
-            :tag="editingTag"
-            v-model:color="tag.color"
-            v-model:is_public="tag.is_public"
-            v-model:name="tag.name"
-            v-model:description="tag.description"
+            :tag="editingTag!"
+            v-model:color="editingTag!.color"
+            v-model:is_public="editingTag!.is_public"
+            v-model:name="editingTag!.name"
+            v-model:description="editingTag!.description"
             @cancel="cancelEdit"
         />
 
