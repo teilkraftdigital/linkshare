@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { Globe, Link2, Tag as TagIcon } from 'lucide-vue-next';
-import { index as dashboardRoute } from '@/routes/dashboard';
-import type { DashboardTag, DashboardLink } from '@/types/dashboard';
+import AllTagsTile from '@/components/dashboard/AllTagsTile.vue';
+import PublicTagsTile from '@/components/dashboard/PublicTagsTile.vue';
+import RecentLinksTile from '@/components/dashboard/RecentLinksTile.vue';
 import StatsTile from '@/components/dashboard/StatsTile.vue';
 import { formatDate } from '@/lib/datetime';
-import PublicTagsTile from '@/components/dashboard/PublicTagsTile.vue';
-import AllTagsTile from '@/components/dashboard/AllTagsTile.vue';
-import RecentLinksTile from '@/components/dashboard/RecentLinksTile.vue';
+import { index as dashboardRoute } from '@/routes/dashboard';
+import type { DashboardTag, DashboardLink } from '@/types/dashboard';
 
 type Stat = { count: number; delta: number };
 
-const props = defineProps<{
+defineProps<{
     stats: {
         links: Stat;
         tags: Stat;

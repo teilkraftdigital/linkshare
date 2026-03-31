@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ExternalLink } from 'lucide-vue-next';
-import type { Bucket, Tag } from '@/types/dashboard';
 import PillBucket from '@/components/shared/PillBucket.vue';
 import PillTag from '@/components/shared/PillTag.vue';
+import type { Bucket, Tag } from '@/types/dashboard';
 import LinkFavicon from './LinkFavicon.vue';
 
 defineProps<{

@@ -1,4 +1,5 @@
-import { computed, ref, type ComputedRef } from 'vue';
+import { computed, ref  } from 'vue';
+import type {ComputedRef} from 'vue';
 import type { DashboardTag, SortKey } from '@/types/dashboard';
 
 export function useTagSortAndFilter(tags: ComputedRef<DashboardTag[]>) {
@@ -21,9 +22,11 @@ export function useTagSortAndFilter(tags: ComputedRef<DashboardTag[]>) {
             if (sort === 'name') {
                 return a.name.localeCompare(b.name);
             }
+
             if (sort === 'links_count') {
                 return b.links_count - a.links_count;
             }
+
             // updated_at desc
             return (
                 new Date(b.updated_at).getTime() -

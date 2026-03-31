@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import { Check, Copy, ExternalLink } from 'lucide-vue-next';
-import { COLOR_BG } from '@/lib/colors';
-import { TAG_SEARCH_THRESHOLD } from '@/types/dashboard';
+import { ref, computed } from 'vue';
 import EntrySortButtons from '@/components/dashboard/EntrySortButtons.vue';
-import type { DashboardTag } from '@/types/dashboard';
 import { useTagSortAndFilter } from '@/composables/useTagSortAndFilter';
+import { COLOR_BG } from '@/lib/colors';
 import * as TagsRoute from '@/routes/tags';
+import { TAG_SEARCH_THRESHOLD } from '@/types/dashboard';
+import type { DashboardTag } from '@/types/dashboard';
 
 type Props = {
     tags: DashboardTag[];
