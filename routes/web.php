@@ -10,6 +10,7 @@ use App\Http\Controllers\Dashboard\MetaFetchController;
 use App\Http\Controllers\Dashboard\QuickAddController;
 use App\Http\Controllers\Dashboard\TagController as DashboardTagController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\TagExportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -56,6 +57,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::get('tags/{tag:slug}', [TagController::class, 'show'])->name('tags.show');
-Route::get('tags/{tag:slug}/export', [TagController::class, 'export'])->name('tags.export');
+Route::get('tags/{tag:slug}/export', TagExportController::class)->name('tags.export');
 
 require __DIR__.'/settings.php';
