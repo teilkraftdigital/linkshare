@@ -7,7 +7,8 @@ type Props = {
     link: Link;
     refetchingLinkId: number | null;
 };
-const props = defineProps<Props>();
+
+defineProps<Props>();
 
 const events = defineEmits<{
     edit: [link: Link];

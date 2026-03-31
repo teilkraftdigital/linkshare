@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
 import { Form } from '@inertiajs/vue3';
 import { RotateCcw, Loader2 } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
-import type { Bucket, Tag } from '@/types/dashboard';
-import { useToast } from '@/composables/useToast';
-import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
-import { useMetaFetch } from '@/composables/useMetaFetch';
+import LinkSimilarMessage from '@/components/links/LinkSimilarMessage.vue';
+import TagSelect from '@/components/links/TagSelect.vue';
+import InputError from '@/components/shared/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import LinkSimilarMessage from '@/components/links/LinkSimilarMessage.vue';
-import InputError from '@/components/shared/InputError.vue';
-import TagSelect from '@/components/links/TagSelect.vue';
+import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
+import { useMetaFetch } from '@/composables/useMetaFetch';
+import { useToast } from '@/composables/useToast';
+import type { Bucket, Tag } from '@/types/dashboard';
 
 const props = defineProps<{
     buckets: Bucket[];
@@ -54,9 +54,13 @@ const {
     fetch: fetchMeta,
     reset: resetMeta,
 } = useMetaFetch((meta) => {
-    if (meta.title && !createTitle.value) createTitle.value = meta.title;
-    if (meta.description && !createDescription.value)
-        createDescription.value = meta.description;
+    if (meta.title && !createTitle.value) {
+createTitle.value = meta.title;
+}
+
+    if (meta.description && !createDescription.value) {
+createDescription.value = meta.description;
+}
 });
 
 function resetCreateForm() {

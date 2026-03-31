@@ -2,11 +2,11 @@
 import { Form, usePage } from '@inertiajs/vue3';
 import { Upload } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import { store as storeRoute } from '@/routes/dashboard/import';
 import InputError from '@/components/shared/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { store as storeRoute } from '@/routes/dashboard/import';
 import type { Bucket } from '@/types/dashboard';
 
 const props = defineProps<{

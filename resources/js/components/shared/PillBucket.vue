@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { Bucket } from '@/types/dashboard';
 import { COLOR_BG } from '@/lib/colors';
+import type { Bucket } from '@/types/dashboard';
 type Props = {
     bucket: Bucket;
 };

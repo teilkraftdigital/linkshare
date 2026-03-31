@@ -65,6 +65,7 @@ const exporting = ref(false);
 
 async function downloadExport() {
     exporting.value = true;
+
     try {
         const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? '';
         const response = await fetch(ExportController.url(), {

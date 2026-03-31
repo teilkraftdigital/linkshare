@@ -1,21 +1,20 @@
 <script setup lang="ts">
+import { Form } from '@inertiajs/vue3';
+import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
+import TagSelect from '@/components/links/TagSelect.vue';
+import InputError from '@/components/shared/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Form } from '@inertiajs/vue3';
-import InputError from '@/components/shared/InputError.vue';
 import type { Link, Bucket, Tag } from '@/types/dashboard';
-import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
-import TagSelect from '@/components/links/TagSelect.vue';
 
 type Props = {
-    // link: Link;
     buckets: Bucket[];
     tags: Tag[];
 };
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 const event = defineEmits<{
     (e: 'cancel'): void;

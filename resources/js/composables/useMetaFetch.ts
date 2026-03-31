@@ -31,6 +31,7 @@ export function useMetaFetch(onSuccess: (meta: MetaResult) => void): UseMetaFetc
 
         if (!url) {
             faviconUrl.value = null;
+
             return;
         }
 
@@ -50,6 +51,7 @@ export function useMetaFetch(onSuccess: (meta: MetaResult) => void): UseMetaFetc
 
                 if (!response.ok) {
                     failed.value = true;
+
                     return;
                 }
 
@@ -67,6 +69,7 @@ export function useMetaFetch(onSuccess: (meta: MetaResult) => void): UseMetaFetc
     function reset() {
         faviconUrl.value = null;
         failed.value = false;
+
         if (timer) {
             clearTimeout(timer);
             timer = null;

@@ -6,7 +6,8 @@ import type { Link } from '@/types/dashboard';
 type Props = {
     link: Link;
 };
-const props = defineProps<Props>();
+
+defineProps<Props>();
 
 const events = defineEmits<{
     restore: [link: Link];

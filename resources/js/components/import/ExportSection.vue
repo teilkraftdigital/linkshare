@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Download } from 'lucide-vue-next';
 import { ref } from 'vue';
-import ExportModal from './ExportModal.vue';
 import { Button } from '@/components/ui/button';
 import type { Bucket, Tag } from '@/types/dashboard';
+import ExportModal from './ExportModal.vue';
 
 defineProps<{
     buckets: Bucket[];

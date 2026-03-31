@@ -3,17 +3,17 @@ import { Form, Head } from '@inertiajs/vue3';
 import { CheckCircle2, Loader2, RotateCcw } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
-import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
-import { useMetaFetch } from '@/composables/useMetaFetch';
+import LinkSimilarMessage from '@/components/links/LinkSimilarMessage.vue';
+import TagSelect from '@/components/links/TagSelect.vue';
 import ConfirmModal from '@/components/shared/ConfirmModal.vue';
 import InputError from '@/components/shared/InputError.vue';
-import TagSelect from '@/components/links/TagSelect.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
+import { useMetaFetch } from '@/composables/useMetaFetch';
 import type { Bucket, Tag } from '@/types/dashboard';
-import LinkSimilarMessage from '@/components/links/LinkSimilarMessage.vue';
 
 const props = defineProps<{
     prefillUrl: string;
@@ -58,9 +58,13 @@ const {
     fetch: fetchMeta,
     reset: resetMeta,
 } = useMetaFetch((meta) => {
-    if (meta.title && !title.value) title.value = meta.title;
-    if (meta.description && !description.value)
-        description.value = meta.description;
+    if (meta.title && !title.value) {
+title.value = meta.title;
+}
+
+    if (meta.description && !description.value) {
+description.value = meta.description;
+}
 });
 
 const {

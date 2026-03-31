@@ -1,27 +1,19 @@
 <script setup lang="ts">
-import { Form, Head, router, usePage } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import { Trash2 } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
-import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
-import { useToast } from '@/composables/useToast';
+import LinkCreateForm from '@/components/links/LinkCreateForm.vue';
+import LinkFilter from '@/components/links/LinkFilter.vue';
+import LinkItem from '@/components/links/LinkItem.vue';
 import ConfirmModal from '@/components/shared/ConfirmModal.vue';
 import Heading from '@/components/shared/Heading.vue';
-import InputError from '@/components/shared/InputError.vue';
-import LinkCard from '@/components/links/LinkCard.vue';
-import TagSelect from '@/components/links/TagSelect.vue';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { index } from '@/routes/dashboard/links';
 import Pagination from '@/components/shared/Pagination.vue';
+import { Button } from '@/components/ui/button';
+import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
+import { useToast } from '@/composables/useToast';
+import { index } from '@/routes/dashboard/links';
 import type { Bucket, Link, Paginator, Tag, Filters } from '@/types/dashboard';
-import LinkFilter from '@/components/links/LinkFilter.vue';
-import LinkNormalAction from '@/components/links/LinkNormalAction.vue';
-import LinkTrashAction from '@/components/links/LinkTrashAction.vue';
-import LinkCreateForm from '@/components/links/LinkCreateForm.vue';
-import LinkItem from '@/components/links/LinkItem.vue';
 
 type Props = {
     links: Paginator<Link>;
@@ -65,10 +57,6 @@ function confirmDuplicateSubmit() {
 }
 
 // — Edit state —
-const editingLink = ref<Link | null>(null);
-const editBucketId = ref<number>(0);
-const editTagIds = ref<number[]>([]);
-
 const deleteTarget = ref<Link | null>(null);
 const forceDeleteTarget = ref<Link | null>(null);
 const refetchingLinkId = ref<number | null>(null);
@@ -110,7 +98,9 @@ const hasActiveFilters = ref(false);
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
 function applyFilters(immediate = false) {
-    if (searchTimer) clearTimeout(searchTimer);
+    if (searchTimer) {
+        clearTimeout(searchTimer);
+    }
 
     const doApply = () => {
         router.get(
@@ -140,22 +130,15 @@ watch(filterTagId, () => applyFilters(true));
 watch(filterSearch, () => applyFilters(false));
 
 // — CRUD —
-function startEdit(link: Link) {
-    editingLink.value = link;
-    editBucketId.value = link.bucket_id;
-    editTagIds.value = link.tags.map((t) => t.id);
-}
-
-function cancelEdit() {
-    editingLink.value = null;
-}
-
 function confirmDelete(link: Link) {
     deleteTarget.value = link;
 }
 
 function deleteLink() {
-    if (!deleteTarget.value) return;
+    if (!deleteTarget.value) {
+        return;
+    }
+
     router.delete(LinkController.destroy.url(deleteTarget.value), {
         preserveScroll: true,
         onSuccess: () => {
@@ -187,7 +170,10 @@ function confirmForceDelete(link: Link) {
 }
 
 function forceDeleteLink() {
-    if (!forceDeleteTarget.value) return;
+    if (!forceDeleteTarget.value) {
+        return;
+    }
+
     router.delete(LinkController.forceDelete.url(forceDeleteTarget.value), {
         preserveScroll: true,
         onSuccess: () => {
@@ -264,7 +250,6 @@ function forceDeleteLink() {
                 :tags="tags"
                 :showTrashed="showTrashed"
                 :refetchingLinkId="refetchingLinkId"
-                @start-edit="startEdit"
                 @confirm-delete="confirmDelete"
                 @restore="restoreLink"
                 @confirm-force-delete="confirmForceDelete"

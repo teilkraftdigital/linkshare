@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Globe } from 'lucide-vue-next';
-import type { Tag } from '@/types/dashboard';
 import { COLOR_BG, COLOR_BG_OPACITY, HAS_COLOR } from '@/lib/colors';
+import type { Tag } from '@/types/dashboard';
 
 type Props = {
     tag: Tag;

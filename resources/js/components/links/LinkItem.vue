@@ -2,10 +2,10 @@
 import { ref } from 'vue';
 
 import type { Bucket, Link, Tag } from '@/types/dashboard';
-import LinkNormalAction from './LinkNormalAction.vue';
-import LinkTrashAction from './LinkTrashAction.vue';
 import LinkCard from './LinkCard.vue';
 import LinkInlineEditForm from './LinkInlineEditForm.vue';
+import LinkNormalAction from './LinkNormalAction.vue';
+import LinkTrashAction from './LinkTrashAction.vue';
 
 type Props = {
     link: Link;
@@ -15,7 +15,7 @@ type Props = {
     refetchingLinkId: number | null;
 };
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 const event = defineEmits<{
     delete: [link: Link];

@@ -25,10 +25,15 @@ export function useDuplicateCheck(): UseDuplicateCheck {
     }
 
     function check(url: string) {
-        if (timer) clearTimeout(timer);
+        if (timer) {
+clearTimeout(timer);
+}
+
         reset();
 
-        if (!url) return;
+        if (!url) {
+return;
+}
 
         timer = setTimeout(async () => {
             try {
@@ -44,7 +49,9 @@ export function useDuplicateCheck(): UseDuplicateCheck {
                     body: JSON.stringify({ url }),
                 });
 
-                if (!response.ok) return;
+                if (!response.ok) {
+return;
+}
 
                 const result: DuplicateResult = await response.json();
                 exists.value = result.exists;

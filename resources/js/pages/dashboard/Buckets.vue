@@ -3,7 +3,6 @@ import { Form, Head, router } from '@inertiajs/vue3';
 import { Link as LinkIcon, Pencil, RotateCcw, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import BucketController from '@/actions/App/Http/Controllers/Dashboard/BucketController';
-import { useToast } from '@/composables/useToast';
 import ColorPalette from '@/components/shared/ColorPalette.vue';
 import ConfirmModal from '@/components/shared/ConfirmModal.vue';
 import Heading from '@/components/shared/Heading.vue';
@@ -11,6 +10,7 @@ import InputError from '@/components/shared/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/composables/useToast';
 import { COLOR_BG } from '@/lib/colors';
 import { index } from '@/routes/dashboard/buckets';
 import type { Bucket } from '@/types/dashboard';
@@ -63,6 +63,7 @@ function deleteBucket() {
     if (!deleteTarget.value) {
         return;
     }
+
     router.delete(BucketController.destroy.url(deleteTarget.value), {
         preserveScroll: true,
         onSuccess: () => {
@@ -91,6 +92,7 @@ function forceDeleteBucket() {
     if (!forceDeleteTarget.value) {
         return;
     }
+
     router.delete(BucketController.forceDelete.url(forceDeleteTarget.value), {
         preserveScroll: true,
         onSuccess: () => {

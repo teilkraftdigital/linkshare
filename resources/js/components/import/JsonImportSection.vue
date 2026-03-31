@@ -2,12 +2,12 @@
 import { Upload } from 'lucide-vue-next';
 import { ref } from 'vue';
 import JsonImportController from '@/actions/App/Http/Controllers/Dashboard/JsonImportController';
-import { useToast } from '@/composables/useToast';
-import JsonImportModal from './JsonImportModal.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/composables/useToast';
 import type { Bucket, Tag } from '@/types/dashboard';
+import JsonImportModal from './JsonImportModal.vue';
 
 type ParsePreview = {
     buckets: Bucket[];
@@ -30,7 +30,9 @@ function onModalClose() {
 }
 
 async function parseJsonFile() {
-    if (!jsonFile.value) return;
+    if (!jsonFile.value) {
+return;
+}
 
     jsonParsing.value = true;
     jsonParseError.value = null;
@@ -52,6 +54,7 @@ async function parseJsonFile() {
 
         if (!response.ok) {
             jsonParseError.value = data.error ?? data.message ?? 'Fehler beim Parsen der Datei.';
+
             return;
         }
 
@@ -65,7 +68,9 @@ async function parseJsonFile() {
 }
 
 async function executeJsonImport(bucketNames: string[], tagNames: string[]) {
-    if (!jsonFile.value) return;
+    if (!jsonFile.value) {
+return;
+}
 
     jsonImporting.value = true;
     jsonImportModalOpen.value = false;
@@ -91,9 +96,18 @@ async function executeJsonImport(bucketNames: string[], tagNames: string[]) {
             const { imported, skipped, buckets_created, tags_created } = result;
 
             let message = `${imported} ${imported === 1 ? 'Link' : 'Links'} importiert`;
-            if (skipped > 0) message += ` · ${skipped} übersprungen`;
-            if (buckets_created > 0) message += ` · ${buckets_created} ${buckets_created === 1 ? 'Bucket' : 'Buckets'} erstellt`;
-            if (tags_created > 0) message += ` · ${tags_created} ${tags_created === 1 ? 'Tag' : 'Tags'} erstellt`;
+
+            if (skipped > 0) {
+message += ` · ${skipped} übersprungen`;
+}
+
+            if (buckets_created > 0) {
+message += ` · ${buckets_created} ${buckets_created === 1 ? 'Bucket' : 'Buckets'} erstellt`;
+}
+
+            if (tags_created > 0) {
+message += ` · ${tags_created} ${tags_created === 1 ? 'Tag' : 'Tags'} erstellt`;
+}
 
             toast(message, 'success');
             jsonFile.value = null;

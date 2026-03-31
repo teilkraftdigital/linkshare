@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { usePage } from '@inertiajs/vue3';
 import { BookmarkPlus, Copy } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import { usePage } from '@inertiajs/vue3';
 import QuickAddController from '@/actions/App/Http/Controllers/Dashboard/QuickAddController';
 import { Button } from '@/components/ui/button';
 
@@ -9,11 +9,13 @@ const page = usePage();
 
 const quickAddUrl = computed(() => {
     const base = page.props.appUrl.replace(/\/$/, '');
+
     return base + QuickAddController.url();
 });
 
 const bookmarkletCode = computed(() => {
     const url = quickAddUrl.value;
+
     return `javascript:(function(){window.open('${url}?url='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title),'_blank','width=480,height=640,resizable=yes');})();`;
 });
 

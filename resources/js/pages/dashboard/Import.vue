@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
-import { create as importRoute } from '@/routes/dashboard/import';
+import BookmarkletCodeSection from '@/components/import/BookmarkletCodeSection.vue';
 import ExportSection from '@/components/import/ExportSection.vue';
 import HtmlImportSection from '@/components/import/HtmlImportSection.vue';
 import JsonImportSection from '@/components/import/JsonImportSection.vue';
-import BookmarkletCodeSection from '@/components/import/BookmarkletCodeSection.vue';
 import Heading from '@/components/shared/Heading.vue';
+import { create as importRoute } from '@/routes/dashboard/import';
 import type { Bucket, Tag } from '@/types/dashboard';
 
-const props = defineProps<{
+defineProps<{
     buckets: Bucket[];
     tags: Tag[];
     inboxBucketId: number;

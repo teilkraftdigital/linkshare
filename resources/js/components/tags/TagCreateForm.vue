@@ -1,15 +1,15 @@
 <script setup lang="ts">
+import { Form } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import TagController from '@/actions/App/Http/Controllers/Dashboard/TagController';
-import { useToast } from '@/composables/useToast';
 import ColorPalette from '@/components/shared/ColorPalette.vue';
-import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
-import { Form } from '@inertiajs/vue3';
-import Label from '@/components/ui/label/Label.vue';
-import Input from '@/components/ui/input/Input.vue';
-import Textarea from '@/components/ui/textarea/Textarea.vue';
 import InputError from '@/components/shared/InputError.vue';
 import Button from '@/components/ui/button/Button.vue';
+import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
+import Input from '@/components/ui/input/Input.vue';
+import Label from '@/components/ui/label/Label.vue';
+import Textarea from '@/components/ui/textarea/Textarea.vue';
+import { useToast } from '@/composables/useToast';
 
 const createColor = ref<string>('gray');
 const createIsPublic = ref<boolean>(false);

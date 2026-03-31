@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue';
-import type { Bucket, Tag } from '@/types/dashboard';
 import { Search, X } from 'lucide-vue-next';
+import { computed, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import type { Bucket, Tag } from '@/types/dashboard';
 
 type Props = {
     buckets: Bucket[];
     tags: Tag[];
 };
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 const filterSearch = defineModel<string>('search', {
     required: true,

@@ -3,14 +3,14 @@ import { Head, router } from '@inertiajs/vue3';
 import { Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import TagController from '@/actions/App/Http/Controllers/Dashboard/TagController';
-import { useToast } from '@/composables/useToast';
 import ConfirmModal from '@/components/shared/ConfirmModal.vue';
 import Heading from '@/components/shared/Heading.vue';
-import { Button } from '@/components/ui/button';
-import { index } from '@/routes/dashboard/tags';
-import type { Tag } from '@/types/dashboard';
 import TagCreateForm from '@/components/tags/TagCreateForm.vue';
 import TagItem from '@/components/tags/TagItem.vue';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/composables/useToast';
+import { index } from '@/routes/dashboard/tags';
+import type { Tag } from '@/types/dashboard';
 
 type Props = {
     tags: Tag[];
@@ -44,6 +44,7 @@ function deleteTag() {
     if (!deleteTarget.value) {
         return;
     }
+
     router.delete(TagController.destroy.url(deleteTarget.value), {
         preserveScroll: true,
         onSuccess: () => {
@@ -72,6 +73,7 @@ function forceDeleteTag() {
     if (!forceDeleteTarget.value) {
         return;
     }
+
     router.delete(TagController.forceDelete.url(forceDeleteTarget.value), {
         preserveScroll: true,
         onSuccess: () => {

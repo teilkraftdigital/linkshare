@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import type { Tag } from '@/types/dashboard';
 import { Form } from '@inertiajs/vue3';
+import TagController from '@/actions/App/Http/Controllers/Dashboard/TagController';
 import ColorPalette from '@/components/shared/ColorPalette.vue';
+import InputError from '@/components/shared/InputError.vue';
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
 import Input from '@/components/ui/input/Input.vue';
 import Label from '@/components/ui/label/Label.vue';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
+import type { Tag } from '@/types/dashboard';
 import Button from '../ui/button/Button.vue';
-import InputError from '@/components/shared/InputError.vue';
 
-import TagController from '@/actions/App/Http/Controllers/Dashboard/TagController';
-
-const props = defineProps<{
+defineProps<{
     tag: Tag;
 }>();
 

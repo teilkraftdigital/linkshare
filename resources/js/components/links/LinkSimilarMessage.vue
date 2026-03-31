@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
     existis: boolean | undefined;
     similar: boolean | undefined;
 }>();

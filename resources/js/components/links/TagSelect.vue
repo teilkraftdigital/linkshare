@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
 import { Globe, X } from 'lucide-vue-next';
 import {
     ComboboxAnchor,
@@ -12,8 +11,9 @@ import {
     ComboboxRoot,
     ComboboxViewport,
 } from 'reka-ui';
-import { cn } from '@/lib/utils';
+import { computed, ref } from 'vue';
 import { COLOR_BG } from '@/lib/colors';
+import { cn } from '@/lib/utils';
 import type { Tag } from '@/types/dashboard';
 
 const props = defineProps<{
@@ -35,6 +35,7 @@ const selectedTags = computed(() =>
 
 const filteredTags = computed(() => {
     const q = searchTerm.value.toLowerCase().trim();
+
     return q
         ? props.tags.filter((t) => t.name.toLowerCase().includes(q))
         : props.tags;
