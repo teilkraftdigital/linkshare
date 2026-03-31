@@ -56,5 +56,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::get('tags/{tag:slug}', [TagController::class, 'show'])->name('tags.show');
+Route::get('tags/{tag:slug}/export', [TagController::class, 'export'])->name('tags.export');
 
 require __DIR__.'/settings.php';
