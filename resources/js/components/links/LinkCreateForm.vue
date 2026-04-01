@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
 import { RotateCcw, Loader2 } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import LinkSimilarMessage from '@/components/links/LinkSimilarMessage.vue';
 import TagSelect from '@/components/links/TagSelect.vue';
@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
 import { useMetaFetch } from '@/composables/useMetaFetch';
+import { useTagCreate } from '@/composables/useTagCreate';
 import { useToast } from '@/composables/useToast';
 import type { Bucket, Tag } from '@/types/dashboard';
 
@@ -22,6 +23,15 @@ const props = defineProps<{
 }>();
 
 const { toast } = useToast();
+const { createError: tagCreateError, createTag } = useTagCreate();
+
+const localTags = ref<Tag[]>([...props.tags]);
+watch(
+    () => props.tags,
+    (tags) => {
+        localTags.value = [...tags];
+    },
+);
 
 const createUrl = ref('');
 const createTitle = ref('');
@@ -81,6 +91,14 @@ const events = defineEmits<{
 const handleCreateSubmit = (value: any) => {
     events('created', value);
 };
+
+async function handleTagCreated(name: string) {
+    const tag = await createTag(name);
+    if (tag) {
+        localTags.value = [...localTags.value, tag];
+        createTagIds.value = [...createTagIds.value, tag.id];
+    }
+}
 </script>
 
 <template>
@@ -205,9 +223,14 @@ const handleCreateSubmit = (value: any) => {
                 <InputError :message="errors.bucket_id" />
             </div>
 
-            <div v-if="tags.length > 0" class="flex flex-col gap-2">
+            <div class="flex flex-col gap-2">
                 <Label>Tags</Label>
-                <TagSelect :tags="tags" v-model="createTagIds" />
+                <TagSelect
+                    :tags="localTags"
+                    v-model="createTagIds"
+                    :create-error="tagCreateError"
+                    @tag-created="handleTagCreated"
+                />
                 <InputError :message="errors['tag_ids']" />
             </div>
         </div>
