@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import TagSelect from '@/components/links/TagSelect.vue';
 import InputError from '@/components/shared/InputError.vue';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useTagCreate } from '@/composables/useTagCreate';
 import type { Link, Bucket, Tag } from '@/types/dashboard';
 
 type Props = {
@@ -14,7 +16,10 @@ type Props = {
     tags: Tag[];
 };
 
-defineProps<Props>();
+const props = defineProps<Props>();
+
+const { createError: tagCreateError, createTag } = useTagCreate();
+const localTags = ref<Tag[]>([...props.tags]);
 
 const event = defineEmits<{
     (e: 'cancel'): void;
@@ -36,6 +41,14 @@ const editTagIds = defineModel<number[]>('tag_ids', {
     required: false,
     default: () => [],
 });
+
+async function handleTagCreated(name: string) {
+    const tag = await createTag(name);
+    if (tag) {
+        localTags.value = [...localTags.value, tag];
+        editTagIds.value = [...editTagIds.value, tag.id];
+    }
+}
 </script>
 
 <template>
@@ -131,9 +144,14 @@ const editTagIds = defineModel<number[]>('tag_ids', {
                 <InputError :message="errors.bucket_id" />
             </div>
 
-            <div v-if="tags.length > 0" class="flex flex-col gap-2">
+            <div class="flex flex-col gap-2">
                 <Label>Tags</Label>
-                <TagSelect :tags="tags" v-model="editTagIds" />
+                <TagSelect
+                    :tags="localTags"
+                    v-model="editTagIds"
+                    :create-error="tagCreateError"
+                    @tag-created="handleTagCreated"
+                />
             </div>
         </div>
 

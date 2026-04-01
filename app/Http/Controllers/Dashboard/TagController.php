@@ -7,6 +7,7 @@ use App\Http\Requests\Dashboard\StoreTagRequest;
 use App\Http\Requests\Dashboard\UpdateTagRequest;
 use App\Models\Tag;
 use App\Services\SlugGenerator;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -30,12 +31,16 @@ class TagController extends Controller
         ]);
     }
 
-    public function store(StoreTagRequest $request): RedirectResponse
+    public function store(StoreTagRequest $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validated();
         $validated['slug'] = $this->slugGenerator->generate($validated['name']);
 
-        Tag::create($validated);
+        $tag = Tag::create($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json($tag, 201);
+        }
 
         return back();
     }

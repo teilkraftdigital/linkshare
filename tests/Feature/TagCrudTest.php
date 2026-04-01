@@ -120,3 +120,20 @@ test('authenticated user can delete a tag', function () {
 
     expect($tag->fresh()->deleted_at)->not->toBeNull();
 });
+
+test('store returns json tag when request accepts json', function () {
+    $response = $this->postJson(route('dashboard.tags.store'), [
+        'name' => 'Inline Tag',
+        'color' => 'gray',
+        'is_public' => false,
+    ]);
+
+    $response->assertCreated()
+        ->assertJsonFragment(['name' => 'Inline Tag', 'color' => 'gray', 'slug' => 'inline-tag']);
+});
+
+test('store json returns validation errors for invalid data', function () {
+    $this->postJson(route('dashboard.tags.store'), [])
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors(['name', 'color']);
+});

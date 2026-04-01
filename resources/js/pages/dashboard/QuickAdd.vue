@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
 import { useMetaFetch } from '@/composables/useMetaFetch';
+import { useTagCreate } from '@/composables/useTagCreate';
 import type { Bucket, Tag } from '@/types/dashboard';
 
 const props = defineProps<{
@@ -23,6 +24,8 @@ const props = defineProps<{
     inboxBucketId: number;
 }>();
 
+const { createError: tagCreateError, createTag } = useTagCreate();
+
 const url = ref(props.prefillUrl);
 const title = ref(props.prefillTitle);
 const description = ref('');
@@ -30,6 +33,7 @@ const notes = ref('');
 const bucketId = ref<number>(props.inboxBucketId);
 const tagIds = ref<number[]>([]);
 const saved = ref(false);
+const localTags = ref<Tag[]>([...props.tags]);
 
 const isFormDirty = computed(
     () =>
@@ -104,6 +108,14 @@ function onSuccess() {
     resetMeta();
     saved.value = true;
     setTimeout(() => window.close(), 1500);
+}
+
+async function handleTagCreated(name: string) {
+    const tag = await createTag(name);
+    if (tag) {
+        localTags.value = [...localTags.value, tag];
+        tagIds.value = [...tagIds.value, tag.id];
+    }
 }
 </script>
 
@@ -241,9 +253,14 @@ function onSuccess() {
                 <InputError :message="errors.bucket_id" />
             </div>
 
-            <div v-if="tags.length > 0" class="flex flex-col gap-1.5">
+            <div class="flex flex-col gap-1.5">
                 <Label>Tags</Label>
-                <TagSelect :tags="tags" v-model="tagIds" />
+                <TagSelect
+                    :tags="localTags"
+                    v-model="tagIds"
+                    :create-error="tagCreateError"
+                    @tag-created="handleTagCreated"
+                />
             </div>
 
             <div class="mt-1 flex gap-2">
