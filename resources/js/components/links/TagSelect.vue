@@ -20,10 +20,12 @@ const props = defineProps<{
     tags: Tag[];
     modelValue: number[];
     name?: string;
+    createError?: string;
 }>();
 
 const emit = defineEmits<{
     'update:modelValue': [value: number[]];
+    'tag-created': [name: string];
 }>();
 
 const searchTerm = ref('');
@@ -56,6 +58,14 @@ function toggle(tag: Tag) {
 
 function remove(id: number) {
     emit('update:modelValue', props.modelValue.filter((i) => i !== id));
+}
+
+function handleEnter(e: KeyboardEvent) {
+    if (filteredTags.value.length === 0 && searchTerm.value.trim()) {
+        e.preventDefault();
+        emit('tag-created', searchTerm.value.trim());
+        searchTerm.value = '';
+    }
 }
 </script>
 
@@ -105,6 +115,7 @@ function remove(id: number) {
                 v-model="searchTerm"
                 class="min-w-24 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
                 placeholder="Tags suchen…"
+                @keydown.enter="handleEnter"
             />
         </ComboboxAnchor>
 
@@ -115,7 +126,10 @@ function remove(id: number) {
         >
             <ComboboxViewport class="p-1">
                 <ComboboxEmpty class="py-2 text-center text-sm text-muted-foreground">
-                    Keine Tags gefunden
+                    <template v-if="searchTerm.trim()">
+                        Enter drücken um „{{ searchTerm.trim() }}" zu erstellen
+                    </template>
+                    <template v-else>Keine Tags gefunden</template>
                 </ComboboxEmpty>
 
                 <ComboboxGroup>
@@ -144,4 +158,8 @@ function remove(id: number) {
             </ComboboxViewport>
         </ComboboxContent>
     </ComboboxRoot>
+
+    <p v-if="createError" class="text-sm text-red-600 dark:text-red-500">
+        {{ createError }}
+    </p>
 </template>
