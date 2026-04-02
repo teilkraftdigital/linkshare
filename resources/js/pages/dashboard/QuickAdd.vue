@@ -112,6 +112,7 @@ function onSuccess() {
 
 async function handleTagCreated(name: string) {
     const tag = await createTag(name);
+
     if (tag) {
         localTags.value = [...localTags.value, tag];
         tagIds.value = [...tagIds.value, tag.id];
@@ -120,19 +121,19 @@ async function handleTagCreated(name: string) {
 </script>
 
 <template>
-    <Head title="Quick Add" />
+    <Head :title="$t('quickAdd.pageTitle')" />
 
     <div class="flex min-h-screen flex-col gap-4 p-4">
-        <h1 class="text-base font-semibold">Link speichern</h1>
+        <h1 class="text-base font-semibold">{{ $t('quickAdd.heading') }}</h1>
 
         <div
             v-if="saved"
             class="flex flex-col items-center justify-center gap-3 py-8 text-center"
         >
             <CheckCircle2 class="size-10 text-green-500" />
-            <p class="font-medium">Link gespeichert!</p>
+            <p class="font-medium">{{ $t('quickAdd.saved') }}</p>
             <p class="text-sm text-muted-foreground">
-                Dieses Fenster schließt sich automatisch…
+                {{ $t('quickAdd.autoClose') }}
             </p>
         </div>
 
@@ -183,24 +184,24 @@ async function handleTagCreated(name: string) {
             </div>
 
             <div class="flex flex-col gap-1.5">
-                <Label for="qa-title">Titel</Label>
+                <Label for="qa-title">{{ $t('fields.title') }}</Label>
                 <Input
                     id="qa-title"
                     v-model="title"
                     name="title"
-                    placeholder="Link-Titel"
+                    :placeholder="$t('placeholders.linkTitle')"
                     autocomplete="off"
                 />
                 <InputError :message="errors.title" />
             </div>
 
             <div class="flex flex-col gap-1.5">
-                <Label for="qa-description">Beschreibung</Label>
+                <Label for="qa-description">{{ $t('fields.description') }}</Label>
                 <Textarea
                     id="qa-description"
                     v-model="description"
                     name="description"
-                    placeholder="Optionale Beschreibung"
+                    :placeholder="$t('placeholders.optionalDescription')"
                     class="resize-none"
                     rows="2"
                 />
@@ -209,14 +210,14 @@ async function handleTagCreated(name: string) {
 
             <div class="flex flex-col gap-1.5">
                 <Label for="qa-notes">
-                    Notizen
-                    <span class="text-muted-foreground">(privat)</span></Label
+                    {{ $t('fields.notes') }}
+                    <span class="text-muted-foreground">({{ $t('fields.notesPrivate') }})</span></Label
                 >
                 <Textarea
                     id="qa-notes"
                     v-model="notes"
                     name="notes"
-                    placeholder="Private Notizen"
+                    :placeholder="$t('placeholders.privateNotes')"
                     class="resize-none"
                     rows="2"
                 />
@@ -224,7 +225,7 @@ async function handleTagCreated(name: string) {
             </div>
 
             <div class="flex flex-col gap-1.5">
-                <Label for="qa-bucket">Bucket</Label>
+                <Label for="qa-bucket">{{ $t('fields.bucket') }}</Label>
                 <select
                     id="qa-bucket"
                     :value="bucketId"
@@ -254,7 +255,7 @@ async function handleTagCreated(name: string) {
             </div>
 
             <div class="flex flex-col gap-1.5">
-                <Label>Tags</Label>
+                <Label>{{ $t('fields.tags') }}</Label>
                 <TagSelect
                     :tags="localTags"
                     v-model="tagIds"
@@ -270,14 +271,14 @@ async function handleTagCreated(name: string) {
                     class="flex-1"
                     @click="handleSubmit(submit)"
                 >
-                    {{ processing ? 'Speichere…' : 'Speichern' }}
+                    {{ processing ? $t('quickAdd.saving') : $t('quickAdd.save') }}
                 </Button>
                 <Button
                     v-if="isFormDirty"
                     type="button"
                     variant="ghost"
                     size="icon"
-                    aria-label="Formular zurücksetzen"
+                    :aria-label="$t('quickAdd.resetForm')"
                     @click="resetForm"
                 >
                     <RotateCcw class="size-4" />
@@ -287,9 +288,9 @@ async function handleTagCreated(name: string) {
 
         <ConfirmModal
             :open="duplicateConfirmOpen"
-            title="Link bereits vorhanden"
-            description="Ein Link mit dieser URL ist bereits gespeichert. Trotzdem hinzufügen?"
-            confirm-label="Trotzdem hinzufügen"
+            :title="$t('links.duplicate.title')"
+            :description="$t('links.duplicate.description')"
+            :confirm-label="$t('links.duplicate.confirm')"
             @update:open="duplicateConfirmOpen = $event"
             @confirm="confirmDuplicateSubmit"
         />

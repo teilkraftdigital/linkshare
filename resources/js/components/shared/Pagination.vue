@@ -10,7 +10,7 @@ defineProps<{
 <template>
     <div class="flex items-center justify-between gap-2">
         <p class="text-sm text-muted-foreground">
-            {{ items.from }}–{{ items.to }} of {{ items.total }}
+            {{ $t('pagination.summary', { from: items.from, to: items.to, total: items.total }) }}
         </p>
         <div class="flex gap-1">
             <Link

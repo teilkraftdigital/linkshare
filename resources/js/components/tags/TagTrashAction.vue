@@ -28,7 +28,7 @@ function confirmForceDelete(tag: Tag) {
     <Button
         variant="ghost"
         size="icon"
-        :aria-label="`Wiederherstellen ${tag.name}`"
+        :aria-label="$t('tags.actions.restoreAriaLabel', { name: tag.name })"
         @click="restoreTag(tag)"
     >
         <RotateCcw class="size-4" />
@@ -37,7 +37,7 @@ function confirmForceDelete(tag: Tag) {
     <Button
         variant="ghost"
         size="icon"
-        :aria-label="`Endgültig löschen ${tag.name}`"
+        :aria-label="$t('tags.actions.forceDeleteAriaLabel', { name: tag.name })"
         @click="confirmForceDelete(tag)"
     >
         <Trash2 class="size-4 text-destructive" />

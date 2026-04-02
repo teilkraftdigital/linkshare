@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Download } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import ExportController from '@/actions/App/Http/Controllers/Dashboard/ExportController';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -61,6 +62,7 @@ function toggleTag(id: number, checked: boolean) {
     }
 }
 
+const { t } = useI18n();
 const exporting = ref(false);
 
 async function downloadExport() {
@@ -109,7 +111,7 @@ async function downloadExport() {
     <Dialog :open="open" @update:open="emit('update:open', $event)">
         <DialogContent class="max-w-md">
             <DialogHeader>
-                <DialogTitle>Exportieren</DialogTitle>
+                <DialogTitle>{{ $t('import.export.modalTitle') }}</DialogTitle>
             </DialogHeader>
 
             <div class="space-y-5 py-2">
@@ -122,7 +124,7 @@ async function downloadExport() {
                             @update:model-value="allBuckets = $event as boolean"
                         />
                         <Label for="export-all-buckets" class="cursor-pointer">
-                            Alle Buckets einschließen
+                            {{ $t('import.export.allBuckets') }}
                         </Label>
                     </div>
 
@@ -163,7 +165,7 @@ async function downloadExport() {
                             @update:model-value="allTags = $event as boolean"
                         />
                         <Label for="export-all-tags" class="cursor-pointer">
-                            Alle Tags einschließen
+                            {{ $t('import.export.allTags') }}
                         </Label>
                     </div>
 
@@ -199,18 +201,18 @@ async function downloadExport() {
                 <div class="flex items-center gap-2">
                     <Checkbox id="export-includes-notes" v-model="includesNotes" />
                     <Label for="export-includes-notes" class="cursor-pointer font-normal">
-                        Private Notizen einschließen
+                        {{ $t('import.export.includeNotes') }}
                     </Label>
                 </div>
             </div>
 
             <DialogFooter>
                 <Button variant="outline" @click="emit('update:open', false)">
-                    Abbrechen
+                    {{ $t('import.export.cancel') }}
                 </Button>
                 <Button :disabled="exporting" @click="downloadExport">
                     <Download class="mr-2 size-4" />
-                    {{ exporting ? 'Exportiere…' : 'Exportieren' }}
+                    {{ exporting ? t('import.export.exporting') : t('import.export.button') }}
                 </Button>
             </DialogFooter>
         </DialogContent>

@@ -16,7 +16,7 @@ defineProps<Props>();
         </div>
         <div class="text-3xl font-bold">{{ stat }}</div>
         <div class="mt-1 text-xs text-muted-foreground">
-            <slot name="delta"> +{{ delta }} letzte 7 Tage </slot>
+            <slot name="delta"> {{ $t('dashboard.stats.deltaLabel', { delta }) }} </slot>
         </div>
     </div>
 </template>

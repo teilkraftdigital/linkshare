@@ -32,10 +32,9 @@ function copyBookmarklet() {
 <template>
     <div class="space-y-3">
         <div>
-            <h2 class="text-sm font-semibold">Quick-Add Bookmarklet</h2>
+            <h2 class="text-sm font-semibold">{{ $t('import.bookmarklet.title') }}</h2>
             <p class="mt-0.5 text-sm text-muted-foreground">
-                Ziehe den Button in deine Lesezeichen-Leiste oder kopiere den
-                Code manuell.
+                {{ $t('import.bookmarklet.description') }}
             </p>
         </div>
 
@@ -46,10 +45,10 @@ function copyBookmarklet() {
                 @click.prevent
             >
                 <BookmarkPlus class="size-4" />
-                Link speichern
+                {{ $t('import.bookmarklet.saveLink') }}
             </a>
             <span class="text-xs text-muted-foreground"
-                >← In Lesezeichen-Leiste ziehen</span
+                >{{ $t('import.bookmarklet.dragHint') }}</span
             >
         </div>
 
@@ -65,7 +64,7 @@ function copyBookmarklet() {
                 @click="copyBookmarklet"
             >
                 <Copy class="size-3.5" />
-                {{ copied ? 'Kopiert!' : 'Kopieren' }}
+                {{ copied ? $t('import.bookmarklet.copied') : $t('import.bookmarklet.copy') }}
             </Button>
         </div>
     </div>

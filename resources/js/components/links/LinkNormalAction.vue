@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { Trash2, Pencil, RefreshCw } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
 import type { Link } from '@/types/dashboard';
+const { t } = useI18n();
 
 type Props = {
     link: Link;
@@ -34,7 +36,9 @@ function refetchMeta(link: Link) {
         variant="ghost"
         size="icon"
         class="size-7"
-        :aria-label="`Metadaten neu abrufen für ${link.title}`"
+        :aria-label="
+            t('links.actions.refetchMetaAriaLabel', { title: link.title })
+        "
         :disabled="refetchingLinkId === link.id"
         @click="refetchMeta(link)"
     >
@@ -47,7 +51,7 @@ function refetchMeta(link: Link) {
         variant="ghost"
         size="icon"
         class="size-7"
-        :aria-label="`Editiere ${link.title}`"
+        :aria-label="t('links.actions.editAriaLabel', { title: link.title })"
         @click="startEdit(link)"
     >
         <Pencil class="size-3.5" />
@@ -56,7 +60,7 @@ function refetchMeta(link: Link) {
         variant="ghost"
         size="icon"
         class="size-7"
-        :aria-label="`Lösche ${link.title}`"
+        :aria-label="t('links.actions.deleteAriaLabel', { title: link.title })"
         @click="confirmDelete(link)"
     >
         <Trash2 class="size-3.5 text-destructive" />

@@ -1,0 +1,491 @@
+{
+    "common": {
+        "save": "Speichern",
+        "saving": "Speichere…",
+        "cancel": "Abbrechen",
+        "delete": "Löschen",
+        "forceDelete": "Endgültig löschen",
+        "add": "Hinzufügen",
+        "search": "Suchen…",
+        "noResults": "Keine Ergebnisse.",
+        "close": "Schließen",
+        "trash": "Papierkorb",
+        "restore": "Wiederherstellen",
+        "copy": "Kopieren",
+        "copied": "Kopiert!",
+        "saved": "Gespeichert.",
+        "continue": "Weiter",
+        "back": "Zurück",
+        "confirm": "Bestätigen",
+        "export": "Exportieren",
+        "exporting": "Exportiere…",
+        "import": "Importieren",
+        "importing": "Importiere…",
+        "of": "von",
+        "warning": "Warnung",
+        "password": "Passwort",
+        "clearForm": "Formular zurücksetzen"
+    },
+    "fields": {
+        "url": "URL",
+        "title": "Titel",
+        "description": "Beschreibung",
+        "notes": "Notizen",
+        "notesPrivate": "Notizen (privat)",
+        "bucket": "Bucket",
+        "tags": "Tags",
+        "name": "Name",
+        "color": "Farbe",
+        "isPublic": "Öffentlich",
+        "email": "E-Mail-Adresse",
+        "password": "Passwort",
+        "newPassword": "Neues Passwort",
+        "currentPassword": "Aktuelles Passwort",
+        "confirmPassword": "Passwort bestätigen",
+        "showPassword": "Passwort anzeigen",
+        "hidePassword": "Passwort ausblenden"
+    },
+    "placeholders": {
+        "url": "https://example.com",
+        "linkTitle": "Link-Titel",
+        "description": "Optionale Beschreibung",
+        "optionalDescription": "Optionale Beschreibung",
+        "notes": "Private Notizen",
+        "privateNotes": "Private Notizen",
+        "searchLinks": "Suche in deinen Links…",
+        "email": "email@example.com",
+        "password": "Passwort",
+        "fullName": "Vollständiger Name"
+    },
+    "confirmModal": {
+        "defaultTitle": "Bist du sicher?",
+        "defaultDescription": "Diese Aktion kann nicht rückgängig gemacht werden.",
+        "defaultLabel": "Löschen",
+        "cancel": "Abbrechen"
+    },
+    "auth": {
+        "login": {
+            "pageTitle": "Anmelden",
+            "title": "Bei deinem Konto anmelden",
+            "description": "Gib deine E-Mail-Adresse und dein Passwort ein",
+            "rememberMe": "Angemeldet bleiben",
+            "forgotPassword": "Passwort vergessen?",
+            "submit": "Anmelden",
+            "noAccount": "Noch kein Konto?",
+            "signUp": "Registrieren"
+        },
+        "forgotPassword": {
+            "pageTitle": "Passwort vergessen",
+            "title": "Passwort vergessen",
+            "description": "Gib deine E-Mail-Adresse ein, um einen Link zum Zurücksetzen zu erhalten",
+            "submit": "Link zum Zurücksetzen senden",
+            "or": "Oder kehre zur",
+            "backToLogin": "Anmeldung"
+        },
+        "resetPassword": {
+            "pageTitle": "Passwort zurücksetzen",
+            "title": "Passwort zurücksetzen",
+            "description": "Gib dein neues Passwort ein",
+            "submit": "Passwort zurücksetzen"
+        },
+        "confirmPassword": {
+            "pageTitle": "Passwort bestätigen",
+            "title": "Passwort bestätigen",
+            "description": "Dies ist ein sicherer Bereich. Bitte bestätige dein Passwort, bevor du fortfährst.",
+            "submit": "Passwort bestätigen"
+        },
+        "twoFactor": {
+            "pageTitle": "Zwei-Faktor-Authentifizierung",
+            "authCode": {
+                "title": "Authentifizierungscode",
+                "description": "Gib den Code aus deiner Authenticator-App ein.",
+                "switchButton": "Wiederherstellungscode verwenden"
+            },
+            "recoveryCode": {
+                "title": "Wiederherstellungscode",
+                "description": "Gib einen deiner Notfall-Wiederherstellungscodes ein.",
+                "switchButton": "Authentifizierungscode verwenden",
+                "placeholder": "Wiederherstellungscode eingeben"
+            },
+            "orYouCan": "oder du kannst"
+        },
+        "verifyEmail": {
+            "pageTitle": "E-Mail bestätigen",
+            "title": "E-Mail bestätigen",
+            "description": "Bitte bestätige deine E-Mail-Adresse, indem du auf den Link in der E-Mail klickst.",
+            "verificationSent": "Ein neuer Bestätigungslink wurde an die bei der Registrierung angegebene E-Mail-Adresse gesendet.",
+            "resend": "Bestätigungs-E-Mail erneut senden",
+            "logout": "Abmelden"
+        },
+        "register": {
+            "pageTitle": "Registrieren",
+            "title": "Konto erstellen",
+            "description": "Gib deine Daten ein, um dein Konto zu erstellen",
+            "submit": "Konto erstellen",
+            "alreadyHaveAccount": "Bereits ein Konto?",
+            "login": "Anmelden"
+        }
+    },
+    "settings": {
+        "title": "Einstellungen",
+        "description": "Profil und Kontoeinstellungen verwalten",
+        "nav": {
+            "profile": "Profil",
+            "security": "Sicherheit",
+            "appearance": "Darstellung"
+        },
+        "profile": {
+            "breadcrumb": "Profileinstellungen",
+            "pageTitle": "Profileinstellungen",
+            "title": "Profilinformationen",
+            "description": "Name und E-Mail-Adresse aktualisieren",
+            "unverifiedEmail": "Deine E-Mail-Adresse ist nicht bestätigt.",
+            "resendVerification": "Hier klicken, um die Bestätigungs-E-Mail erneut zu senden.",
+            "verificationSent": "Ein neuer Bestätigungslink wurde an deine E-Mail-Adresse gesendet.",
+            "save": "Speichern"
+        },
+        "security": {
+            "breadcrumb": "Sicherheitseinstellungen",
+            "pageTitle": "Sicherheitseinstellungen",
+            "passwordTitle": "Passwort ändern",
+            "passwordDescription": "Verwende ein langes, zufälliges Passwort für mehr Sicherheit",
+            "savePassword": "Passwort speichern",
+            "twoFactor": {
+                "title": "Zwei-Faktor-Authentifizierung",
+                "description": "Zwei-Faktor-Authentifizierung verwalten",
+                "enableDescription": "Wenn du die Zwei-Faktor-Authentifizierung aktivierst, wirst du beim Anmelden nach einem sicheren PIN gefragt. Dieser PIN kann von einer TOTP-kompatiblen App auf deinem Telefon abgerufen werden.",
+                "enabledDescription": "Du wirst beim Anmelden nach einem sicheren, zufälligen PIN gefragt, den du von der TOTP-kompatiblen App auf deinem Telefon abrufen kannst.",
+                "enable": "2FA aktivieren",
+                "continueSetup": "Setup fortsetzen",
+                "disable": "2FA deaktivieren"
+            }
+        },
+        "appearance": {
+            "breadcrumb": "Darstellungseinstellungen",
+            "pageTitle": "Darstellungseinstellungen",
+            "title": "Darstellungseinstellungen",
+            "description": "Darstellung des Kontos anpassen",
+            "light": "Hell",
+            "dark": "Dunkel",
+            "system": "System"
+        },
+        "deleteAccount": {
+            "title": "Konto löschen",
+            "description": "Konto und alle zugehörigen Daten löschen",
+            "warning": "Warnung",
+            "warningText": "Bitte mit Vorsicht vorgehen. Diese Aktion kann nicht rückgängig gemacht werden.",
+            "trigger": "Konto löschen",
+            "dialogTitle": "Konto wirklich löschen?",
+            "dialogDescription": "Nach dem Löschen des Kontos werden alle Daten und Ressourcen dauerhaft gelöscht. Bitte gib dein Passwort ein, um die dauerhafte Löschung zu bestätigen.",
+            "confirm": "Konto löschen",
+            "cancel": "Abbrechen",
+            "confirmation": "Bist du sicher, dass du dein Konto löschen möchtest?",
+            "confirmationDescription": "Sobald dein Konto gelöscht ist, werden alle Ressourcen und Daten ebenfalls dauerhaft gelöscht. Bitte gib dein Passwort ein, um zu bestätigen, dass du dein Konto dauerhaft löschen möchtest."
+
+        },
+        "twoFactorRecoveryCodes": {
+            "cardTitle": "2FA-Wiederherstellungscodes",
+            "cardDescription": "Wiederherstellungscodes ermöglichen den Zugang, wenn du dein 2FA-Gerät verlierst. Bewahre sie in einem sicheren Passwortmanager auf.",
+            "view": "Anzeigen",
+            "hide": "Ausblenden",
+            "recoveryCodes": "Wiederherstellungscodes",
+            "regenerate": "Codes neu generieren",
+            "hint": "Jeder Wiederherstellungscode kann einmal verwendet werden und wird danach entfernt. Wenn du weitere benötigst, klicke oben auf Codes neu generieren."
+        },
+        "twoFactorSetup": {
+            "enableTitle": "Zwei-Faktor-Authentifizierung aktivieren",
+            "enableDescription": "Scanne den QR-Code oder gib den Einrichtungsschlüssel in deiner Authenticator-App ein, um die Aktivierung abzuschließen",
+            "enabledTitle": "Zwei-Faktor-Authentifizierung aktiviert",
+            "enabledDescription": "Scanne den QR-Code oder gib den Einrichtungsschlüssel in deiner Authenticator-App ein.",
+            "verifyTitle": "Authentifizierungscode bestätigen",
+            "verifyDescription": "Gib den 6-stelligen Code aus deiner Authenticator-App ein",
+            "manualEntry": "oder manuell eingeben",
+            "close": "Schließen",
+            "back": "Zurück",
+            "confirm": "Bestätigen"
+        }
+    },
+    "nav": {
+        "dashboard": "Dashboard",
+        "links": "Links",
+        "buckets": "Buckets",
+        "tags": "Tags",
+        "import": "Import",
+        "settings": "Einstellungen",
+        "logout": "Abmelden",
+        "library": "Bibliothek",
+        "tools": "Werkzeuge"
+    },
+    "links": {
+        "pageTitle": "Links",
+        "description": "Verwalte deine gespeicherten Links",
+        "saved": "Link gespeichert",
+        "deleted": "Link gelöscht",
+        "restored": "Link wiederhergestellt",
+        "forceDeleted": "Link endgültig gelöscht",
+        "duplicateExists": "Dieser Link ist bereits vorhanden.",
+        "duplicateSimilar": "Ein ähnlicher Link ist bereits vorhanden.",
+        "metaUpdated": "Metadaten aktualisiert",
+        "metaFailed": "Metadaten konnten nicht abgerufen werden",
+        "metaLoadFailed": "Metadaten für diese URL konnten nicht geladen werden.",
+        "empty": "Noch keine Links. Füge deinen ersten Link oben hinzu.",
+        "emptyFiltered": "Keine Links entsprechen deinen Filtern.",
+        "emptyTrashed": "Keine gelöschten Links.",
+        "duplicate": {
+            "title": "Link bereits vorhanden",
+            "description": "Ein Link mit dieser URL ist bereits gespeichert. Trotzdem hinzufügen?",
+            "confirm": "Trotzdem hinzufügen"
+        },
+        "existsWarning": "Dieser Link ist bereits vorhanden.",
+        "similarWarning": "Ein ähnlicher Link ist bereits vorhanden.",
+        "delete": {
+            "title": "Link löschen?",
+            "description": "'{title}' wird gelöscht. Diese Aktion kann rückgängig gemacht werden.",
+            "confirm": "Löschen"
+        },
+        "forceDeleteDialog": {
+            "title": "Endgültig löschen?",
+            "description": "'{title}' wird permanent gelöscht und kann nicht wiederhergestellt werden.",
+            "confirm": "Endgültig löschen"
+        },
+        "actions": {
+            "refetchMeta": "Metadaten neu abrufen für {title}",
+            "refetchMetaAriaLabel": "Metadaten neu abrufen für {title}",
+            "editAriaLabel": "Editiere {title}",
+            "deleteAriaLabel": "Lösche {title}",
+            "restoreAriaLabel": "Stelle {title} wieder her",
+            "forceDeleteAriaLabel": "Lösche permanent {title}"
+        },
+        "filter": {
+            "allBuckets": "Alle Buckets",
+            "allTags": "Alle Tags",
+            "bucketAriaLabel": "Filter nach Bucket",
+            "tagAriaLabel": "Filter nach Tag",
+            "clearAriaLabel": "Filter zurücksetzen"
+        },
+        "searchPlaceholder": "Suche in deinen Links…",
+        "filterByBucket": "Filter nach Bucket",
+        "allBuckets": "Alle Buckets",
+        "filterByTag": "Filter nach Tag",
+        "allTags": "Alle Tags",
+        "resetFilters": "Filter zurücksetzen",
+        "clearForm": "Formular zurücksetzen"
+    },
+    "tags": {
+        "pageTitle": "Tags",
+        "description": "Verwalte deine Tags und deren Sichtbarkeit.",
+        "created": "Tag erstellt",
+        "deleted": "Tag gelöscht",
+        "restored": "Tag wiederhergestellt",
+        "forceDeleted": "Tag endgültig gelöscht",
+        "createFailed": "Tag konnte nicht erstellt werden",
+        "tagCreated": "Tag \u201e{name}\u201c erstellt",
+        "empty": "Keine Tags vorhanden.",
+        "emptyTrashed": "Keine gelöschten Tags.",
+        "showEmpty": "Es wurden noch keine Links mit diesem Tag versehen.",
+        "select": {
+            "placeholder": "Tags suchen…",
+            "createHint": "Enter drücken um \u201e{term}\u201c zu erstellen",
+            "noResults": "Keine Tags gefunden",
+            "removeAriaLabel": "Entferne {name}",
+            "isPublicAriaLabel": "{name} ist öffentlich",
+            "publicTagAriaLabel": "{name} ist öffentlich"
+        },
+        "delete": {
+            "title": "Tag löschen?",
+            "description": "Tag '{name}' löschen? Diese Aktion kann rückgängig gemacht werden.",
+            "confirm": "Löschen"
+        },
+        "forceDeleteDialog": {
+            "title": "Endgültig löschen?",
+            "description": "'{name}' wird permanent gelöscht und kann nicht wiederhergestellt werden.",
+            "confirm": "Endgültig löschen"
+        },
+        "actions": {
+            "editAriaLabel": "Bearbeite {name}",
+            "deleteAriaLabel": "Lösche {name}",
+            "restoreAriaLabel": "Wiederherstellen {name}",
+            "forceDeleteAriaLabel": "Endgültig löschen {name}",
+            "copyUrlAriaLabel": "URL von {name} kopieren",
+            "openAriaLabel": "{name} öffnen",
+            "urlCopied": "URL kopiert"
+        },
+        "item": {
+            "publicBadge": "Öffentlich"
+        },
+        "show": {
+            "empty": "Es wurden noch keine Links mit diesem Tag versehen."
+        },
+        "form": {
+            "namePlaceholder": "Tag-Name",
+            "descriptionLabel": "Beschreibung",
+            "descriptionPlaceholder": "Optionale Beschreibung",
+            "colorLabel": "Farbe",
+            "isPublicLabel": "Öffentlich",
+            "addButton": "Hinzufügen"
+        }
+    },
+    "buckets": {
+        "pageTitle": "Buckets",
+        "description": "Organisiere deine Links in Buckets, um sie besser zu verwalten.",
+        "created": "Bucket erstellt",
+        "deleted": "Bucket gelöscht",
+        "restored": "Bucket wiederhergestellt",
+        "forceDeleted": "Bucket endgültig gelöscht",
+        "empty": "Keine Buckets vorhanden.",
+        "emptyTrashed": "Keine gelöschten Buckets.",
+        "inbox": "Inbox",
+        "inboxLabel": "Inbox",
+        "newBucket": "Neuer Bucket",
+        "newBucketLabel": "Neuer Bucket",
+        "nameLabel": "Bucket-Name",
+        "namePlaceholder": "Bucket-Name",
+        "colorLabel": "Farbe",
+        "addButton": "Hinzufügen",
+        "editAriaLabel": "Bearbeite {name}",
+        "deleteAriaLabel": "Lösche {name}",
+        "restoreAriaLabel": "Wiederherstellen {name}",
+        "forceDeleteAriaLabel": "Endgültig löschen {name}",
+        "delete": {
+            "title": "Bucket löschen?",
+            "description": "'{name}' wird gelöscht. Diese Aktion kann rückgängig gemacht werden.",
+            "confirm": "Löschen"
+        },
+        "forceDeleteDialog": {
+            "title": "Endgültig löschen?",
+            "description": "'{name}' wird permanent gelöscht und kann nicht wiederhergestellt werden.",
+            "confirm": "Endgültig löschen"
+        },
+        "actions": {
+            "editAriaLabel": "Bearbeite {name}",
+            "deleteAriaLabel": "Lösche {name}",
+            "restoreAriaLabel": "Wiederherstellen {name}",
+            "forceDeleteAriaLabel": "Endgültig löschen {name}",
+            "linksCountAriaLabel": "{count} Links"
+        }
+    },
+    "dashboard": {
+        "title": "Dashboard",
+        "pageTitle": "Dashboard",
+        "stats": {
+            "links": "Links",
+            "tags": "Tags",
+            "publicTags": "Öffentliche Tags",
+            "lastAdded": "Zuletzt hinzugefügt",
+            "lastLink": "letzter Link",
+            "deltaLabel": "+{delta} letzte 7 Tage"
+        },
+        "recentLinks": {
+            "title": "Zuletzt hinzugefügt",
+            "empty": "Noch keine Links vorhanden."
+        },
+        "publicTags": {
+            "title": "Öffentliche Tags",
+            "empty": "Noch keine öffentlichen Tags.",
+            "searchPlaceholder": "Suchen…",
+            "searchAriaLabel": "Öffentliche Tags suchen",
+            "noResults": "Keine Ergebnisse."
+        },
+        "allTags": {
+            "title": "Alle Tags",
+            "empty": "Noch keine Tags vorhanden.",
+            "searchPlaceholder": "Suchen…",
+            "searchAriaLabel": "Alle Tags suchen",
+            "noResults": "Keine Ergebnisse."
+        },
+        "sort": {
+            "ariaLabel": "Sortiereinträge",
+            "recent": "Zuletzt",
+            "alphabetical": "A\u2013Z",
+            "linksCount": "Links"
+        }
+    },
+    "quickAdd": {
+        "pageTitle": "Quick Add",
+        "title": "Link speichern",
+        "heading": "Link speichern",
+        "savedTitle": "Link gespeichert!",
+        "saved": "Link gespeichert!",
+        "savedDescription": "Dieses Fenster schließt sich automatisch…",
+        "autoClose": "Dieses Fenster schließt sich automatisch…",
+        "saving": "Speichere…",
+        "save": "Speichern",
+        "resetAriaLabel": "Formular zurücksetzen",
+        "resetForm": "Formular zurücksetzen"
+    },
+    "import": {
+        "pageTitle": "Import & Export",
+        "breadcrumb": "Import & Export",
+        "description": "Exportiere oder importiere deine Links, Buckets und Tags.",
+        "export": {
+            "title": "Exportieren",
+            "description": "Alle aktiven Links, Buckets und Tags als JSON-Datei herunterladen. Einträge im Papierkorb sind nicht enthalten.",
+            "modalTitle": "Exportieren",
+            "allBuckets": "Alle Buckets einschließen",
+            "allTags": "Alle Tags einschließen",
+            "includeNotes": "Private Notizen einschließen",
+            "button": "Exportieren",
+            "exporting": "Exportiere…",
+            "cancel": "Abbrechen"
+        },
+        "htmlImport": {
+            "title": "Netscape HTML importieren",
+            "description": "Browser-Lesezeichen im Netscape HTML Format (Chrome, Firefox, Safari).",
+            "targetBucket": "Ziel-Bucket",
+            "inboxSuffix": "(Standard)",
+            "fileLabel": "Lesezeichen-Datei (.html)",
+            "importing": "Importiere…",
+            "importButton": "Importieren",
+            "imported": "0 Links importiert | {n} Link importiert | {n} Links importiert",
+            "skipped": "{n} übersprungen",
+            "hints": "0 ähnliche URLs | {n} ähnliche URL gefunden | {n} ähnliche URLs gefunden"
+        },
+        "jsonImport": {
+            "title": "Linkshare JSON importieren",
+            "description": "Importiere eine zuvor exportierte Linkshare JSON-Datei.",
+            "fileLabel": "JSON-Datei (.json)",
+            "parseError": "Fehler beim Parsen der Datei.",
+            "uploadError": "Fehler beim Hochladen der Datei.",
+            "importError": "Fehler beim Importieren der Datei.",
+            "analyzing": "Datei analysieren",
+            "reading": "Lese Datei…",
+            "importing": "Importiere…",
+            "importedCount": "0 Links importiert | {n} Link importiert | {n} Links importiert",
+            "skippedCount": "{n} übersprungen",
+            "bucketsCreated": "0 Buckets erstellt | {n} Bucket erstellt | {n} Buckets erstellt",
+            "tagsCreated": "0 Tags erstellt | {n} Tag erstellt | {n} Tags erstellt",
+            "modal": {
+                "title": "JSON importieren",
+                "foundLinks": "0 Links gefunden. | {n} Link gefunden. | {n} Links gefunden.",
+                "selectInstruction": "Wähle aus, was importiert werden soll.",
+                "allBuckets": "Alle Buckets importieren",
+                "allTags": "Alle Tags importieren",
+                "importButton": "Importieren",
+                "cancel": "Abbrechen"
+            }
+        },
+        "bookmarklet": {
+            "title": "Quick-Add Bookmarklet",
+            "description": "Ziehe den Button in deine Lesezeichen-Leiste oder kopiere den Code manuell.",
+            "dragHint": "\u2190 In Lesezeichen-Leiste ziehen",
+            "saveLink": "Link speichern",
+            "copy": "Kopieren",
+            "copied": "Kopiert!"
+        }
+    },
+    "pagination": {
+        "summary": "{from}\u2013{to} von {total}"
+    },
+    "welcome": {
+        "pageTitle": "Willkommen",
+        "dashboard": "Dashboard",
+        "login": "Anmelden",
+        "register": "Registrieren"
+    },
+    "toaster": {
+        "close": "Schließen"
+    },
+    "colorPalette": {
+        "ariaLabel": "Farbpalette"
+    }
+}

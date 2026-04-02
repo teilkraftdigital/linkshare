@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Search, X } from 'lucide-vue-next';
 import { computed, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { Bucket, Tag } from '@/types/dashboard';
@@ -11,6 +12,8 @@ type Props = {
 };
 
 defineProps<Props>();
+
+const { t } = useI18n();
 
 const filterSearch = defineModel<string>('search', {
     required: true,
@@ -55,7 +58,7 @@ watch(hasActiveFilters, (value) => {
             />
             <Input
                 v-model="filterSearch"
-                placeholder="Suche in deinen Links…"
+                :placeholder="t('links.searchPlaceholder')"
                 class="pl-8"
             />
         </div>
@@ -63,9 +66,9 @@ watch(hasActiveFilters, (value) => {
         <select
             v-model="filterBucketId"
             class="rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
-            aria-label="Filter nach Bucket"
+            :aria-label="t('links.filterByBucket')"
         >
-            <option value="">Alle Buckets</option>
+            <option value="">{{ t('links.allBuckets') }}</option>
             <option
                 v-for="bucket in buckets"
                 :key="bucket.id"
@@ -79,9 +82,9 @@ watch(hasActiveFilters, (value) => {
             v-if="tags.length > 0"
             v-model="filterTagId"
             class="rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:ring-2"
-            aria-label="Filter nach Tag"
+            :aria-label="t('links.filterByTag')"
         >
-            <option value="">Alle Tags</option>
+            <option value="">{{ t('links.allTags') }}</option>
             <option v-for="tag in tags" :key="tag.id" :value="String(tag.id)">
                 {{ tag.name }}
             </option>
@@ -91,7 +94,7 @@ watch(hasActiveFilters, (value) => {
             v-if="hasActiveFilters"
             variant="ghost"
             size="icon"
-            aria-label="Filter zurücksetzen"
+            :aria-label="t('links.resetFilters')"
             @click="clearFilters"
         >
             <X class="size-4" />

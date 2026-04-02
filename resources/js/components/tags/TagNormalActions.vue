@@ -26,7 +26,7 @@ function confirmDelete(tag: Tag) {
     <Button
         variant="ghost"
         size="icon"
-        :aria-label="`Bearbeite ${tag.name}`"
+        :aria-label="$t('tags.actions.editAriaLabel', { name: tag.name })"
         @click="startEdit(tag)"
     >
         <Pencil class="size-4" />
@@ -35,7 +35,7 @@ function confirmDelete(tag: Tag) {
     <Button
         variant="ghost"
         size="icon"
-        :aria-label="`Lösche ${tag.name}`"
+        :aria-label="$t('tags.actions.deleteAriaLabel', { name: tag.name })"
         @click="confirmDelete(tag)"
     >
         <Trash2 class="size-4 text-destructive" />

@@ -1,5 +1,7 @@
 import { createInertiaApp } from '@inertiajs/vue3';
+import { createApp, h } from 'vue';
 import { initializeTheme } from '@/composables/useAppearance';
+import { i18n } from '@/i18n';
 import AppLayout from '@/layouts/AppLayout.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import GuestLayout from '@/layouts/GuestLayout.vue';
@@ -28,6 +30,12 @@ createInertiaApp({
     },
     progress: {
         color: '#4B5563',
+    },
+    setup({ el, App, props, plugin }) {
+        createApp({ render: () => h(App, props) })
+            .use(plugin)
+            .use(i18n)
+            .mount(el);
     },
 });
 

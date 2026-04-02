@@ -13,7 +13,7 @@ defineProps<Props>();
         <h2
             class="mb-3 text-sm font-semibold tracking-wide text-muted-foreground uppercase"
         >
-            Zuletzt hinzugefügt
+            {{ $t('dashboard.recentLinks.title') }}
         </h2>
         <ul>
             <li v-if="links.length > 0" class="flex flex-col gap-1.5">
@@ -28,7 +28,7 @@ defineProps<Props>();
                 />
             </li>
             <li v-else class="text-sm text-muted-foreground">
-                Noch keine Links vorhanden.
+                {{ $t('dashboard.recentLinks.empty') }}
             </li>
         </ul>
     </section>

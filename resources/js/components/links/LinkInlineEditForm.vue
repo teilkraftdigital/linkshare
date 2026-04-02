@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import TagSelect from '@/components/links/TagSelect.vue';
 import InputError from '@/components/shared/InputError.vue';
@@ -20,6 +21,7 @@ const props = defineProps<Props>();
 
 const { createError: tagCreateError, createTag } = useTagCreate();
 const localTags = ref<Tag[]>([...props.tags]);
+const { t } = useI18n();
 
 const event = defineEmits<{
     (e: 'cancel'): void;
@@ -44,6 +46,7 @@ const editTagIds = defineModel<number[]>('tag_ids', {
 
 async function handleTagCreated(name: string) {
     const tag = await createTag(name);
+
     if (tag) {
         localTags.value = [...localTags.value, tag];
         editTagIds.value = [...editTagIds.value, tag.id];
@@ -76,27 +79,27 @@ async function handleTagCreated(name: string) {
 
             <div class="flex flex-col gap-2">
                 <Label :for="`edit-title-${link.id}`" class="sr-only">
-                    Titel
+                    {{ t('fields.title') }}
                 </Label>
                 <Input
                     :id="`edit-title-${link.id}`"
                     name="title"
                     v-model="link.title"
-                    placeholder="Link Titel"
+                    :placeholder="t('placeholders.linkTitle')"
                 />
                 <InputError :message="errors.title" />
             </div>
 
             <div class="flex flex-col gap-2">
                 <Label :for="`edit-desc-${link.id}`" class="sr-only">
-                    Beschreibung
+                    {{ t('fields.description') }}
                 </Label>
                 <Textarea
                     :id="`edit-desc-${link.id}`"
                     name="description"
                     :default-value="link.description ?? ''"
                     v-model="link.description"
-                    placeholder="Optionale Beschreibung"
+                    :placeholder="t('placeholders.optionalDescription')"
                     class="resize-none"
                     rows="2"
                 />
@@ -105,13 +108,13 @@ async function handleTagCreated(name: string) {
 
             <div class="flex flex-col gap-2">
                 <Label :for="`edit-notes-${link.id}`" class="sr-only">
-                    Notizen (privat)
+                    {{ t('fields.notesPrivate') }}
                 </Label>
                 <Textarea
                     :id="`edit-notes-${link.id}`"
                     name="notes"
                     v-model="link.notes"
-                    placeholder="Private Notizen"
+                    :placeholder="t('placeholders.privateNotes')"
                     class="resize-none"
                     rows="2"
                 />
@@ -121,7 +124,9 @@ async function handleTagCreated(name: string) {
 
         <div class="flex flex-wrap gap-6">
             <div class="flex flex-col gap-2">
-                <Label :for="`edit-bucket-${link.id}`"> Bucket </Label>
+                <Label :for="`edit-bucket-${link.id}`">{{
+                    t('fields.bucket')
+                }}</Label>
                 <select
                     :id="`edit-bucket-${link.id}`"
                     name="bucket_id"
@@ -145,7 +150,7 @@ async function handleTagCreated(name: string) {
             </div>
 
             <div class="flex flex-col gap-2">
-                <Label>Tags</Label>
+                <Label>{{ t('fields.tags') }}</Label>
                 <TagSelect
                     :tags="localTags"
                     v-model="editTagIds"
@@ -157,7 +162,7 @@ async function handleTagCreated(name: string) {
 
         <div class="flex gap-2">
             <Button type="submit" size="sm" :disabled="processing">
-                Speichern
+                {{ t('common.save') }}
             </Button>
             <Button
                 type="button"
@@ -165,7 +170,7 @@ async function handleTagCreated(name: string) {
                 variant="outline"
                 @click="cancelEdit"
             >
-                Abbrechen
+                {{ t('common.cancel') }}
             </Button>
         </div>
     </Form>

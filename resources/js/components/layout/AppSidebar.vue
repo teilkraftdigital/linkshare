@@ -9,6 +9,7 @@ import {
     Tag,
     Upload,
 } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
 import AppLogo from '@/components/layout/AppLogo.vue';
 import NavFooter from '@/components/layout/NavFooter.vue';
 import NavMain from '@/components/layout/NavMain.vue';
@@ -29,9 +30,11 @@ import { index as linksIndex } from '@/routes/dashboard/links';
 import { index as tagsIndex } from '@/routes/dashboard/tags';
 import type { NavItem } from '@/types';
 
+const { t } = useI18n();
+
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: t('nav.dashboard'),
         href: dashboard(),
         icon: LayoutGrid,
     },
@@ -39,17 +42,17 @@ const mainNavItems: NavItem[] = [
 
 const libraryNavItems: NavItem[] = [
     {
-        title: 'Links',
+        title: t('nav.links'),
         href: linksIndex(),
         icon: LinkIcon,
     },
     {
-        title: 'Buckets',
+        title: t('nav.buckets'),
         href: bucketsIndex(),
         icon: Inbox,
     },
     {
-        title: 'Tags',
+        title: t('nav.tags'),
         href: tagsIndex(),
         icon: Tag,
     },
@@ -57,7 +60,7 @@ const libraryNavItems: NavItem[] = [
 
 const toolNavItems: NavItem[] = [
     {
-        title: 'Import',
+        title: t('nav.import'),
         href: importCreate(),
         icon: Upload,
     },
@@ -93,8 +96,8 @@ const footerNavItems: NavItem[] = [
 
         <SidebarContent>
             <NavMain :items="mainNavItems" />
-            <NavMain :items="libraryNavItems" label="Bibliothek" />
-            <NavMain :items="toolNavItems" label="Werkzeuge" />
+            <NavMain :items="libraryNavItems" :label="$t('nav.library')" />
+            <NavMain :items="toolNavItems" :label="$t('nav.tools')" />
         </SidebarContent>
 
         <SidebarFooter>

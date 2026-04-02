@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import InputError from '@/components/shared/InputError.vue';
 import PasswordInput from '@/components/shared/PasswordInput.vue';
 import TextLink from '@/components/shared/TextLink.vue';
@@ -9,16 +10,18 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { login } from '@/routes';
 
+const { t } = useI18n();
+
 defineOptions({
     layout: {
-        title: 'Create an account',
-        description: 'Enter your details below to create your account',
+        title: t('auth.register.title'),
+        description: t('auth.register.description'),
     },
 });
 </script>
 
 <template>
-    <Head title="Register" />
+    <Head :title="$t('auth.register.pageTitle')" />
 
     <Form
         action="/register"
@@ -29,7 +32,7 @@ defineOptions({
     >
         <div class="grid gap-6">
             <div class="grid gap-2">
-                <Label for="name">Name</Label>
+                <Label for="name">{{ $t('fields.name') }}</Label>
                 <Input
                     id="name"
                     type="text"
@@ -38,13 +41,13 @@ defineOptions({
                     :tabindex="1"
                     autocomplete="name"
                     name="name"
-                    placeholder="Full name"
+                    :placeholder="$t('placeholders.fullName')"
                 />
                 <InputError :message="errors.name" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="email">Email address</Label>
+                <Label for="email">{{ $t('fields.email') }}</Label>
                 <Input
                     id="email"
                     type="email"
@@ -52,33 +55,33 @@ defineOptions({
                     :tabindex="2"
                     autocomplete="email"
                     name="email"
-                    placeholder="email@example.com"
+                    :placeholder="$t('placeholders.email')"
                 />
                 <InputError :message="errors.email" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="password">Password</Label>
+                <Label for="password">{{ $t('fields.password') }}</Label>
                 <PasswordInput
                     id="password"
                     required
                     :tabindex="3"
                     autocomplete="new-password"
                     name="password"
-                    placeholder="Password"
+                    :placeholder="$t('placeholders.password')"
                 />
                 <InputError :message="errors.password" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="password_confirmation">Confirm password</Label>
+                <Label for="password_confirmation">{{ $t('fields.confirmPassword') }}</Label>
                 <PasswordInput
                     id="password_confirmation"
                     required
                     :tabindex="4"
                     autocomplete="new-password"
                     name="password_confirmation"
-                    placeholder="Confirm password"
+                    :placeholder="$t('fields.confirmPassword')"
                 />
                 <InputError :message="errors.password_confirmation" />
             </div>
@@ -91,18 +94,17 @@ defineOptions({
                 data-test="register-user-button"
             >
                 <Spinner v-if="processing" />
-                Create account
+                {{ $t('auth.register.submit') }}
             </Button>
         </div>
 
         <div class="text-center text-sm text-muted-foreground">
-            Already have an account?
+            {{ $t('auth.register.alreadyHaveAccount') }}
             <TextLink
                 :href="login()"
                 class="underline underline-offset-4"
                 :tabindex="6"
-                >Log in</TextLink
-            >
+            >{{ $t('auth.register.login') }}</TextLink>
         </div>
     </Form>
 </template>

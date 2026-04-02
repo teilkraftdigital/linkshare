@@ -33,15 +33,18 @@ export function useTagCreate() {
                     'Tag konnte nicht erstellt werden';
                 createError.value = message;
                 toast(message, 'destructive');
+
                 return null;
             }
 
             toast(`Tag „${(data as Tag).name}" erstellt`, 'success');
+
             return data as Tag;
         } catch {
             const message = 'Tag konnte nicht erstellt werden';
             createError.value = message;
             toast(message, 'destructive');
+
             return null;
         }
     }

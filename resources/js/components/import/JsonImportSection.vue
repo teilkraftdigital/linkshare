@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Upload } from 'lucide-vue-next';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import JsonImportController from '@/actions/App/Http/Controllers/Dashboard/JsonImportController';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +16,7 @@ type ParsePreview = {
     link_count: number;
 };
 
+const { t } = useI18n();
 const { toast } = useToast();
 
 const jsonFile = ref<File | null>(null);
@@ -53,7 +55,7 @@ return;
         const data = await response.json();
 
         if (!response.ok) {
-            jsonParseError.value = data.error ?? data.message ?? 'Fehler beim Parsen der Datei.';
+            jsonParseError.value = data.error ?? data.message ?? t('import.jsonImport.parseError');
 
             return;
         }
@@ -61,7 +63,7 @@ return;
         jsonPreview.value = data as ParsePreview;
         jsonImportModalOpen.value = true;
     } catch {
-        jsonParseError.value = 'Fehler beim Hochladen der Datei.';
+        jsonParseError.value = t('import.jsonImport.uploadError');
     } finally {
         jsonParsing.value = false;
     }
@@ -95,27 +97,27 @@ return;
             const result = await response.json();
             const { imported, skipped, buckets_created, tags_created } = result;
 
-            let message = `${imported} ${imported === 1 ? 'Link' : 'Links'} importiert`;
+            const parts = [t('import.jsonImport.importedCount', imported)];
 
             if (skipped > 0) {
-message += ` · ${skipped} übersprungen`;
+parts.push(t('import.jsonImport.skippedCount', { n: skipped }));
 }
 
             if (buckets_created > 0) {
-message += ` · ${buckets_created} ${buckets_created === 1 ? 'Bucket' : 'Buckets'} erstellt`;
+parts.push(t('import.jsonImport.bucketsCreated', buckets_created));
 }
 
             if (tags_created > 0) {
-message += ` · ${tags_created} ${tags_created === 1 ? 'Tag' : 'Tags'} erstellt`;
+parts.push(t('import.jsonImport.tagsCreated', tags_created));
 }
 
-            toast(message, 'success');
+            toast(parts.join(' · '), 'success');
             jsonFile.value = null;
         } else {
-            jsonParseError.value = 'Fehler beim Importieren der Datei.';
+            jsonParseError.value = t('import.jsonImport.importError');
         }
     } catch {
-        jsonParseError.value = 'Fehler beim Importieren der Datei.';
+        jsonParseError.value = t('import.jsonImport.importError');
     } finally {
         jsonImporting.value = false;
     }
@@ -132,15 +134,15 @@ message += ` · ${tags_created} ${tags_created === 1 ? 'Tag' : 'Tags'} erstellt`
     />
 
     <div>
-        <h2 class="text-sm font-semibold">Linkshare JSON importieren</h2>
+        <h2 class="text-sm font-semibold">{{ $t('import.jsonImport.title') }}</h2>
         <p class="mt-0.5 text-sm text-muted-foreground">
-            Importiere eine zuvor exportierte Linkshare JSON-Datei.
+            {{ $t('import.jsonImport.description') }}
         </p>
     </div>
 
     <div class="space-y-4">
         <div class="space-y-1.5">
-            <Label for="json-file">JSON-Datei (.json)</Label>
+            <Label for="json-file">{{ $t('import.jsonImport.fileLabel') }}</Label>
             <Input
                 id="json-file"
                 type="file"
@@ -163,7 +165,7 @@ message += ` · ${tags_created} ${tags_created === 1 ? 'Tag' : 'Tags'} erstellt`
             @click="parseJsonFile"
         >
             <Upload class="mr-2 size-4" />
-            {{ jsonImporting ? 'Importiere…' : jsonParsing ? 'Lese Datei…' : 'Datei analysieren' }}
+            {{ jsonImporting ? $t('import.jsonImport.importing') : jsonParsing ? $t('import.jsonImport.reading') : $t('import.jsonImport.analyzing') }}
         </Button>
     </div>
 </template>
