@@ -432,7 +432,7 @@
             "title": "Netscape HTML importieren",
             "description": "Browser-Lesezeichen im Netscape HTML Format (Chrome, Firefox, Safari).",
             "targetBucket": "Ziel-Bucket",
-            "inboxSuffix": "(Standard)",
+            "inboxSuffix": "Standard",
             "fileLabel": "Lesezeichen-Datei (.html)",
             "importing": "Importiere…",
             "importButton": "Importieren",
