@@ -18,15 +18,14 @@ const open = ref(false);
 
     <div class="space-y-3">
         <div>
-            <h2 class="text-sm font-semibold">Exportieren</h2>
+            <h2 class="text-sm font-semibold">{{ $t('import.export.title') }}</h2>
             <p class="mt-0.5 text-sm text-muted-foreground">
-                Alle aktiven Links, Buckets und Tags als JSON-Datei herunterladen.
-                Einträge im Papierkorb sind nicht enthalten.
+                {{ $t('import.export.description') }}
             </p>
         </div>
         <Button variant="outline" @click="open = true">
             <Download class="mr-2 size-4" />
-            Exportieren
+            {{ $t('import.export.button') }}
         </Button>
     </div>
 </template>

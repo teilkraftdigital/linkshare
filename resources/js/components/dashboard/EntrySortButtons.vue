@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import type { SortKey } from '@/types/dashboard';
+
+const { t } = useI18n();
 
 const sortKey = defineModel<SortKey>({
     default: 'updated_at',
@@ -11,23 +14,23 @@ const updateSortKey = (newKey: SortKey) => {
 </script>
 
 <template>
-    <section class="flex gap-1" aria-label="Sortiereinträge">
+    <section class="flex gap-1" :aria-label="$t('dashboard.sort.ariaLabel')">
         <button
-            v-for="opt in [
-                ['updated_at', 'Zuletzt'],
-                ['name', 'A–Z'],
-                ['links_count', 'Links'],
+            v-for="[key, labelKey] in [
+                ['updated_at', 'dashboard.sort.recent'],
+                ['name', 'dashboard.sort.alphabetical'],
+                ['links_count', 'dashboard.sort.linksCount'],
             ] as [SortKey, string][]"
-            :key="opt[0]"
+            :key="key"
             class="rounded px-2 py-0.5 text-xs transition-colors"
             :class="
-                sortKey === opt[0]
+                sortKey === key
                     ? 'bg-primary text-primary-foreground'
                     : 'text-muted-foreground hover:bg-muted'
             "
-            @click="updateSortKey(opt[0])"
+            @click="updateSortKey(key)"
         >
-            {{ opt[1] }}
+            {{ t(labelKey) }}
         </button>
     </section>
 </template>

@@ -30,10 +30,6 @@ setLayoutProps({
     </Head>
 
     <main class="mx-auto max-w-2xl px-4 py-12">
-        <!-- <div class="mb-6 flex items-center justify-between gap-4">
-            <h2 class="text-2xl font-bold">{{ tag.name }}</h2>
-        </div> -->
-
         <ul v-if="links.length > 0" class="flex flex-col gap-2">
             <li v-for="link in links" :key="link.id">
                 <LinkCard
@@ -46,7 +42,7 @@ setLayoutProps({
         </ul>
 
         <p v-else class="text-sm text-muted-foreground">
-            Es wurden noch keine Links mit diesem Tag versehen.
+            {{ $t('tags.showEmpty') }}
         </p>
     </main>
 </template>

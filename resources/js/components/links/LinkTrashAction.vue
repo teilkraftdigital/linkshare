@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { Trash2, RotateCcw } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
 import type { Link } from '@/types/dashboard';
+const { t } = useI18n();
 
 type Props = {
     link: Link;
@@ -28,7 +30,7 @@ function confirmForceDelete(link: Link) {
         variant="ghost"
         size="icon"
         class="size-7"
-        :aria-label="`Stelle ${link.title} wieder her`"
+        :aria-label="t('links.actions.restoreAriaLabel', { title: link.title })"
         @click="restoreLink(link)"
     >
         <RotateCcw class="size-3.5" />
@@ -37,7 +39,9 @@ function confirmForceDelete(link: Link) {
         variant="ghost"
         size="icon"
         class="size-7"
-        :aria-label="`Lösche permanent ${link.title}`"
+        :aria-label="
+            t('links.actions.forceDeleteAriaLabel', { title: link.title })
+        "
         @click="confirmForceDelete(link)"
     >
         <Trash2 class="size-3.5 text-destructive" />

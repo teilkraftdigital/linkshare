@@ -13,7 +13,7 @@ const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
     <div
         class="flex flex-wrap justify-between gap-2 md:justify-items-start"
         role="group"
-        aria-label="Color palette"
+        :aria-label="$t('colorPalette.ariaLabel')"
     >
         <label
             v-for="color in COLORS"

@@ -2,6 +2,7 @@
 import { Form } from '@inertiajs/vue3';
 import { RotateCcw, Loader2 } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import LinkSimilarMessage from '@/components/links/LinkSimilarMessage.vue';
 import TagSelect from '@/components/links/TagSelect.vue';
@@ -22,6 +23,7 @@ const props = defineProps<{
     inboxBucketId: number;
 }>();
 
+const { t } = useI18n();
 const { toast } = useToast();
 const { createError: tagCreateError, createTag } = useTagCreate();
 
@@ -94,6 +96,7 @@ const handleCreateSubmit = (value: any) => {
 
 async function handleTagCreated(name: string) {
     const tag = await createTag(name);
+
     if (tag) {
         localTags.value = [...localTags.value, tag];
         createTagIds.value = [...createTagIds.value, tag.id];
@@ -110,7 +113,7 @@ async function handleTagCreated(name: string) {
         @success="
             () => {
                 resetCreateForm();
-                toast('Link gespeichert', 'success');
+                toast(t('links.saved'), 'success');
             }
         "
     >
@@ -151,30 +154,30 @@ async function handleTagCreated(name: string) {
                     :existis="duplicateExists"
                 />
                 <p v-if="metaFailed" class="text-xs text-muted-foreground">
-                    Metadaten für diese URL konnten nicht geladen werden.
+                    {{ $t('links.metaLoadFailed') }}
                 </p>
                 <InputError :message="errors.url" />
             </div>
 
             <div class="flex flex-col gap-2">
-                <Label for="link-title">Titel</Label>
+                <Label for="link-title">{{ $t('fields.title') }}</Label>
                 <Input
                     id="link-title"
                     v-model="createTitle"
                     name="title"
-                    placeholder="Link-Titel"
+                    :placeholder="$t('placeholders.linkTitle')"
                     autocomplete="off"
                 />
                 <InputError :message="errors.title" />
             </div>
 
             <div class="flex flex-col gap-2">
-                <Label for="link-description">Beschreibung</Label>
+                <Label for="link-description">{{ $t('fields.description') }}</Label>
                 <Textarea
                     id="link-description"
                     v-model="createDescription"
                     name="description"
-                    placeholder="Optionale Beschreibung"
+                    :placeholder="$t('placeholders.optionalDescription')"
                     class="resize-none"
                     rows="2"
                 />
@@ -183,14 +186,14 @@ async function handleTagCreated(name: string) {
 
             <div class="flex flex-col gap-2">
                 <Label for="link-notes">
-                    Notizen
-                    <span class="text-muted-foreground"> (privat)</span>
+                    {{ $t('fields.notes') }}
+                    <span class="text-muted-foreground"> ({{ $t('fields.notesPrivate') }})</span>
                 </Label>
                 <Textarea
                     id="link-notes"
                     v-model="createNotes"
                     name="notes"
-                    placeholder="Private Notizen"
+                    :placeholder="$t('placeholders.privateNotes')"
                     class="resize-none"
                     rows="2"
                 />
@@ -200,7 +203,7 @@ async function handleTagCreated(name: string) {
 
         <div class="flex flex-wrap gap-6">
             <div class="flex flex-col gap-2">
-                <Label for="link-bucket">Bucket</Label>
+                <Label for="link-bucket">{{ $t('fields.bucket') }}</Label>
                 <select
                     id="link-bucket"
                     name="bucket_id"
@@ -224,7 +227,7 @@ async function handleTagCreated(name: string) {
             </div>
 
             <div class="flex flex-col gap-2">
-                <Label>Tags</Label>
+                <Label>{{ $t('fields.tags') }}</Label>
                 <TagSelect
                     :tags="localTags"
                     v-model="createTagIds"
@@ -248,14 +251,14 @@ async function handleTagCreated(name: string) {
                 :disabled="processing"
                 @click="handleCreateSubmit(submit)"
             >
-                Speichern
+                {{ $t('common.save') }}
             </Button>
             <Button
                 v-if="isCreateFormDirty"
                 type="button"
                 variant="ghost"
                 size="icon"
-                aria-label="Clear form"
+                :aria-label="$t('common.clearForm')"
                 @click="resetCreateForm"
             >
                 <RotateCcw class="size-4" />

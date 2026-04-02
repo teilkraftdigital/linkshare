@@ -34,11 +34,11 @@ function openTagLinks(tag: DashboardTag): void {
         <h2
             class="mb-3 text-sm font-semibold tracking-wide text-muted-foreground uppercase"
         >
-            Alle Tags
+            {{ $t('dashboard.allTags.title') }}
         </h2>
 
         <div v-if="allTags.length === 0" class="text-sm text-muted-foreground">
-            Noch keine Tags vorhanden.
+            {{ $t('dashboard.allTags.empty') }}
         </div>
 
         <template v-else>
@@ -47,8 +47,8 @@ function openTagLinks(tag: DashboardTag): void {
                 v-if="allTags.length >= TAG_SEARCH_THRESHOLD"
                 v-model="allTagSearch"
                 type="search"
-                aria-label="Alle Tags suchen"
-                placeholder="Suchen…"
+                :aria-label="$t('dashboard.allTags.searchAriaLabel')"
+                :placeholder="$t('dashboard.allTags.searchPlaceholder')"
                 class="mb-2 w-64 rounded-md border bg-background px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
 
@@ -93,7 +93,7 @@ function openTagLinks(tag: DashboardTag): void {
                     v-if="sortedAllTags.length === 0"
                     class="col-span-full text-sm text-muted-foreground"
                 >
-                    Keine Ergebnisse.
+                    {{ $t('dashboard.allTags.noResults') }}
                 </li>
             </ul>
         </template>

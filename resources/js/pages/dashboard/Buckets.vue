@@ -2,6 +2,7 @@
 import { Form, Head, router } from '@inertiajs/vue3';
 import { Link as LinkIcon, Pencil, RotateCcw, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import BucketController from '@/actions/App/Http/Controllers/Dashboard/BucketController';
 import ColorPalette from '@/components/shared/ColorPalette.vue';
 import ConfirmModal from '@/components/shared/ConfirmModal.vue';
@@ -21,6 +22,8 @@ type Props = {
 };
 
 const props = defineProps<Props>();
+
+const { t } = useI18n();
 
 defineOptions({
     layout: {
@@ -68,7 +71,7 @@ function deleteBucket() {
         preserveScroll: true,
         onSuccess: () => {
             deleteTarget.value = null;
-            toast('Bucket gelöscht', 'success');
+            toast(t('buckets.deleted'), 'success');
         },
     });
 }
@@ -79,7 +82,7 @@ function restoreBucket(bucket: Bucket) {
         {},
         {
             preserveScroll: true,
-            onSuccess: () => toast('Bucket wiederhergestellt', 'success'),
+            onSuccess: () => toast(t('buckets.restored'), 'success'),
         },
     );
 }
@@ -97,20 +100,20 @@ function forceDeleteBucket() {
         preserveScroll: true,
         onSuccess: () => {
             forceDeleteTarget.value = null;
-            toast('Bucket endgültig gelöscht', 'success');
+            toast(t('buckets.forceDeleted'), 'success');
         },
     });
 }
 </script>
 
 <template>
-    <Head title="Buckets" />
+    <Head :title="$t('buckets.pageTitle')" />
 
     <div class="flex flex-col gap-8 p-4">
         <div class="flex items-start justify-between gap-4">
             <Heading
-                title="Buckets"
-                description="Organisiere deine Links in Buckets, um sie besser zu verwalten."
+                :title="$t('buckets.pageTitle')"
+                :description="$t('buckets.description')"
             />
             <Button
                 variant="ghost"
@@ -121,7 +124,7 @@ function forceDeleteBucket() {
                 @click="toggleTrashed"
             >
                 <Trash2 class="size-4" />
-                Papierkorb
+                {{ $t('common.trash') }}
             </Button>
         </div>
 
@@ -135,30 +138,30 @@ function forceDeleteBucket() {
             @success="
                 () => {
                     createColor = 'gray';
-                    toast('Bucket created', 'success');
+                    toast($t('buckets.created'), 'success');
                 }
             "
         >
             <div class="flex flex-1 flex-col gap-2">
-                <Label for="bucket-name">Neuer Bucket</Label>
+                <Label for="bucket-name">{{ $t('buckets.newBucket') }}</Label>
                 <Input
                     id="bucket-name"
                     name="name"
-                    placeholder="Bucket name"
+                    :placeholder="$t('buckets.namePlaceholder')"
                     autocomplete="off"
                 />
                 <InputError :message="errors.name" />
             </div>
 
             <div class="flex flex-col gap-2">
-                <Label>Color</Label>
+                <Label>{{ $t('fields.color') }}</Label>
                 <input type="hidden" name="color" :value="createColor" />
                 <ColorPalette v-model="createColor" class="mt-1.5" />
                 <InputError :message="errors.color" />
             </div>
 
             <Button type="submit" :disabled="processing" class="self-end">
-                Hinzufügen
+                {{ $t('common.add') }}
             </Button>
         </Form>
 
@@ -192,13 +195,13 @@ function forceDeleteBucket() {
                                 :for="`bucket-name-${bucket.id}`"
                                 class="sr-only"
                             >
-                                Bucket name
+                                {{ $t('buckets.nameLabel') }}
                             </Label>
                             <Input
                                 :id="`bucket-name-${bucket.id}`"
                                 name="name"
                                 :default-value="bucket.name"
-                                placeholder="Bucket name"
+                                :placeholder="$t('buckets.namePlaceholder')"
                                 autocomplete="off"
                                 class="h-8 w-48"
                             />
@@ -210,7 +213,7 @@ function forceDeleteBucket() {
                                 :for="`bucket-color-${bucket.id}`"
                                 class="sr-only"
                             >
-                                Farbe
+                                {{ $t('fields.color') }}
                             </Label>
                             <input
                                 type="hidden"
@@ -228,7 +231,7 @@ function forceDeleteBucket() {
                                 size="sm"
                                 :disabled="processing"
                             >
-                                Speichern
+                                {{ $t('common.save') }}
                             </Button>
                             <Button
                                 type="button"
@@ -236,7 +239,7 @@ function forceDeleteBucket() {
                                 variant="outline"
                                 @click="cancelEdit"
                             >
-                                Abbrechen
+                                {{ $t('common.cancel') }}
                             </Button>
                         </div>
                     </Form>
@@ -261,7 +264,7 @@ function forceDeleteBucket() {
                         v-if="!showTrashed && bucket.is_inbox"
                         class="text-xs text-muted-foreground"
                     >
-                        Inbox
+                        {{ $t('buckets.inbox') }}
                     </span>
 
                     <!-- Normal actions -->
@@ -269,7 +272,7 @@ function forceDeleteBucket() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            :aria-label="`Edit ${bucket.name}`"
+                            :aria-label="$t('buckets.editAriaLabel', { name: bucket.name })"
                             @click="startEdit(bucket)"
                         >
                             <Pencil class="size-4" />
@@ -279,7 +282,7 @@ function forceDeleteBucket() {
                             v-if="!bucket.is_inbox"
                             variant="ghost"
                             size="icon"
-                            :aria-label="`Lösche ${bucket.name}`"
+                            :aria-label="$t('buckets.deleteAriaLabel', { name: bucket.name })"
                             @click="confirmDelete(bucket)"
                         >
                             <Trash2 class="size-4 text-destructive" />
@@ -291,7 +294,7 @@ function forceDeleteBucket() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            :aria-label="`Wiederherstellen ${bucket.name}`"
+                            :aria-label="$t('buckets.restoreAriaLabel', { name: bucket.name })"
                             @click="restoreBucket(bucket)"
                         >
                             <RotateCcw class="size-4" />
@@ -300,7 +303,7 @@ function forceDeleteBucket() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            :aria-label="`Endgültig löschen ${bucket.name}`"
+                            :aria-label="$t('buckets.forceDeleteAriaLabel', { name: bucket.name })"
                             @click="confirmForceDelete(bucket)"
                         >
                             <Trash2 class="size-4 text-destructive" />
@@ -313,17 +316,17 @@ function forceDeleteBucket() {
         <p v-if="buckets.length === 0" class="text-sm text-muted-foreground">
             {{
                 showTrashed
-                    ? 'Keine gelöschten Buckets.'
-                    : 'Keine Buckets vorhanden.'
+                    ? $t('buckets.emptyTrashed')
+                    : $t('buckets.empty')
             }}
         </p>
     </div>
 
     <ConfirmModal
         :open="deleteTarget !== null"
-        title="Bucket löschen?"
-        :description="`'${deleteTarget?.name}' wird gelöscht. Diese Aktion kann rückgängig gemacht werden.`"
-        confirm-label="Löschen"
+        :title="$t('buckets.delete.title')"
+        :description="$t('buckets.delete.description', { name: deleteTarget?.name })"
+        :confirm-label="$t('buckets.delete.confirm')"
         @update:open="
             (val) => {
                 if (!val) deleteTarget = null;
@@ -334,9 +337,9 @@ function forceDeleteBucket() {
 
     <ConfirmModal
         :open="forceDeleteTarget !== null"
-        title="Endgültig löschen?"
-        :description="`'${forceDeleteTarget?.name}' wird permanent gelöscht und kann nicht wiederhergestellt werden.`"
-        confirm-label="Endgültig löschen"
+        :title="$t('buckets.forceDeleteDialog.title')"
+        :description="$t('buckets.forceDeleteDialog.description', { name: forceDeleteTarget?.name })"
+        :confirm-label="$t('buckets.forceDeleteDialog.confirm')"
         @update:open="
             (val) => {
                 if (!val) forceDeleteTarget = null;

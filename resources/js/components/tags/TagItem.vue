@@ -2,6 +2,7 @@
 import { Copy } from 'lucide-vue-next';
 import { Link as LinkIcon } from 'lucide-vue-next';
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import PublicTagController from '@/actions/App/Http/Controllers/TagController';
 import TagInlineEditForm from '@/components/tags/TagInlineEditForm.vue';
 import TagNormalActions from '@/components/tags/TagNormalActions.vue';
@@ -11,6 +12,7 @@ import { useToast } from '@/composables/useToast';
 import { COLOR_BG } from '@/lib/colors';
 import type { Tag } from '@/types/dashboard';
 
+const { t } = useI18n();
 const { toast } = useToast();
 
 type Props = {
@@ -52,7 +54,7 @@ async function copyUrl(slug: string) {
     const url = `${window.location.origin}${PublicTagController.show.url(slug)}`;
     await navigator.clipboard.writeText(url);
 
-    toast('URL copied', 'success');
+    toast(t('tags.actions.urlCopied'), 'success');
 }
 </script>
 
@@ -131,7 +133,7 @@ async function copyUrl(slug: string) {
                 <span
                     class="rounded bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400"
                 >
-                    Öffentlich
+                    {{ $t('tags.item.publicBadge') }}
                 </span>
                 <code class="flex-1 truncate text-xs text-muted-foreground">
                     {{
@@ -142,7 +144,7 @@ async function copyUrl(slug: string) {
                     variant="ghost"
                     size="icon"
                     class="size-7 shrink-0"
-                    :aria-label="`Copy URL for ${tag.name}`"
+                    :aria-label="$t('tags.actions.copyUrlAriaLabel', { name: tag.name })"
                     @click="copyUrl(tag.slug ?? '')"
                 >
                     <Copy class="size-3.5" />

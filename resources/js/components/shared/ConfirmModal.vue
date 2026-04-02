@@ -16,11 +16,7 @@ type Props = {
     confirmLabel?: string;
 };
 
-withDefaults(defineProps<Props>(), {
-    title: 'Are you sure?',
-    description: 'This action cannot be undone.',
-    confirmLabel: 'Delete',
-});
+defineProps<Props>();
 
 const emit = defineEmits<{
     'update:open': [value: boolean];
@@ -32,16 +28,16 @@ const emit = defineEmits<{
     <Dialog :open="open" @update:open="emit('update:open', $event)">
         <DialogContent>
             <DialogHeader>
-                <DialogTitle>{{ title }}</DialogTitle>
-                <DialogDescription>{{ description }}</DialogDescription>
+                <DialogTitle>{{ title ?? $t('confirmModal.defaultTitle') }}</DialogTitle>
+                <DialogDescription>{{ description ?? $t('confirmModal.defaultDescription') }}</DialogDescription>
             </DialogHeader>
 
             <DialogFooter>
                 <Button variant="outline" @click="emit('update:open', false)">
-                    Cancel
+                    {{ $t('confirmModal.cancel') }}
                 </Button>
                 <Button variant="destructive" @click="emit('confirm')">
-                    {{ confirmLabel }}
+                    {{ confirmLabel ?? $t('confirmModal.defaultLabel') }}
                 </Button>
             </DialogFooter>
         </DialogContent>

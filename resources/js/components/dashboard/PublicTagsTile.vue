@@ -43,14 +43,14 @@ function copyTagUrl(tag: DashboardTag): void {
         <h2
             class="mb-3 text-sm font-semibold tracking-wide text-muted-foreground uppercase"
         >
-            Öffentliche Tags
+            {{ $t('dashboard.publicTags.title') }}
         </h2>
 
         <div
             v-if="publicTags.length === 0"
             class="text-sm text-muted-foreground"
         >
-            Noch keine öffentlichen Tags.
+            {{ $t('dashboard.publicTags.empty') }}
         </div>
 
         <template v-else>
@@ -58,9 +58,9 @@ function copyTagUrl(tag: DashboardTag): void {
             <input
                 v-if="publicTags.length >= TAG_SEARCH_THRESHOLD"
                 v-model="publicTagSearch"
-                aria-label="Öffentliche Tags suchen"
+                :aria-label="$t('dashboard.publicTags.searchAriaLabel')"
                 type="search"
-                placeholder="Suchen…"
+                :placeholder="$t('dashboard.publicTags.searchPlaceholder')"
                 class="mb-2 w-full rounded-md border bg-background px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
 
@@ -93,13 +93,13 @@ function copyTagUrl(tag: DashboardTag): void {
                         target="_blank"
                         rel="noopener noreferrer"
                         class="shrink-0 text-muted-foreground hover:text-foreground"
-                        :aria-label="`${tag.name} öffnen`"
+                        :aria-label="$t('tags.actions.openAriaLabel', { name: tag.name })"
                     >
                         <ExternalLink class="size-3.5" aria-hidden="true" />
                     </a>
                     <button
                         class="shrink-0 text-muted-foreground hover:text-foreground"
-                        :aria-label="`URL von ${tag.name} kopieren`"
+                        :aria-label="$t('tags.actions.copyUrlAriaLabel', { name: tag.name })"
                         @click="copyTagUrl(tag)"
                     >
                         <Check
@@ -114,7 +114,7 @@ function copyTagUrl(tag: DashboardTag): void {
                     v-if="sortedPublicTags.length === 0"
                     class="text-sm text-muted-foreground"
                 >
-                    Keine Ergebnisse.
+                    {{ $t('dashboard.publicTags.noResults') }}
                 </li>
             </ul>
         </template>

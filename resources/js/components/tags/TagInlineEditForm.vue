@@ -49,11 +49,11 @@ const editIsPublic = defineModel<Tag['is_public']>('is_public', {
     >
         <div class="grid gap-4 sm:grid-cols-2">
             <div class="flex flex-col gap-2">
-                <Label :for="`tag-name-${tag.id}`" class="sr-only">Name</Label>
+                <Label :for="`tag-name-${tag.id}`" class="sr-only">{{ $t('fields.name') }}</Label>
                 <Input
                     :id="`tag-name-${tag.id}`"
                     name="name"
-                    placeholder="Tag name"
+                    :placeholder="$t('tags.form.namePlaceholder')"
                     autocomplete="off"
                     v-model="editName"
                 />
@@ -62,12 +62,12 @@ const editIsPublic = defineModel<Tag['is_public']>('is_public', {
 
             <div class="flex flex-col gap-2">
                 <Label :for="`tag-desc-${tag.id}`" class="sr-only">
-                    Beschreibung
+                    {{ $t('tags.form.descriptionLabel') }}
                 </Label>
                 <Textarea
                     :id="`tag-desc-${tag.id}`"
                     name="description"
-                    placeholder="Optionale Beschreibung"
+                    :placeholder="$t('tags.form.descriptionPlaceholder')"
                     class="resize-none"
                     rows="1"
                     v-model="editDescription"
@@ -93,13 +93,13 @@ const editIsPublic = defineModel<Tag['is_public']>('is_public', {
                     :id="`edit-is-public-${tag.id}`"
                     v-model="editIsPublic"
                 />
-                <Label :for="`edit-is-public-${tag.id}`"> Öffentlich </Label>
+                <Label :for="`edit-is-public-${tag.id}`">{{ $t('tags.form.isPublicLabel') }}</Label>
                 <InputError :message="errors.is_public" />
             </div>
 
             <div class="ml-auto flex gap-2">
                 <Button type="submit" size="sm" :disabled="processing">
-                    Speichern
+                    {{ $t('common.save') }}
                 </Button>
                 <Button
                     type="button"
@@ -107,7 +107,7 @@ const editIsPublic = defineModel<Tag['is_public']>('is_public', {
                     variant="outline"
                     @click="cancelEdit"
                 >
-                    Abbrechen
+                    {{ $t('common.cancel') }}
                 </Button>
             </div>
         </div>

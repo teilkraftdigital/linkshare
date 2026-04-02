@@ -7,9 +7,9 @@ defineProps<{
 
 <template>
     <p v-if="existis" class="text-xs text-amber-600 dark:text-amber-400">
-        Dieser Link ist bereits vorhanden.
+        {{ $t('links.duplicateExists') }}
     </p>
     <p v-else-if="similar" class="text-xs text-amber-600 dark:text-amber-400">
-        Ein ähnlicher Link ist bereits vorhanden.
+        {{ $t('links.duplicateSimilar') }}
     </p>
 </template>

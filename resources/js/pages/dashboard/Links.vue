@@ -2,6 +2,7 @@
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { Trash2 } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import LinkCreateForm from '@/components/links/LinkCreateForm.vue';
 import LinkFilter from '@/components/links/LinkFilter.vue';
@@ -25,6 +26,8 @@ type Props = {
 };
 
 const props = defineProps<Props>();
+
+const { t } = useI18n();
 
 defineOptions({
     layout: {
@@ -67,9 +70,9 @@ watch(
     () => page.props.flash,
     (flash) => {
         if ((flash as Record<string, unknown>)?.refetch_success) {
-            toast('Metadaten aktualisiert', 'success');
+            toast(t('links.metaUpdated'), 'success');
         } else if ((flash as Record<string, unknown>)?.refetch_failed) {
-            toast('Metadaten konnten nicht abgerufen werden', 'destructive');
+            toast(t('links.metaFailed'), 'destructive');
         }
     },
 );
@@ -143,7 +146,7 @@ function deleteLink() {
         preserveScroll: true,
         onSuccess: () => {
             deleteTarget.value = null;
-            toast('Link gelöscht', 'success');
+            toast(t('links.deleted'), 'success');
         },
     });
 }
@@ -160,7 +163,7 @@ function restoreLink(link: Link) {
         {},
         {
             preserveScroll: true,
-            onSuccess: () => toast('Link wiederhergestellt', 'success'),
+            onSuccess: () => toast(t('links.restored'), 'success'),
         },
     );
 }
@@ -178,20 +181,20 @@ function forceDeleteLink() {
         preserveScroll: true,
         onSuccess: () => {
             forceDeleteTarget.value = null;
-            toast('Link endgültig gelöscht', 'success');
+            toast(t('links.forceDeleted'), 'success');
         },
     });
 }
 </script>
 
 <template>
-    <Head title="Links" />
+    <Head :title="$t('links.pageTitle')" />
 
     <div class="flex flex-col gap-8 p-4">
         <div class="flex items-start justify-between gap-4">
             <Heading
-                title="Links"
-                description="Verwalte deine gespeicherten Links"
+                :title="$t('links.pageTitle')"
+                :description="$t('links.description')"
             />
             <Button
                 variant="ghost"
@@ -202,7 +205,7 @@ function forceDeleteLink() {
                 @click="toggleTrashed"
             >
                 <Trash2 class="size-4" />
-                Papierkorb
+                {{ $t('common.trash') }}
             </Button>
         </div>
 
@@ -217,9 +220,9 @@ function forceDeleteLink() {
 
         <ConfirmModal
             :open="duplicateConfirmOpen"
-            title="Link bereits vorhanden"
-            description="Ein Link mit dieser URL ist bereits gespeichert. Trotzdem hinzufügen?"
-            confirm-label="Trotzdem hinzufügen"
+            :title="$t('links.duplicate.title')"
+            :description="$t('links.duplicate.description')"
+            :confirm-label="$t('links.duplicate.confirm')"
             @update:open="duplicateConfirmOpen = $event"
             @confirm="confirmDuplicateSubmit"
             @clear="clearFilters"
@@ -260,10 +263,10 @@ function forceDeleteLink() {
         <p v-if="links.data.length === 0" class="text-sm text-muted-foreground">
             {{
                 showTrashed
-                    ? 'Keine gelöschten Links.'
+                    ? $t('links.emptyTrashed')
                     : hasActiveFilters
-                      ? 'Keine Links entsprechen deinen Filtern.'
-                      : 'Noch keine Links. Füge deinen ersten Link oben hinzu.'
+                      ? $t('links.emptyFiltered')
+                      : $t('links.empty')
             }}
         </p>
 
@@ -273,9 +276,9 @@ function forceDeleteLink() {
 
     <ConfirmModal
         :open="deleteTarget !== null"
-        title="Link löschen?"
-        :description="`'${deleteTarget?.title}' wird gelöscht. Diese Aktion kann rückgängig gemacht werden.`"
-        confirm-label="Löschen"
+        :title="$t('links.delete.title')"
+        :description="$t('links.delete.description', { title: deleteTarget?.title })"
+        :confirm-label="$t('links.delete.confirm')"
         @update:open="
             (val) => {
                 if (!val) deleteTarget = null;
@@ -286,9 +289,9 @@ function forceDeleteLink() {
 
     <ConfirmModal
         :open="forceDeleteTarget !== null"
-        title="Endgültig löschen?"
-        :description="`'${forceDeleteTarget?.title}' wird permanent gelöscht und kann nicht wiederhergestellt werden.`"
-        confirm-label="Endgültig löschen"
+        :title="$t('links.forceDeleteDialog.title')"
+        :description="$t('links.forceDeleteDialog.description', { title: forceDeleteTarget?.title })"
+        :confirm-label="$t('links.forceDeleteDialog.confirm')"
         @update:open="
             (val) => {
                 if (!val) forceDeleteTarget = null;

@@ -22,12 +22,12 @@ defineOptions({
 </script>
 
 <template>
-    <Head title="Import & Export" />
+    <Head :title="$t('import.pageTitle')" />
 
     <div class="flex flex-col gap-8 p-4">
         <Heading
-            title="Import & Export"
-            description="Exportiere oder importiere deine Links, Buckets und Tags."
+            :title="$t('import.pageTitle')"
+            :description="$t('import.description')"
         />
 
         <ExportSection :buckets="buckets" :tags="tags" />

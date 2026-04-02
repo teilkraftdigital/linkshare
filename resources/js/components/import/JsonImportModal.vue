@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Globe, Upload } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -31,6 +32,7 @@ const emit = defineEmits<{
     confirm: [bucketNames: string[], tagNames: string[]];
 }>();
 
+const { t } = useI18n();
 const allBuckets = ref(true);
 const selectedBucketNames = ref<Set<string>>(new Set());
 const allTags = ref(true);
@@ -57,7 +59,7 @@ watch(
     <Dialog :open="open" @update:open="emit('update:open', $event)">
         <DialogContent class="max-w-md">
             <DialogHeader>
-                <DialogTitle>JSON importieren</DialogTitle>
+                <DialogTitle>{{ $t('import.jsonImport.modal.title') }}</DialogTitle>
             </DialogHeader>
 
             <div v-if="preview" class="space-y-5 py-2">
@@ -65,8 +67,8 @@ watch(
                     <span class="mr-0.5 font-medium text-foreground">{{
                         preview.link_count
                     }}</span>
-                    {{ preview.link_count === 1 ? 'Link' : 'Links' }} gefunden.
-                    Wähle aus, was importiert werden soll.
+                    {{ t('import.jsonImport.modal.foundLinks', preview.link_count) }}
+                    {{ $t('import.jsonImport.modal.selectInstruction') }}
                 </p>
 
                 <!-- Bucket selection -->
@@ -81,7 +83,7 @@ watch(
                             for="json-import-all-buckets"
                             class="cursor-pointer"
                         >
-                            Alle Buckets importieren
+                            {{ $t('import.jsonImport.modal.allBuckets') }}
                         </Label>
                     </div>
 
@@ -135,7 +137,7 @@ watch(
                             for="json-import-all-tags"
                             class="cursor-pointer"
                         >
-                            Alle Tags importieren
+                            {{ $t('import.jsonImport.modal.allTags') }}
                         </Label>
                     </div>
 
@@ -172,7 +174,7 @@ watch(
                                 <Globe
                                     v-if="tag.is_public"
                                     class="size-3 opacity-60"
-                                    :aria-label="`${tag.name} ist öffentlich`"
+                                    :aria-label="t('tags.select.publicTagAriaLabel', { name: tag.name })"
                                 />
                             </Label>
                         </div>
@@ -182,7 +184,7 @@ watch(
 
             <DialogFooter>
                 <Button variant="outline" @click="emit('update:open', false)">
-                    Abbrechen
+                    {{ $t('import.jsonImport.modal.cancel') }}
                 </Button>
                 <Button
                     @click="
@@ -198,7 +200,7 @@ watch(
                     "
                 >
                     <Upload class="mr-2 size-4" />
-                    Importieren
+                    {{ $t('import.jsonImport.modal.importButton') }}
                 </Button>
             </DialogFooter>
         </DialogContent>

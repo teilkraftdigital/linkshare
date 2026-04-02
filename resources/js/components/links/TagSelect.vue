@@ -12,9 +12,11 @@ import {
     ComboboxViewport,
 } from 'reka-ui';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { COLOR_BG } from '@/lib/colors';
 import { cn } from '@/lib/utils';
 import type { Tag } from '@/types/dashboard';
+const { t } = useI18n();
 
 const props = defineProps<{
     tags: Tag[];
@@ -57,7 +59,10 @@ function toggle(tag: Tag) {
 }
 
 function remove(id: number) {
-    emit('update:modelValue', props.modelValue.filter((i) => i !== id));
+    emit(
+        'update:modelValue',
+        props.modelValue.filter((i) => i !== id),
+    );
 }
 
 function handleEnter(e: KeyboardEvent) {
@@ -86,15 +91,15 @@ function handleEnter(e: KeyboardEvent) {
         <ComboboxAnchor
             :class="
                 cn(
-                    'border-input bg-background flex min-h-9 flex-wrap items-center gap-1 rounded-md border px-2 py-1 text-sm shadow-xs',
-                    'focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]',
+                    'flex min-h-9 flex-wrap items-center gap-1 rounded-md border border-input bg-background px-2 py-1 text-sm shadow-xs',
+                    'focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50',
                 )
             "
         >
             <span
                 v-for="tag in selectedTags"
                 :key="tag.id"
-                class="bg-muted flex items-center gap-1 rounded-full py-0.5 pl-2 pr-1 text-xs font-medium"
+                class="flex items-center gap-1 rounded-full bg-muted py-0.5 pr-1 pl-2 text-xs font-medium"
             >
                 <span
                     class="size-2 rounded-full"
@@ -103,8 +108,8 @@ function handleEnter(e: KeyboardEvent) {
                 {{ tag.name }}
                 <button
                     type="button"
-                    class="text-muted-foreground rounded-full p-0.5 hover:text-foreground"
-                    :aria-label="`Remove ${tag.name}`"
+                    class="rounded-full p-0.5 text-muted-foreground hover:text-foreground"
+                    :aria-label="$t('tags.select.removeAriaLabel', { name: tag.name })"
                     @click.stop="remove(tag.id)"
                 >
                     <X class="size-3" />
@@ -114,22 +119,28 @@ function handleEnter(e: KeyboardEvent) {
             <ComboboxInput
                 v-model="searchTerm"
                 class="min-w-24 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
-                placeholder="Tags suchen…"
+                :placeholder="$t('tags.select.placeholder')"
                 @keydown.enter="handleEnter"
             />
         </ComboboxAnchor>
 
         <ComboboxContent
-            class="border-input bg-popover z-50 mt-1 w-(--reka-combobox-trigger-width) max-h-60 overflow-y-auto rounded-md border shadow-md"
+            class="z-50 mt-1 max-h-60 w-(--reka-combobox-trigger-width) overflow-y-auto rounded-md border border-input bg-popover shadow-md"
             position="popper"
             :avoid-collisions="true"
         >
             <ComboboxViewport class="p-1">
-                <ComboboxEmpty class="py-2 text-center text-sm text-muted-foreground">
+                <ComboboxEmpty
+                    class="py-2 text-center text-sm text-muted-foreground"
+                >
                     <template v-if="searchTerm.trim()">
-                        Enter drücken um „{{ searchTerm.trim() }}" zu erstellen
+                        {{
+                            t('tags.select.createHint', {
+                                term: searchTerm.trim(),
+                            })
+                        }}
                     </template>
-                    <template v-else>Keine Tags gefunden</template>
+                    <template v-else>{{ t('tags.select.noResults') }}</template>
                 </ComboboxEmpty>
 
                 <ComboboxGroup>
@@ -147,8 +158,13 @@ function handleEnter(e: KeyboardEvent) {
                         {{ tag.name }}
                         <Globe
                             v-if="tag.is_public"
-                            class="size-3 opacity-60 shrink-0"
-                            :aria-label="`${tag.name} is public`"
+                            class="size-3 shrink-0 opacity-60"
+                            :aria-label="`${t(
+                                'tags.select.publicTagAriaLabel',
+                                {
+                                    name: tag.name,
+                                },
+                            )}`"
                         />
                         <ComboboxItemIndicator class="ml-auto">
                             <span class="text-xs opacity-60">✓</span>

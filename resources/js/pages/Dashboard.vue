@@ -30,13 +30,13 @@ defineOptions({
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head :title="$t('dashboard.pageTitle')" />
 
     <div class="flex flex-col gap-6 p-4">
         <!-- Stat tiles -->
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatsTile
-                eyebrow="Links"
+                :eyebrow="$t('dashboard.stats.links')"
                 :stat="stats.links.count"
                 :delta="stats.links.delta"
                 use-delta
@@ -47,7 +47,7 @@ defineOptions({
             </StatsTile>
 
             <StatsTile
-                eyebrow="Tags"
+                :eyebrow="$t('dashboard.stats.tags')"
                 :stat="stats.tags.count"
                 :delta="stats.tags.delta"
             >
@@ -57,7 +57,7 @@ defineOptions({
             </StatsTile>
 
             <StatsTile
-                eyebrow="Öffentliche Tags"
+                :eyebrow="$t('dashboard.stats.publicTags')"
                 :stat="stats.public_tags.count"
                 :delta="stats.public_tags.delta"
             >
@@ -67,15 +67,14 @@ defineOptions({
             </StatsTile>
 
             <StatsTile
-                eyebrow="Zuletzt hinzugefügt"
+                :eyebrow="$t('dashboard.stats.lastAdded')"
                 :stat="formatDate(stats.last_link_date)"
-                delta="letzter Link"
             >
                 <template #icon>
                     <Link2 class="size-4" aria-hidden="true" />
                 </template>
 
-                <template #delta> letzter Link </template>
+                <template #delta>{{ $t('dashboard.stats.lastLink') }}</template>
             </StatsTile>
         </div>
 
