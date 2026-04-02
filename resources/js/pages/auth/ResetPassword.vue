@@ -2,6 +2,7 @@
 import { Form, Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { i18n } from '@/i18n';
 import InputError from '@/components/shared/InputError.vue';
 import PasswordInput from '@/components/shared/PasswordInput.vue';
 import { Button } from '@/components/ui/button';
@@ -14,8 +15,8 @@ const { t } = useI18n();
 
 defineOptions({
     layout: {
-        title: t('auth.resetPassword.title'),
-        description: t('auth.resetPassword.description'),
+        title: i18n.global.t('auth.resetPassword.title'),
+        description: i18n.global.t('auth.resetPassword.description'),
     },
 });
 

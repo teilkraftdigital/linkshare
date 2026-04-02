@@ -3,6 +3,7 @@ import { Form, Head } from '@inertiajs/vue3';
 import { ShieldCheck } from 'lucide-vue-next';
 import { onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { i18n } from '@/i18n';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
 import TwoFactorRecoveryCodes from '@/components/settings/TwoFactorRecoveryCodes.vue';
 import TwoFactorSetupModal from '@/components/settings/TwoFactorSetupModal.vue';
@@ -33,7 +34,7 @@ defineOptions({
     layout: {
         breadcrumbs: [
             {
-                title: t('settings.security.breadcrumb'),
+                title: i18n.global.t('settings.security.breadcrumb'),
                 href: edit(),
             },
         ],
@@ -73,9 +74,9 @@ onUnmounted(() => clearTwoFactorAuthData());
             v-slot="{ errors, processing, recentlySuccessful }"
         >
             <div class="grid gap-2">
-                <Label for="current_password">{{
-                    t('fields.currentPassword')
-                }}</Label>
+                <Label for="current_password">
+                    {{ t('fields.currentPassword') }}
+                </Label>
                 <PasswordInput
                     id="current_password"
                     name="current_password"
@@ -99,9 +100,9 @@ onUnmounted(() => clearTwoFactorAuthData());
             </div>
 
             <div class="grid gap-2">
-                <Label for="password_confirmation">{{
-                    t('fields.confirmPassword')
-                }}</Label>
+                <Label for="password_confirmation">
+                    {{ t('fields.confirmPassword') }}
+                </Label>
                 <PasswordInput
                     id="password_confirmation"
                     name="password_confirmation"

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
+import { i18n } from '@/i18n';
 import InputError from '@/components/shared/InputError.vue';
 import PasswordInput from '@/components/shared/PasswordInput.vue';
 import { Button } from '@/components/ui/button';
@@ -12,8 +13,8 @@ const { t } = useI18n();
 
 defineOptions({
     layout: {
-        title: t('auth.confirmPassword.title'),
-        description: t('auth.confirmPassword.description'),
+        title: i18n.global.t('auth.confirmPassword.title'),
+        description: i18n.global.t('auth.confirmPassword.description'),
     },
 });
 </script>

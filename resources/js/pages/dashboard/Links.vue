@@ -3,6 +3,7 @@ import { Head, router, usePage } from '@inertiajs/vue3';
 import { Trash2 } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { i18n } from '@/i18n';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import LinkCreateForm from '@/components/links/LinkCreateForm.vue';
 import LinkFilter from '@/components/links/LinkFilter.vue';
@@ -31,7 +32,12 @@ const { t } = useI18n();
 
 defineOptions({
     layout: {
-        breadcrumbs: [{ title: 'Links', href: index() }],
+        breadcrumbs: [
+            {
+                title: i18n.global.t('links.pageTitle'),
+                href: index(),
+            },
+        ],
     },
 });
 
@@ -277,7 +283,9 @@ function forceDeleteLink() {
     <ConfirmModal
         :open="deleteTarget !== null"
         :title="t('links.delete.title')"
-        :description="t('links.delete.description', { title: deleteTarget?.title })"
+        :description="
+            t('links.delete.description', { title: deleteTarget?.title })
+        "
         :confirm-label="t('links.delete.confirm')"
         @update:open="
             (val) => {
@@ -290,7 +298,11 @@ function forceDeleteLink() {
     <ConfirmModal
         :open="forceDeleteTarget !== null"
         :title="t('links.forceDeleteDialog.title')"
-        :description="t('links.forceDeleteDialog.description', { title: forceDeleteTarget?.title })"
+        :description="
+            t('links.forceDeleteDialog.description', {
+                title: forceDeleteTarget?.title,
+            })
+        "
         :confirm-label="t('links.forceDeleteDialog.confirm')"
         @update:open="
             (val) => {

@@ -3,6 +3,7 @@ import { Head, router } from '@inertiajs/vue3';
 import { Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { i18n } from '@/i18n';
 import TagController from '@/actions/App/Http/Controllers/Dashboard/TagController';
 import ConfirmModal from '@/components/shared/ConfirmModal.vue';
 import Heading from '@/components/shared/Heading.vue';
@@ -24,7 +25,7 @@ const { t } = useI18n();
 
 defineOptions({
     layout: {
-        breadcrumbs: [{ title: 'Tags', href: index() }],
+        breadcrumbs: [{ title: i18n.global.t('tags.pageTitle'), href: index() }],
     },
 });
 

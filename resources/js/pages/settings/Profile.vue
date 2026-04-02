@@ -2,6 +2,7 @@
 import { Form, Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { i18n } from '@/i18n';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/settings/DeleteUser.vue';
 import Heading from '@/components/shared/Heading.vue';
@@ -25,7 +26,7 @@ defineOptions({
     layout: {
         breadcrumbs: [
             {
-                title: t('settings.profile.breadcrumb'),
+                title: i18n.global.t('settings.profile.breadcrumb'),
                 href: edit(),
             },
         ],

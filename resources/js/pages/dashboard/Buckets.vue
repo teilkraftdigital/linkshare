@@ -3,6 +3,7 @@ import { Form, Head, router } from '@inertiajs/vue3';
 import { Link as LinkIcon, Pencil, RotateCcw, Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { i18n } from '@/i18n';
 import BucketController from '@/actions/App/Http/Controllers/Dashboard/BucketController';
 import ColorPalette from '@/components/shared/ColorPalette.vue';
 import ConfirmModal from '@/components/shared/ConfirmModal.vue';
@@ -29,7 +30,7 @@ defineOptions({
     layout: {
         breadcrumbs: [
             {
-                title: 'Buckets',
+                title: i18n.global.t('buckets.pageTitle'),
                 href: index(),
             },
         ],

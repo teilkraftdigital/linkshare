@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
+import { i18n } from '@/i18n';
 import InputError from '@/components/shared/InputError.vue';
 import PasswordInput from '@/components/shared/PasswordInput.vue';
 import TextLink from '@/components/shared/TextLink.vue';
@@ -14,8 +15,8 @@ const { t } = useI18n();
 
 defineOptions({
     layout: {
-        title: t('auth.register.title'),
-        description: t('auth.register.description'),
+        title: i18n.global.t('auth.register.title'),
+        description: i18n.global.t('auth.register.description'),
     },
 });
 </script>
@@ -38,7 +39,6 @@ defineOptions({
                     type="text"
                     required
                     autofocus
-                    :tabindex="1"
                     autocomplete="name"
                     name="name"
                     :placeholder="t('placeholders.fullName')"
@@ -52,7 +52,6 @@ defineOptions({
                     id="email"
                     type="email"
                     required
-                    :tabindex="2"
                     autocomplete="email"
                     name="email"
                     :placeholder="t('placeholders.email')"
@@ -65,7 +64,6 @@ defineOptions({
                 <PasswordInput
                     id="password"
                     required
-                    :tabindex="3"
                     autocomplete="new-password"
                     name="password"
                     :placeholder="t('placeholders.password')"
@@ -74,11 +72,12 @@ defineOptions({
             </div>
 
             <div class="grid gap-2">
-                <Label for="password_confirmation">{{ t('fields.confirmPassword') }}</Label>
+                <Label for="password_confirmation">{{
+                    t('fields.confirmPassword')
+                }}</Label>
                 <PasswordInput
                     id="password_confirmation"
                     required
-                    :tabindex="4"
                     autocomplete="new-password"
                     name="password_confirmation"
                     :placeholder="t('fields.confirmPassword')"
@@ -100,11 +99,9 @@ defineOptions({
 
         <div class="text-center text-sm text-muted-foreground">
             {{ t('auth.register.alreadyHaveAccount') }}
-            <TextLink
-                :href="login()"
-                class="underline underline-offset-4"
-                :tabindex="6"
-            >{{ t('auth.register.login') }}</TextLink>
+            <TextLink :href="login()" class="underline underline-offset-4">
+                {{ t('auth.register.login') }}
+            </TextLink>
         </div>
     </Form>
 </template>

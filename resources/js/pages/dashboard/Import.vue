@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
+import { i18n } from '@/i18n';
 import BookmarkletCodeSection from '@/components/import/BookmarkletCodeSection.vue';
 import ExportSection from '@/components/import/ExportSection.vue';
 import HtmlImportSection from '@/components/import/HtmlImportSection.vue';
@@ -19,7 +20,7 @@ defineProps<{
 
 defineOptions({
     layout: {
-        breadcrumbs: [{ title: 'Import & Export', href: importRoute() }],
+        breadcrumbs: [{ title: i18n.global.t('import.breadcrumb'), href: importRoute() }],
     },
 });
 </script>

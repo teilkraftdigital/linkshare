@@ -9,6 +9,7 @@ import StatsTile from '@/components/dashboard/StatsTile.vue';
 import { formatDate } from '@/lib/datetime';
 import { index as dashboardRoute } from '@/routes/dashboard';
 import type { DashboardTag, DashboardLink } from '@/types/dashboard';
+import { i18n } from '@/i18n';
 
 const { t } = useI18n();
 
@@ -27,7 +28,9 @@ defineProps<{
 
 defineOptions({
     layout: {
-        breadcrumbs: [{ title: 'Dashboard', href: dashboardRoute() }],
+        breadcrumbs: [
+            { title: i18n.global.t('dashboard.title'), href: dashboardRoute() },
+        ],
     },
 });
 </script>
