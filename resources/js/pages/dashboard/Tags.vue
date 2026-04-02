@@ -3,6 +3,7 @@ import { Head, router } from '@inertiajs/vue3';
 import { Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { i18n } from '@/i18n';
 import TagController from '@/actions/App/Http/Controllers/Dashboard/TagController';
 import ConfirmModal from '@/components/shared/ConfirmModal.vue';
 import Heading from '@/components/shared/Heading.vue';
@@ -24,7 +25,7 @@ const { t } = useI18n();
 
 defineOptions({
     layout: {
-        breadcrumbs: [{ title: 'Tags', href: index() }],
+        breadcrumbs: [{ title: i18n.global.t('tags.pageTitle'), href: index() }],
     },
 });
 
@@ -88,13 +89,13 @@ function forceDeleteTag() {
 </script>
 
 <template>
-    <Head :title="$t('tags.pageTitle')" />
+    <Head :title="t('tags.pageTitle')" />
 
     <div class="flex flex-col gap-8 p-4">
         <div class="flex items-start justify-between gap-4">
             <Heading
-                :title="$t('tags.pageTitle')"
-                :description="$t('tags.description')"
+                :title="t('tags.pageTitle')"
+                :description="t('tags.description')"
             />
             <Button
                 variant="ghost"
@@ -105,7 +106,7 @@ function forceDeleteTag() {
                 @click="toggleTrashed"
             >
                 <Trash2 class="size-4" />
-                {{ $t('common.trash') }}
+                {{ t('common.trash') }}
             </Button>
         </div>
 
@@ -127,16 +128,16 @@ function forceDeleteTag() {
 
         <p v-if="tags.length === 0" class="text-sm text-muted-foreground">
             {{
-                showTrashed ? $t('tags.emptyTrashed') : $t('tags.empty')
+                showTrashed ? t('tags.emptyTrashed') : t('tags.empty')
             }}
         </p>
     </div>
 
     <ConfirmModal
         :open="deleteTarget !== null"
-        :title="$t('tags.delete.title')"
-        :description="$t('tags.delete.description', { name: deleteTarget?.name })"
-        :confirm-label="$t('tags.delete.confirm')"
+        :title="t('tags.delete.title')"
+        :description="t('tags.delete.description', { name: deleteTarget?.name })"
+        :confirm-label="t('tags.delete.confirm')"
         @update:open="
             (val) => {
                 if (!val) deleteTarget = null;
@@ -147,9 +148,9 @@ function forceDeleteTag() {
 
     <ConfirmModal
         :open="forceDeleteTarget !== null"
-        :title="$t('tags.forceDeleteDialog.title')"
-        :description="$t('tags.forceDeleteDialog.description', { name: forceDeleteTarget?.name })"
-        :confirm-label="$t('tags.forceDeleteDialog.confirm')"
+        :title="t('tags.forceDeleteDialog.title')"
+        :description="t('tags.forceDeleteDialog.description', { name: forceDeleteTarget?.name })"
+        :confirm-label="t('tags.forceDeleteDialog.confirm')"
         @update:open="
             (val) => {
                 if (!val) forceDeleteTarget = null;

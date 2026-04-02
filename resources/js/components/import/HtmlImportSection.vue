@@ -23,9 +23,11 @@ const selectedBucketId = ref<number>(props.inboxBucketId);
 
 <template>
     <div>
-        <h2 class="text-sm font-semibold">{{ $t('import.htmlImport.title') }}</h2>
+        <h2 class="text-sm font-semibold">
+            {{ t('import.htmlImport.title') }}
+        </h2>
         <p class="mt-0.5 text-sm text-muted-foreground">
-            {{ $t('import.htmlImport.description') }}
+            {{ t('import.htmlImport.description') }}
         </p>
     </div>
 
@@ -54,7 +56,9 @@ const selectedBucketId = ref<number>(props.inboxBucketId);
 
         <div class="space-y-4">
             <div class="space-y-1.5">
-                <Label for="bucket">{{ $t('import.htmlImport.targetBucket') }}</Label>
+                <Label for="bucket">{{
+                    t('import.htmlImport.targetBucket')
+                }}</Label>
                 <select
                     id="bucket"
                     :value="selectedBucketId"
@@ -70,14 +74,21 @@ const selectedBucketId = ref<number>(props.inboxBucketId);
                         :key="bucket.id"
                         :value="bucket.id"
                     >
-                        {{ bucket.name }}{{ bucket.is_inbox ? ` (${$t('import.htmlImport.inboxSuffix')})` : '' }}
+                        {{ bucket.name
+                        }}{{
+                            bucket.is_inbox
+                                ? ` (${t('import.htmlImport.inboxSuffix')})`
+                                : ''
+                        }}
                     </option>
                 </select>
                 <InputError :message="errors.bucket_id" />
             </div>
 
             <div class="space-y-1.5">
-                <Label for="html-file">{{ $t('import.htmlImport.fileLabel') }}</Label>
+                <Label for="html-file">{{
+                    t('import.htmlImport.fileLabel')
+                }}</Label>
                 <Input
                     id="html-file"
                     name="file"
@@ -90,7 +101,11 @@ const selectedBucketId = ref<number>(props.inboxBucketId);
 
             <Button type="submit" :disabled="processing">
                 <Upload class="mr-2 h-4 w-4" />
-                {{ processing ? $t('import.htmlImport.importing') : $t('import.htmlImport.importButton') }}
+                {{
+                    processing
+                        ? t('import.htmlImport.importing')
+                        : t('import.htmlImport.importButton')
+                }}
             </Button>
         </div>
     </Form>

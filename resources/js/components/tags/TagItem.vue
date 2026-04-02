@@ -133,7 +133,7 @@ async function copyUrl(slug: string) {
                 <span
                     class="rounded bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400"
                 >
-                    {{ $t('tags.item.publicBadge') }}
+                    {{ t('tags.item.publicBadge') }}
                 </span>
                 <code class="flex-1 truncate text-xs text-muted-foreground">
                     {{
@@ -144,7 +144,7 @@ async function copyUrl(slug: string) {
                     variant="ghost"
                     size="icon"
                     class="size-7 shrink-0"
-                    :aria-label="$t('tags.actions.copyUrlAriaLabel', { name: tag.name })"
+                    :aria-label="t('tags.actions.copyUrlAriaLabel', { name: tag.name })"
                     @click="copyUrl(tag.slug ?? '')"
                 >
                     <Copy class="size-3.5" />

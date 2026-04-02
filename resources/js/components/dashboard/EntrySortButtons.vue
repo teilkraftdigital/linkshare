@@ -14,7 +14,7 @@ const updateSortKey = (newKey: SortKey) => {
 </script>
 
 <template>
-    <section class="flex gap-1" :aria-label="$t('dashboard.sort.ariaLabel')">
+    <section class="flex gap-1" :aria-label="t('dashboard.sort.ariaLabel')">
         <button
             v-for="[key, labelKey] in [
                 ['updated_at', 'dashboard.sort.recent'],

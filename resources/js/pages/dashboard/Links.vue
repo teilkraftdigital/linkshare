@@ -3,6 +3,7 @@ import { Head, router, usePage } from '@inertiajs/vue3';
 import { Trash2 } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { i18n } from '@/i18n';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import LinkCreateForm from '@/components/links/LinkCreateForm.vue';
 import LinkFilter from '@/components/links/LinkFilter.vue';
@@ -31,7 +32,12 @@ const { t } = useI18n();
 
 defineOptions({
     layout: {
-        breadcrumbs: [{ title: 'Links', href: index() }],
+        breadcrumbs: [
+            {
+                title: i18n.global.t('links.pageTitle'),
+                href: index(),
+            },
+        ],
     },
 });
 
@@ -188,13 +194,13 @@ function forceDeleteLink() {
 </script>
 
 <template>
-    <Head :title="$t('links.pageTitle')" />
+    <Head :title="t('links.pageTitle')" />
 
     <div class="flex flex-col gap-8 p-4">
         <div class="flex items-start justify-between gap-4">
             <Heading
-                :title="$t('links.pageTitle')"
-                :description="$t('links.description')"
+                :title="t('links.pageTitle')"
+                :description="t('links.description')"
             />
             <Button
                 variant="ghost"
@@ -205,7 +211,7 @@ function forceDeleteLink() {
                 @click="toggleTrashed"
             >
                 <Trash2 class="size-4" />
-                {{ $t('common.trash') }}
+                {{ t('common.trash') }}
             </Button>
         </div>
 
@@ -220,9 +226,9 @@ function forceDeleteLink() {
 
         <ConfirmModal
             :open="duplicateConfirmOpen"
-            :title="$t('links.duplicate.title')"
-            :description="$t('links.duplicate.description')"
-            :confirm-label="$t('links.duplicate.confirm')"
+            :title="t('links.duplicate.title')"
+            :description="t('links.duplicate.description')"
+            :confirm-label="t('links.duplicate.confirm')"
             @update:open="duplicateConfirmOpen = $event"
             @confirm="confirmDuplicateSubmit"
             @clear="clearFilters"
@@ -263,10 +269,10 @@ function forceDeleteLink() {
         <p v-if="links.data.length === 0" class="text-sm text-muted-foreground">
             {{
                 showTrashed
-                    ? $t('links.emptyTrashed')
+                    ? t('links.emptyTrashed')
                     : hasActiveFilters
-                      ? $t('links.emptyFiltered')
-                      : $t('links.empty')
+                      ? t('links.emptyFiltered')
+                      : t('links.empty')
             }}
         </p>
 
@@ -276,9 +282,11 @@ function forceDeleteLink() {
 
     <ConfirmModal
         :open="deleteTarget !== null"
-        :title="$t('links.delete.title')"
-        :description="$t('links.delete.description', { title: deleteTarget?.title })"
-        :confirm-label="$t('links.delete.confirm')"
+        :title="t('links.delete.title')"
+        :description="
+            t('links.delete.description', { title: deleteTarget?.title })
+        "
+        :confirm-label="t('links.delete.confirm')"
         @update:open="
             (val) => {
                 if (!val) deleteTarget = null;
@@ -289,9 +297,13 @@ function forceDeleteLink() {
 
     <ConfirmModal
         :open="forceDeleteTarget !== null"
-        :title="$t('links.forceDeleteDialog.title')"
-        :description="$t('links.forceDeleteDialog.description', { title: forceDeleteTarget?.title })"
-        :confirm-label="$t('links.forceDeleteDialog.confirm')"
+        :title="t('links.forceDeleteDialog.title')"
+        :description="
+            t('links.forceDeleteDialog.description', {
+                title: forceDeleteTarget?.title,
+            })
+        "
+        :confirm-label="t('links.forceDeleteDialog.confirm')"
         @update:open="
             (val) => {
                 if (!val) forceDeleteTarget = null;

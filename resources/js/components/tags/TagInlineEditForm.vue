@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import TagController from '@/actions/App/Http/Controllers/Dashboard/TagController';
 import ColorPalette from '@/components/shared/ColorPalette.vue';
 import InputError from '@/components/shared/InputError.vue';
@@ -9,6 +10,8 @@ import Label from '@/components/ui/label/Label.vue';
 import Textarea from '@/components/ui/textarea/Textarea.vue';
 import type { Tag } from '@/types/dashboard';
 import Button from '../ui/button/Button.vue';
+
+const { t } = useI18n();
 
 defineProps<{
     tag: Tag;
@@ -49,11 +52,11 @@ const editIsPublic = defineModel<Tag['is_public']>('is_public', {
     >
         <div class="grid gap-4 sm:grid-cols-2">
             <div class="flex flex-col gap-2">
-                <Label :for="`tag-name-${tag.id}`" class="sr-only">{{ $t('fields.name') }}</Label>
+                <Label :for="`tag-name-${tag.id}`" class="sr-only">{{ t('fields.name') }}</Label>
                 <Input
                     :id="`tag-name-${tag.id}`"
                     name="name"
-                    :placeholder="$t('tags.form.namePlaceholder')"
+                    :placeholder="t('tags.form.namePlaceholder')"
                     autocomplete="off"
                     v-model="editName"
                 />
@@ -62,12 +65,12 @@ const editIsPublic = defineModel<Tag['is_public']>('is_public', {
 
             <div class="flex flex-col gap-2">
                 <Label :for="`tag-desc-${tag.id}`" class="sr-only">
-                    {{ $t('tags.form.descriptionLabel') }}
+                    {{ t('tags.form.descriptionLabel') }}
                 </Label>
                 <Textarea
                     :id="`tag-desc-${tag.id}`"
                     name="description"
-                    :placeholder="$t('tags.form.descriptionPlaceholder')"
+                    :placeholder="t('tags.form.descriptionPlaceholder')"
                     class="resize-none"
                     rows="1"
                     v-model="editDescription"
@@ -93,13 +96,13 @@ const editIsPublic = defineModel<Tag['is_public']>('is_public', {
                     :id="`edit-is-public-${tag.id}`"
                     v-model="editIsPublic"
                 />
-                <Label :for="`edit-is-public-${tag.id}`">{{ $t('tags.form.isPublicLabel') }}</Label>
+                <Label :for="`edit-is-public-${tag.id}`">{{ t('tags.form.isPublicLabel') }}</Label>
                 <InputError :message="errors.is_public" />
             </div>
 
             <div class="ml-auto flex gap-2">
                 <Button type="submit" size="sm" :disabled="processing">
-                    {{ $t('common.save') }}
+                    {{ t('common.save') }}
                 </Button>
                 <Button
                     type="button"
@@ -107,7 +110,7 @@ const editIsPublic = defineModel<Tag['is_public']>('is_public', {
                     variant="outline"
                     @click="cancelEdit"
                 >
-                    {{ $t('common.cancel') }}
+                    {{ t('common.cancel') }}
                 </Button>
             </div>
         </div>

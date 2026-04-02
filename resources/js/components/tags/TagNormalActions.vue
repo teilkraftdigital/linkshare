@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { Trash2, Pencil } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
 import type { Tag } from '@/types/dashboard';
+
+const { t } = useI18n();
 
 type Props = {
     tag: Tag;
@@ -26,7 +29,7 @@ function confirmDelete(tag: Tag) {
     <Button
         variant="ghost"
         size="icon"
-        :aria-label="$t('tags.actions.editAriaLabel', { name: tag.name })"
+        :aria-label="t('tags.actions.editAriaLabel', { name: tag.name })"
         @click="startEdit(tag)"
     >
         <Pencil class="size-4" />
@@ -35,7 +38,7 @@ function confirmDelete(tag: Tag) {
     <Button
         variant="ghost"
         size="icon"
-        :aria-label="$t('tags.actions.deleteAriaLabel', { name: tag.name })"
+        :aria-label="t('tags.actions.deleteAriaLabel', { name: tag.name })"
         @click="confirmDelete(tag)"
     >
         <Trash2 class="size-4 text-destructive" />

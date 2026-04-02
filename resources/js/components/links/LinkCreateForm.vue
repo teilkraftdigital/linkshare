@@ -67,12 +67,12 @@ const {
     reset: resetMeta,
 } = useMetaFetch((meta) => {
     if (meta.title && !createTitle.value) {
-createTitle.value = meta.title;
-}
+        createTitle.value = meta.title;
+    }
 
     if (meta.description && !createDescription.value) {
-createDescription.value = meta.description;
-}
+        createDescription.value = meta.description;
+    }
 });
 
 function resetCreateForm() {
@@ -154,30 +154,32 @@ async function handleTagCreated(name: string) {
                     :existis="duplicateExists"
                 />
                 <p v-if="metaFailed" class="text-xs text-muted-foreground">
-                    {{ $t('links.metaLoadFailed') }}
+                    {{ t('links.metaLoadFailed') }}
                 </p>
                 <InputError :message="errors.url" />
             </div>
 
             <div class="flex flex-col gap-2">
-                <Label for="link-title">{{ $t('fields.title') }}</Label>
+                <Label for="link-title">{{ t('fields.title') }}</Label>
                 <Input
                     id="link-title"
                     v-model="createTitle"
                     name="title"
-                    :placeholder="$t('placeholders.linkTitle')"
+                    :placeholder="t('placeholders.linkTitle')"
                     autocomplete="off"
                 />
                 <InputError :message="errors.title" />
             </div>
 
             <div class="flex flex-col gap-2">
-                <Label for="link-description">{{ $t('fields.description') }}</Label>
+                <Label for="link-description">{{
+                    t('fields.description')
+                }}</Label>
                 <Textarea
                     id="link-description"
                     v-model="createDescription"
                     name="description"
-                    :placeholder="$t('placeholders.optionalDescription')"
+                    :placeholder="t('placeholders.optionalDescription')"
                     class="resize-none"
                     rows="2"
                 />
@@ -186,14 +188,16 @@ async function handleTagCreated(name: string) {
 
             <div class="flex flex-col gap-2">
                 <Label for="link-notes">
-                    {{ $t('fields.notes') }}
-                    <span class="text-muted-foreground"> ({{ $t('fields.notesPrivate') }})</span>
+                    {{ t('fields.notes') }}
+                    <span class="text-muted-foreground">
+                        ({{ t('fields.notesPrivate') }})</span
+                    >
                 </Label>
                 <Textarea
                     id="link-notes"
                     v-model="createNotes"
                     name="notes"
-                    :placeholder="$t('placeholders.privateNotes')"
+                    :placeholder="t('placeholders.privateNotes')"
                     class="resize-none"
                     rows="2"
                 />
@@ -203,7 +207,7 @@ async function handleTagCreated(name: string) {
 
         <div class="flex flex-wrap gap-6">
             <div class="flex flex-col gap-2">
-                <Label for="link-bucket">{{ $t('fields.bucket') }}</Label>
+                <Label for="link-bucket">{{ t('fields.bucket') }}</Label>
                 <select
                     id="link-bucket"
                     name="bucket_id"
@@ -227,7 +231,7 @@ async function handleTagCreated(name: string) {
             </div>
 
             <div class="flex flex-col gap-2">
-                <Label>{{ $t('fields.tags') }}</Label>
+                <Label>{{ t('fields.tags') }}</Label>
                 <TagSelect
                     :tags="localTags"
                     v-model="createTagIds"
@@ -251,14 +255,14 @@ async function handleTagCreated(name: string) {
                 :disabled="processing"
                 @click="handleCreateSubmit(submit)"
             >
-                {{ $t('common.save') }}
+                {{ t('common.save') }}
             </Button>
             <Button
                 v-if="isCreateFormDirty"
                 type="button"
                 variant="ghost"
                 size="icon"
-                :aria-label="$t('common.clearForm')"
+                :aria-label="t('common.clearForm')"
                 @click="resetCreateForm"
             >
                 <RotateCcw class="size-4" />

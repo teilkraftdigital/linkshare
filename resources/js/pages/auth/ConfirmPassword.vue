@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
+import { i18n } from '@/i18n';
 import InputError from '@/components/shared/InputError.vue';
 import PasswordInput from '@/components/shared/PasswordInput.vue';
 import { Button } from '@/components/ui/button';
@@ -12,14 +13,14 @@ const { t } = useI18n();
 
 defineOptions({
     layout: {
-        title: t('auth.confirmPassword.title'),
-        description: t('auth.confirmPassword.description'),
+        title: i18n.global.t('auth.confirmPassword.title'),
+        description: i18n.global.t('auth.confirmPassword.description'),
     },
 });
 </script>
 
 <template>
-    <Head :title="$t('auth.confirmPassword.pageTitle')" />
+    <Head :title="t('auth.confirmPassword.pageTitle')" />
 
     <Form
         v-bind="store.form()"
@@ -28,7 +29,7 @@ defineOptions({
     >
         <div class="space-y-6">
             <div class="grid gap-2">
-                <Label htmlFor="password">{{ $t('fields.password') }}</Label>
+                <Label htmlFor="password">{{ t('fields.password') }}</Label>
                 <PasswordInput
                     id="password"
                     name="password"
@@ -48,7 +49,7 @@ defineOptions({
                     data-test="confirm-password-button"
                 >
                     <Spinner v-if="processing" />
-                    {{ $t('auth.confirmPassword.submit') }}
+                    {{ t('auth.confirmPassword.submit') }}
                 </Button>
             </div>
         </div>

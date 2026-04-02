@@ -2,6 +2,7 @@
 import { router } from '@inertiajs/vue3';
 import { Globe } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import * as LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import EntrySortButtons from '@/components/dashboard/EntrySortButtons.vue';
 import { useTagSortAndFilter } from '@/composables/useTagSortAndFilter';
@@ -15,6 +16,7 @@ type Props = {
 
 const props = defineProps<Props>();
 const allTags = computed(() => props.tags);
+const { t } = useI18n();
 
 const {
     sortKey: allTagSort,
@@ -34,11 +36,11 @@ function openTagLinks(tag: DashboardTag): void {
         <h2
             class="mb-3 text-sm font-semibold tracking-wide text-muted-foreground uppercase"
         >
-            {{ $t('dashboard.allTags.title') }}
+            {{ t('dashboard.allTags.title') }}
         </h2>
 
         <div v-if="allTags.length === 0" class="text-sm text-muted-foreground">
-            {{ $t('dashboard.allTags.empty') }}
+            {{ t('dashboard.allTags.empty') }}
         </div>
 
         <template v-else>
@@ -47,8 +49,8 @@ function openTagLinks(tag: DashboardTag): void {
                 v-if="allTags.length >= TAG_SEARCH_THRESHOLD"
                 v-model="allTagSearch"
                 type="search"
-                :aria-label="$t('dashboard.allTags.searchAriaLabel')"
-                :placeholder="$t('dashboard.allTags.searchPlaceholder')"
+                :aria-label="t('dashboard.allTags.searchAriaLabel')"
+                :placeholder="t('dashboard.allTags.searchPlaceholder')"
                 class="mb-2 w-64 rounded-md border bg-background px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-ring"
             />
 
@@ -93,7 +95,7 @@ function openTagLinks(tag: DashboardTag): void {
                     v-if="sortedAllTags.length === 0"
                     class="col-span-full text-sm text-muted-foreground"
                 >
-                    {{ $t('dashboard.allTags.noResults') }}
+                    {{ t('dashboard.allTags.noResults') }}
                 </li>
             </ul>
         </template>

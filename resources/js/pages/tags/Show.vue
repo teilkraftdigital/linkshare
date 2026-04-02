@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, setLayoutProps } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import TagExportController from '@/actions/App/Http/Controllers/TagExportController';
 import LinkCard from '@/components/links/LinkCard.vue';
 import type { Link, Tag } from '@/types/dashboard';
@@ -8,6 +9,8 @@ const props = defineProps<{
     tag: Tag;
     links: Link[];
 }>();
+
+const { t } = useI18n();
 
 setLayoutProps({
     title: props.tag.name,
@@ -42,7 +45,7 @@ setLayoutProps({
         </ul>
 
         <p v-else class="text-sm text-muted-foreground">
-            {{ $t('tags.showEmpty') }}
+            {{ t('tags.showEmpty') }}
         </p>
     </main>
 </template>

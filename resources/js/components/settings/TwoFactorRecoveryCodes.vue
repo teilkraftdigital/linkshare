@@ -2,6 +2,7 @@
 import { Form } from '@inertiajs/vue3';
 import { Eye, EyeOff, LockKeyhole, RefreshCw } from 'lucide-vue-next';
 import { nextTick, onMounted, ref, useTemplateRef } from 'vue';
+import { useI18n } from 'vue-i18n';
 import AlertError from '@/components/shared/AlertError.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,6 +15,7 @@ import {
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import { regenerateRecoveryCodes } from '@/routes/two-factor';
 
+const { t } = useI18n();
 const { recoveryCodesList, fetchRecoveryCodes, errors } = useTwoFactorAuth();
 const isRecoveryCodesVisible = ref<boolean>(false);
 const recoveryCodeSectionRef = useTemplateRef('recoveryCodeSectionRef');
@@ -41,10 +43,10 @@ onMounted(async () => {
     <Card class="w-full">
         <CardHeader>
             <CardTitle class="flex gap-3">
-                <LockKeyhole class="size-4" />{{ $t('settings.twoFactorRecoveryCodes.cardTitle') }}
+                <LockKeyhole class="size-4" />{{ t('settings.twoFactorRecoveryCodes.cardTitle') }}
             </CardTitle>
             <CardDescription>
-                {{ $t('settings.twoFactorRecoveryCodes.cardDescription') }}
+                {{ t('settings.twoFactorRecoveryCodes.cardDescription') }}
             </CardDescription>
         </CardHeader>
         <CardContent>
@@ -56,8 +58,8 @@ onMounted(async () => {
                         :is="isRecoveryCodesVisible ? EyeOff : Eye"
                         class="size-4"
                     />
-                    {{ isRecoveryCodesVisible ? $t('settings.twoFactorRecoveryCodes.hide') : $t('settings.twoFactorRecoveryCodes.view') }}
-                    {{ $t('settings.twoFactorRecoveryCodes.recoveryCodes') }}
+                    {{ isRecoveryCodesVisible ? t('settings.twoFactorRecoveryCodes.hide') : t('settings.twoFactorRecoveryCodes.view') }}
+                    {{ t('settings.twoFactorRecoveryCodes.recoveryCodes') }}
                 </Button>
 
                 <Form
@@ -73,7 +75,7 @@ onMounted(async () => {
                         type="submit"
                         :disabled="processing"
                     >
-                        <RefreshCw /> {{ $t('settings.twoFactorRecoveryCodes.regenerate') }}
+                        <RefreshCw /> {{ t('settings.twoFactorRecoveryCodes.regenerate') }}
                     </Button>
                 </Form>
             </div>
@@ -109,7 +111,7 @@ onMounted(async () => {
                         </div>
                     </div>
                     <p class="text-xs text-muted-foreground select-none">
-                        {{ $t('settings.twoFactorRecoveryCodes.hint') }}
+                        {{ t('settings.twoFactorRecoveryCodes.hint') }}
                     </p>
                 </div>
             </div>

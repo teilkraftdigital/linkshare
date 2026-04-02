@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { COLORS } from '@/lib/colors';
+
+const { t } = useI18n();
 
 type Props = {
     modelValue: string;
@@ -13,7 +16,7 @@ const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
     <div
         class="flex flex-wrap justify-between gap-2 md:justify-items-start"
         role="group"
-        :aria-label="$t('colorPalette.ariaLabel')"
+        :aria-label="t('colorPalette.ariaLabel')"
     >
         <label
             v-for="color in COLORS"

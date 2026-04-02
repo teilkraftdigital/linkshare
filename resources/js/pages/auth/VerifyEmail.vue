@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
+import { i18n } from '@/i18n';
 import TextLink from '@/components/shared/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -11,8 +12,8 @@ const { t } = useI18n();
 
 defineOptions({
     layout: {
-        title: t('auth.verifyEmail.title'),
-        description: t('auth.verifyEmail.description'),
+        title: i18n.global.t('auth.verifyEmail.title'),
+        description: i18n.global.t('auth.verifyEmail.description'),
     },
 });
 
@@ -22,13 +23,13 @@ defineProps<{
 </script>
 
 <template>
-    <Head :title="$t('auth.verifyEmail.pageTitle')" />
+    <Head :title="t('auth.verifyEmail.pageTitle')" />
 
     <div
         v-if="status === 'verification-link-sent'"
         class="mb-4 text-center text-sm font-medium text-green-600"
     >
-        {{ $t('auth.verifyEmail.verificationSent') }}
+        {{ t('auth.verifyEmail.verificationSent') }}
     </div>
 
     <Form
@@ -38,11 +39,11 @@ defineProps<{
     >
         <Button :disabled="processing" variant="secondary">
             <Spinner v-if="processing" />
-            {{ $t('auth.verifyEmail.resend') }}
+            {{ t('auth.verifyEmail.resend') }}
         </Button>
 
         <TextLink :href="logout()" as="button" class="mx-auto block text-sm">
-            {{ $t('auth.verifyEmail.logout') }}
+            {{ t('auth.verifyEmail.logout') }}
         </TextLink>
     </Form>
 </template>

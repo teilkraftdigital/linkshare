@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
+import { useI18n } from 'vue-i18n';
 import type { Paginator } from '@/types/dashboard';
+
+const { t } = useI18n();
 
 defineProps<{
     items: Paginator<any>;
@@ -10,7 +13,7 @@ defineProps<{
 <template>
     <div class="flex items-center justify-between gap-2">
         <p class="text-sm text-muted-foreground">
-            {{ $t('pagination.summary', { from: items.from, to: items.to, total: items.total }) }}
+            {{ t('pagination.summary', { from: items.from, to: items.to, total: items.total }) }}
         </p>
         <div class="flex gap-1">
             <Link
