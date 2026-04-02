@@ -22,13 +22,13 @@ defineProps<{
 </script>
 
 <template>
-    <Head :title="$t('auth.verifyEmail.pageTitle')" />
+    <Head :title="t('auth.verifyEmail.pageTitle')" />
 
     <div
         v-if="status === 'verification-link-sent'"
         class="mb-4 text-center text-sm font-medium text-green-600"
     >
-        {{ $t('auth.verifyEmail.verificationSent') }}
+        {{ t('auth.verifyEmail.verificationSent') }}
     </div>
 
     <Form
@@ -38,11 +38,11 @@ defineProps<{
     >
         <Button :disabled="processing" variant="secondary">
             <Spinner v-if="processing" />
-            {{ $t('auth.verifyEmail.resend') }}
+            {{ t('auth.verifyEmail.resend') }}
         </Button>
 
         <TextLink :href="logout()" as="button" class="mx-auto block text-sm">
-            {{ $t('auth.verifyEmail.logout') }}
+            {{ t('auth.verifyEmail.logout') }}
         </TextLink>
     </Form>
 </template>

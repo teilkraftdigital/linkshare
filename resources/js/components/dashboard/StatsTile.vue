@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 type Props = {
     eyebrow: string;
     stat: string | number;
@@ -6,6 +7,8 @@ type Props = {
 };
 
 defineProps<Props>();
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -16,7 +19,9 @@ defineProps<Props>();
         </div>
         <div class="text-3xl font-bold">{{ stat }}</div>
         <div class="mt-1 text-xs text-muted-foreground">
-            <slot name="delta"> {{ $t('dashboard.stats.deltaLabel', { delta }) }} </slot>
+            <slot name="delta">
+                {{ t('dashboard.stats.deltaLabel', { delta }) }}
+            </slot>
         </div>
     </div>
 </template>

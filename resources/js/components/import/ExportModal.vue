@@ -69,7 +69,12 @@ async function downloadExport() {
     exporting.value = true;
 
     try {
-        const csrfToken = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content ?? '';
+        const csrfToken =
+            (
+                document.querySelector(
+                    'meta[name="csrf-token"]',
+                ) as HTMLMetaElement
+            )?.content ?? '';
         const response = await fetch(ExportController.url(), {
             method: 'POST',
             headers: {
@@ -78,7 +83,9 @@ async function downloadExport() {
                 'X-Inertia': 'false',
             },
             body: JSON.stringify({
-                bucket_ids: allBuckets.value ? [] : [...selectedBucketIds.value],
+                bucket_ids: allBuckets.value
+                    ? []
+                    : [...selectedBucketIds.value],
                 tag_ids: allTags.value ? [] : [...selectedTagIds.value],
                 includes_notes: includesNotes.value,
             }),
@@ -91,7 +98,9 @@ async function downloadExport() {
         const blob = await response.blob();
         const disposition = response.headers.get('Content-Disposition') ?? '';
         const match = disposition.match(/filename="([^"]+)"/);
-        const filename = match ? match[1] : `linkshare-export-${new Date().toISOString().slice(0, 10)}.json`;
+        const filename = match
+            ? match[1]
+            : `linkshare-export-${new Date().toISOString().slice(0, 10)}.json`;
 
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -111,7 +120,7 @@ async function downloadExport() {
     <Dialog :open="open" @update:open="emit('update:open', $event)">
         <DialogContent class="max-w-md">
             <DialogHeader>
-                <DialogTitle>{{ $t('import.export.modalTitle') }}</DialogTitle>
+                <DialogTitle>{{ t('import.export.modalTitle') }}</DialogTitle>
             </DialogHeader>
 
             <div class="space-y-5 py-2">
@@ -124,7 +133,7 @@ async function downloadExport() {
                             @update:model-value="allBuckets = $event as boolean"
                         />
                         <Label for="export-all-buckets" class="cursor-pointer">
-                            {{ $t('import.export.allBuckets') }}
+                            {{ t('import.export.allBuckets') }}
                         </Label>
                     </div>
 
@@ -140,7 +149,9 @@ async function downloadExport() {
                             <Checkbox
                                 :id="`export-bucket-${bucket.id}`"
                                 :model-value="selectedBucketIds.has(bucket.id)"
-                                @update:model-value="toggleBucket(bucket.id, $event as boolean)"
+                                @update:model-value="
+                                    toggleBucket(bucket.id, $event as boolean)
+                                "
                             />
                             <Label
                                 :for="`export-bucket-${bucket.id}`"
@@ -148,7 +159,9 @@ async function downloadExport() {
                             >
                                 <span
                                     class="size-2.5 rounded-full"
-                                    :class="COLOR_BG[bucket.color] ?? 'bg-gray-400'"
+                                    :class="
+                                        COLOR_BG[bucket.color] ?? 'bg-gray-400'
+                                    "
                                 />
                                 {{ bucket.name }}
                             </Label>
@@ -165,7 +178,7 @@ async function downloadExport() {
                             @update:model-value="allTags = $event as boolean"
                         />
                         <Label for="export-all-tags" class="cursor-pointer">
-                            {{ $t('import.export.allTags') }}
+                            {{ t('import.export.allTags') }}
                         </Label>
                     </div>
 
@@ -181,7 +194,9 @@ async function downloadExport() {
                             <Checkbox
                                 :id="`export-tag-${tag.id}`"
                                 :model-value="selectedTagIds.has(tag.id)"
-                                @update:model-value="toggleTag(tag.id, $event as boolean)"
+                                @update:model-value="
+                                    toggleTag(tag.id, $event as boolean)
+                                "
                             />
                             <Label
                                 :for="`export-tag-${tag.id}`"
@@ -189,7 +204,9 @@ async function downloadExport() {
                             >
                                 <span
                                     class="size-2.5 rounded-full"
-                                    :class="COLOR_BG[tag.color] ?? 'bg-gray-400'"
+                                    :class="
+                                        COLOR_BG[tag.color] ?? 'bg-gray-400'
+                                    "
                                 />
                                 {{ tag.name }}
                             </Label>
@@ -199,20 +216,30 @@ async function downloadExport() {
 
                 <!-- Private notes -->
                 <div class="flex items-center gap-2">
-                    <Checkbox id="export-includes-notes" v-model="includesNotes" />
-                    <Label for="export-includes-notes" class="cursor-pointer font-normal">
-                        {{ $t('import.export.includeNotes') }}
+                    <Checkbox
+                        id="export-includes-notes"
+                        v-model="includesNotes"
+                    />
+                    <Label
+                        for="export-includes-notes"
+                        class="cursor-pointer font-normal"
+                    >
+                        {{ t('import.export.includeNotes') }}
                     </Label>
                 </div>
             </div>
 
             <DialogFooter>
                 <Button variant="outline" @click="emit('update:open', false)">
-                    {{ $t('import.export.cancel') }}
+                    {{ t('import.export.cancel') }}
                 </Button>
                 <Button :disabled="exporting" @click="downloadExport">
                     <Download class="mr-2 size-4" />
-                    {{ exporting ? t('import.export.exporting') : t('import.export.button') }}
+                    {{
+                        exporting
+                            ? t('import.export.exporting')
+                            : t('import.export.button')
+                    }}
                 </Button>
             </DialogFooter>
         </DialogContent>

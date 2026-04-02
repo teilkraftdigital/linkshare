@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { Trash2, RotateCcw } from 'lucide-vue-next';
-
+import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
 import type { Tag } from '@/types/dashboard';
+
+const { t } = useI18n();
 
 type Props = {
     tag: Tag;
@@ -28,7 +30,7 @@ function confirmForceDelete(tag: Tag) {
     <Button
         variant="ghost"
         size="icon"
-        :aria-label="$t('tags.actions.restoreAriaLabel', { name: tag.name })"
+        :aria-label="t('tags.actions.restoreAriaLabel', { name: tag.name })"
         @click="restoreTag(tag)"
     >
         <RotateCcw class="size-4" />
@@ -37,7 +39,7 @@ function confirmForceDelete(tag: Tag) {
     <Button
         variant="ghost"
         size="icon"
-        :aria-label="$t('tags.actions.forceDeleteAriaLabel', { name: tag.name })"
+        :aria-label="t('tags.actions.forceDeleteAriaLabel', { name: tag.name })"
         @click="confirmForceDelete(tag)"
     >
         <Trash2 class="size-4 text-destructive" />

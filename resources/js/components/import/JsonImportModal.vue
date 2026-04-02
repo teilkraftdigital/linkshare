@@ -59,7 +59,9 @@ watch(
     <Dialog :open="open" @update:open="emit('update:open', $event)">
         <DialogContent class="max-w-md">
             <DialogHeader>
-                <DialogTitle>{{ $t('import.jsonImport.modal.title') }}</DialogTitle>
+                <DialogTitle>{{
+                    t('import.jsonImport.modal.title')
+                }}</DialogTitle>
             </DialogHeader>
 
             <div v-if="preview" class="space-y-5 py-2">
@@ -67,8 +69,13 @@ watch(
                     <span class="mr-0.5 font-medium text-foreground">{{
                         preview.link_count
                     }}</span>
-                    {{ t('import.jsonImport.modal.foundLinks', preview.link_count) }}
-                    {{ $t('import.jsonImport.modal.selectInstruction') }}
+                    {{
+                        t(
+                            'import.jsonImport.modal.foundLinks',
+                            preview.link_count,
+                        )
+                    }}
+                    {{ t('import.jsonImport.modal.selectInstruction') }}
                 </p>
 
                 <!-- Bucket selection -->
@@ -83,7 +90,7 @@ watch(
                             for="json-import-all-buckets"
                             class="cursor-pointer"
                         >
-                            {{ $t('import.jsonImport.modal.allBuckets') }}
+                            {{ t('import.jsonImport.modal.allBuckets') }}
                         </Label>
                     </div>
 
@@ -137,7 +144,7 @@ watch(
                             for="json-import-all-tags"
                             class="cursor-pointer"
                         >
-                            {{ $t('import.jsonImport.modal.allTags') }}
+                            {{ t('import.jsonImport.modal.allTags') }}
                         </Label>
                     </div>
 
@@ -174,7 +181,11 @@ watch(
                                 <Globe
                                     v-if="tag.is_public"
                                     class="size-3 opacity-60"
-                                    :aria-label="t('tags.select.publicTagAriaLabel', { name: tag.name })"
+                                    :aria-label="
+                                        t('tags.select.publicTagAriaLabel', {
+                                            name: tag.name,
+                                        })
+                                    "
                                 />
                             </Label>
                         </div>
@@ -184,7 +195,7 @@ watch(
 
             <DialogFooter>
                 <Button variant="outline" @click="emit('update:open', false)">
-                    {{ $t('import.jsonImport.modal.cancel') }}
+                    {{ t('import.jsonImport.modal.cancel') }}
                 </Button>
                 <Button
                     @click="
@@ -200,7 +211,7 @@ watch(
                     "
                 >
                     <Upload class="mr-2 size-4" />
-                    {{ $t('import.jsonImport.modal.importButton') }}
+                    {{ t('import.jsonImport.modal.importButton') }}
                 </Button>
             </DialogFooter>
         </DialogContent>

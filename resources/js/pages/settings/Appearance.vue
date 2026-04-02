@@ -20,15 +20,15 @@ defineOptions({
 </script>
 
 <template>
-    <Head :title="$t('settings.appearance.pageTitle')" />
+    <Head :title="t('settings.appearance.pageTitle')" />
 
-    <h1 class="sr-only">{{ $t('settings.appearance.title') }}</h1>
+    <h1 class="sr-only">{{ t('settings.appearance.title') }}</h1>
 
     <div class="space-y-6">
         <Heading
             variant="small"
-            :title="$t('settings.appearance.title')"
-            :description="$t('settings.appearance.description')"
+            :title="t('settings.appearance.title')"
+            :description="t('settings.appearance.description')"
         />
         <AppearanceTabs />
     </div>

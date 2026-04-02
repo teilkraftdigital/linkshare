@@ -21,7 +21,7 @@ defineOptions({
 </script>
 
 <template>
-    <Head :title="$t('auth.register.pageTitle')" />
+    <Head :title="t('auth.register.pageTitle')" />
 
     <Form
         action="/register"
@@ -32,7 +32,7 @@ defineOptions({
     >
         <div class="grid gap-6">
             <div class="grid gap-2">
-                <Label for="name">{{ $t('fields.name') }}</Label>
+                <Label for="name">{{ t('fields.name') }}</Label>
                 <Input
                     id="name"
                     type="text"
@@ -41,13 +41,13 @@ defineOptions({
                     :tabindex="1"
                     autocomplete="name"
                     name="name"
-                    :placeholder="$t('placeholders.fullName')"
+                    :placeholder="t('placeholders.fullName')"
                 />
                 <InputError :message="errors.name" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="email">{{ $t('fields.email') }}</Label>
+                <Label for="email">{{ t('fields.email') }}</Label>
                 <Input
                     id="email"
                     type="email"
@@ -55,33 +55,33 @@ defineOptions({
                     :tabindex="2"
                     autocomplete="email"
                     name="email"
-                    :placeholder="$t('placeholders.email')"
+                    :placeholder="t('placeholders.email')"
                 />
                 <InputError :message="errors.email" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="password">{{ $t('fields.password') }}</Label>
+                <Label for="password">{{ t('fields.password') }}</Label>
                 <PasswordInput
                     id="password"
                     required
                     :tabindex="3"
                     autocomplete="new-password"
                     name="password"
-                    :placeholder="$t('placeholders.password')"
+                    :placeholder="t('placeholders.password')"
                 />
                 <InputError :message="errors.password" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="password_confirmation">{{ $t('fields.confirmPassword') }}</Label>
+                <Label for="password_confirmation">{{ t('fields.confirmPassword') }}</Label>
                 <PasswordInput
                     id="password_confirmation"
                     required
                     :tabindex="4"
                     autocomplete="new-password"
                     name="password_confirmation"
-                    :placeholder="$t('fields.confirmPassword')"
+                    :placeholder="t('fields.confirmPassword')"
                 />
                 <InputError :message="errors.password_confirmation" />
             </div>
@@ -94,17 +94,17 @@ defineOptions({
                 data-test="register-user-button"
             >
                 <Spinner v-if="processing" />
-                {{ $t('auth.register.submit') }}
+                {{ t('auth.register.submit') }}
             </Button>
         </div>
 
         <div class="text-center text-sm text-muted-foreground">
-            {{ $t('auth.register.alreadyHaveAccount') }}
+            {{ t('auth.register.alreadyHaveAccount') }}
             <TextLink
                 :href="login()"
                 class="underline underline-offset-4"
                 :tabindex="6"
-            >{{ $t('auth.register.login') }}</TextLink>
+            >{{ t('auth.register.login') }}</TextLink>
         </div>
     </Form>
 </template>

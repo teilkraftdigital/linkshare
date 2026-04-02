@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { Globe, Link2, Tag as TagIcon } from 'lucide-vue-next';
+import { useI18n } from 'vue-i18n';
 import AllTagsTile from '@/components/dashboard/AllTagsTile.vue';
 import PublicTagsTile from '@/components/dashboard/PublicTagsTile.vue';
 import RecentLinksTile from '@/components/dashboard/RecentLinksTile.vue';
@@ -8,6 +9,8 @@ import StatsTile from '@/components/dashboard/StatsTile.vue';
 import { formatDate } from '@/lib/datetime';
 import { index as dashboardRoute } from '@/routes/dashboard';
 import type { DashboardTag, DashboardLink } from '@/types/dashboard';
+
+const { t } = useI18n();
 
 type Stat = { count: number; delta: number };
 
@@ -30,13 +33,13 @@ defineOptions({
 </script>
 
 <template>
-    <Head :title="$t('dashboard.pageTitle')" />
+    <Head :title="t('dashboard.pageTitle')" />
 
     <div class="flex flex-col gap-6 p-4">
         <!-- Stat tiles -->
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatsTile
-                :eyebrow="$t('dashboard.stats.links')"
+                :eyebrow="t('dashboard.stats.links')"
                 :stat="stats.links.count"
                 :delta="stats.links.delta"
                 use-delta
@@ -47,7 +50,7 @@ defineOptions({
             </StatsTile>
 
             <StatsTile
-                :eyebrow="$t('dashboard.stats.tags')"
+                :eyebrow="t('dashboard.stats.tags')"
                 :stat="stats.tags.count"
                 :delta="stats.tags.delta"
             >
@@ -57,7 +60,7 @@ defineOptions({
             </StatsTile>
 
             <StatsTile
-                :eyebrow="$t('dashboard.stats.publicTags')"
+                :eyebrow="t('dashboard.stats.publicTags')"
                 :stat="stats.public_tags.count"
                 :delta="stats.public_tags.delta"
             >
@@ -67,14 +70,14 @@ defineOptions({
             </StatsTile>
 
             <StatsTile
-                :eyebrow="$t('dashboard.stats.lastAdded')"
+                :eyebrow="t('dashboard.stats.lastAdded')"
                 :stat="formatDate(stats.last_link_date)"
             >
                 <template #icon>
                     <Link2 class="size-4" aria-hidden="true" />
                 </template>
 
-                <template #delta>{{ $t('dashboard.stats.lastLink') }}</template>
+                <template #delta>{{ t('dashboard.stats.lastLink') }}</template>
             </StatsTile>
         </div>
 

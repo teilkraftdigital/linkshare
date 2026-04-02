@@ -96,8 +96,8 @@ const footerNavItems: NavItem[] = [
 
         <SidebarContent>
             <NavMain :items="mainNavItems" />
-            <NavMain :items="libraryNavItems" :label="$t('nav.library')" />
-            <NavMain :items="toolNavItems" :label="$t('nav.tools')" />
+            <NavMain :items="libraryNavItems" :label="t('nav.library')" />
+            <NavMain :items="toolNavItems" :label="t('nav.tools')" />
         </SidebarContent>
 
         <SidebarFooter>

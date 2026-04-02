@@ -25,7 +25,7 @@ defineProps<{
 </script>
 
 <template>
-    <Head :title="$t('auth.forgotPassword.pageTitle')" />
+    <Head :title="t('auth.forgotPassword.pageTitle')" />
 
     <div
         v-if="status"
@@ -37,14 +37,14 @@ defineProps<{
     <div class="space-y-6">
         <Form v-bind="email.form()" v-slot="{ errors, processing }">
             <div class="grid gap-2">
-                <Label for="email">{{ $t('fields.email') }}</Label>
+                <Label for="email">{{ t('fields.email') }}</Label>
                 <Input
                     id="email"
                     type="email"
                     name="email"
                     autocomplete="off"
                     autofocus
-                    :placeholder="$t('placeholders.email')"
+                    :placeholder="t('placeholders.email')"
                 />
                 <InputError :message="errors.email" />
             </div>
@@ -56,14 +56,14 @@ defineProps<{
                     data-test="email-password-reset-link-button"
                 >
                     <Spinner v-if="processing" />
-                    {{ $t('auth.forgotPassword.submit') }}
+                    {{ t('auth.forgotPassword.submit') }}
                 </Button>
             </div>
         </Form>
 
         <div class="space-x-1 text-center text-sm text-muted-foreground">
-            <span>{{ $t('auth.forgotPassword.or') }}</span>
-            <TextLink :href="login()">{{ $t('auth.forgotPassword.backToLogin') }}</TextLink>
+            <span>{{ t('auth.forgotPassword.or') }}</span>
+            <TextLink :href="login()">{{ t('auth.forgotPassword.backToLogin') }}</TextLink>
         </div>
     </div>
 </template>

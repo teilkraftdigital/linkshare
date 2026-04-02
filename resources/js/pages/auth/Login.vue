@@ -29,7 +29,7 @@ defineProps<{
 </script>
 
 <template>
-    <Head :title="$t('auth.login.pageTitle')" />
+    <Head :title="t('auth.login.pageTitle')" />
 
     <div
         v-if="status"
@@ -46,7 +46,7 @@ defineProps<{
     >
         <div class="grid gap-6">
             <div class="grid gap-2">
-                <Label for="email">{{ $t('fields.email') }}</Label>
+                <Label for="email">{{ t('fields.email') }}</Label>
                 <Input
                     id="email"
                     type="email"
@@ -55,21 +55,21 @@ defineProps<{
                     autofocus
                     :tabindex="1"
                     autocomplete="email"
-                    :placeholder="$t('placeholders.email')"
+                    :placeholder="t('placeholders.email')"
                 />
                 <InputError :message="errors.email" />
             </div>
 
             <div class="grid gap-2">
                 <div class="flex items-center justify-between">
-                    <Label for="password">{{ $t('fields.password') }}</Label>
+                    <Label for="password">{{ t('fields.password') }}</Label>
                     <TextLink
                         v-if="canResetPassword"
                         :href="request()"
                         class="text-sm"
                         :tabindex="5"
                     >
-                        {{ $t('auth.login.forgotPassword') }}
+                        {{ t('auth.login.forgotPassword') }}
                     </TextLink>
                 </div>
                 <PasswordInput
@@ -78,7 +78,7 @@ defineProps<{
                     required
                     :tabindex="2"
                     autocomplete="current-password"
-                    :placeholder="$t('placeholders.password')"
+                    :placeholder="t('placeholders.password')"
                 />
                 <InputError :message="errors.password" />
             </div>
@@ -86,7 +86,7 @@ defineProps<{
             <div class="flex items-center justify-between">
                 <Label for="remember" class="flex items-center space-x-3">
                     <Checkbox id="remember" name="remember" :tabindex="3" />
-                    <span>{{ $t('auth.login.rememberMe') }}</span>
+                    <span>{{ t('auth.login.rememberMe') }}</span>
                 </Label>
             </div>
 
@@ -98,7 +98,7 @@ defineProps<{
                 data-test="login-button"
             >
                 <Spinner v-if="processing" />
-                {{ $t('auth.login.submit') }}
+                {{ t('auth.login.submit') }}
             </Button>
         </div>
 
@@ -106,8 +106,8 @@ defineProps<{
             class="text-center text-sm text-muted-foreground"
             v-if="canRegister"
         >
-            {{ $t('auth.login.noAccount') }}
-            <TextLink href="/register" :tabindex="5">{{ $t('auth.login.signUp') }}</TextLink>
+            {{ t('auth.login.noAccount') }}
+            <TextLink href="/register" :tabindex="5">{{ t('auth.login.signUp') }}</TextLink>
         </div>
     </Form>
 </template>

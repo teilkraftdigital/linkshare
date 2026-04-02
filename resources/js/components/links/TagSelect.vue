@@ -109,7 +109,7 @@ function handleEnter(e: KeyboardEvent) {
                 <button
                     type="button"
                     class="rounded-full p-0.5 text-muted-foreground hover:text-foreground"
-                    :aria-label="$t('tags.select.removeAriaLabel', { name: tag.name })"
+                    :aria-label="t('tags.select.removeAriaLabel', { name: tag.name })"
                     @click.stop="remove(tag.id)"
                 >
                     <X class="size-3" />
@@ -119,7 +119,7 @@ function handleEnter(e: KeyboardEvent) {
             <ComboboxInput
                 v-model="searchTerm"
                 class="min-w-24 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
-                :placeholder="$t('tags.select.placeholder')"
+                :placeholder="t('tags.select.placeholder')"
                 @keydown.enter="handleEnter"
             />
         </ComboboxAnchor>

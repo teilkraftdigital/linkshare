@@ -2,8 +2,11 @@
 import { Eye, EyeOff } from 'lucide-vue-next';
 import { ref, useTemplateRef } from 'vue';
 import type { HTMLAttributes } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+
+const { t } = useI18n();
 
 defineOptions({ inheritAttrs: false });
 
@@ -36,7 +39,7 @@ defineExpose({
                     'absolute inset-y-0 right-0 flex items-center rounded-r-md px-3 text-muted-foreground hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:outline-none',
                 )
             "
-            :aria-label="showPassword ? $t('fields.hidePassword') : $t('fields.showPassword')"
+            :aria-label="showPassword ? t('fields.hidePassword') : t('fields.showPassword')"
             :tabindex="-1"
         >
             <EyeOff v-if="showPassword" class="size-4" />

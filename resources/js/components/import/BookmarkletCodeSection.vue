@@ -2,9 +2,11 @@
 import { usePage } from '@inertiajs/vue3';
 import { BookmarkPlus, Copy } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import QuickAddController from '@/actions/App/Http/Controllers/Dashboard/QuickAddController';
 import { Button } from '@/components/ui/button';
 
+const { t } = useI18n();
 const page = usePage();
 
 const quickAddUrl = computed(() => {
@@ -32,9 +34,11 @@ function copyBookmarklet() {
 <template>
     <div class="space-y-3">
         <div>
-            <h2 class="text-sm font-semibold">{{ $t('import.bookmarklet.title') }}</h2>
+            <h2 class="text-sm font-semibold">
+                {{ t('import.bookmarklet.title') }}
+            </h2>
             <p class="mt-0.5 text-sm text-muted-foreground">
-                {{ $t('import.bookmarklet.description') }}
+                {{ t('import.bookmarklet.description') }}
             </p>
         </div>
 
@@ -45,11 +49,11 @@ function copyBookmarklet() {
                 @click.prevent
             >
                 <BookmarkPlus class="size-4" />
-                {{ $t('import.bookmarklet.saveLink') }}
+                {{ t('import.bookmarklet.saveLink') }}
             </a>
-            <span class="text-xs text-muted-foreground"
-                >{{ $t('import.bookmarklet.dragHint') }}</span
-            >
+            <span class="text-xs text-muted-foreground">{{
+                t('import.bookmarklet.dragHint')
+            }}</span>
         </div>
 
         <div class="flex items-start gap-2">
@@ -64,7 +68,11 @@ function copyBookmarklet() {
                 @click="copyBookmarklet"
             >
                 <Copy class="size-3.5" />
-                {{ copied ? $t('import.bookmarklet.copied') : $t('import.bookmarklet.copy') }}
+                {{
+                    copied
+                        ? t('import.bookmarklet.copied')
+                        : t('import.bookmarklet.copy')
+                }}
             </Button>
         </div>
     </div>

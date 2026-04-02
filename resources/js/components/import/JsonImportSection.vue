@@ -33,16 +33,19 @@ function onModalClose() {
 
 async function parseJsonFile() {
     if (!jsonFile.value) {
-return;
-}
+        return;
+    }
 
     jsonParsing.value = true;
     jsonParseError.value = null;
 
     try {
         const csrfToken =
-            (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)
-                ?.content ?? '';
+            (
+                document.querySelector(
+                    'meta[name="csrf-token"]',
+                ) as HTMLMetaElement
+            )?.content ?? '';
         const formData = new FormData();
         formData.append('file', jsonFile.value);
 
@@ -55,7 +58,8 @@ return;
         const data = await response.json();
 
         if (!response.ok) {
-            jsonParseError.value = data.error ?? data.message ?? t('import.jsonImport.parseError');
+            jsonParseError.value =
+                data.error ?? data.message ?? t('import.jsonImport.parseError');
 
             return;
         }
@@ -71,8 +75,8 @@ return;
 
 async function executeJsonImport(bucketNames: string[], tagNames: string[]) {
     if (!jsonFile.value) {
-return;
-}
+        return;
+    }
 
     jsonImporting.value = true;
     jsonImportModalOpen.value = false;
@@ -100,16 +104,18 @@ return;
             const parts = [t('import.jsonImport.importedCount', imported)];
 
             if (skipped > 0) {
-parts.push(t('import.jsonImport.skippedCount', { n: skipped }));
-}
+                parts.push(t('import.jsonImport.skippedCount', { n: skipped }));
+            }
 
             if (buckets_created > 0) {
-parts.push(t('import.jsonImport.bucketsCreated', buckets_created));
-}
+                parts.push(
+                    t('import.jsonImport.bucketsCreated', buckets_created),
+                );
+            }
 
             if (tags_created > 0) {
-parts.push(t('import.jsonImport.tagsCreated', tags_created));
-}
+                parts.push(t('import.jsonImport.tagsCreated', tags_created));
+            }
 
             toast(parts.join(' · '), 'success');
             jsonFile.value = null;
@@ -134,15 +140,19 @@ parts.push(t('import.jsonImport.tagsCreated', tags_created));
     />
 
     <div>
-        <h2 class="text-sm font-semibold">{{ $t('import.jsonImport.title') }}</h2>
+        <h2 class="text-sm font-semibold">
+            {{ t('import.jsonImport.title') }}
+        </h2>
         <p class="mt-0.5 text-sm text-muted-foreground">
-            {{ $t('import.jsonImport.description') }}
+            {{ t('import.jsonImport.description') }}
         </p>
     </div>
 
     <div class="space-y-4">
         <div class="space-y-1.5">
-            <Label for="json-file">{{ $t('import.jsonImport.fileLabel') }}</Label>
+            <Label for="json-file">{{
+                t('import.jsonImport.fileLabel')
+            }}</Label>
             <Input
                 id="json-file"
                 type="file"
@@ -150,7 +160,7 @@ parts.push(t('import.jsonImport.tagsCreated', tags_created));
                 class="cursor-pointer"
                 @change="
                     jsonFile =
-                        ($event.target as HTMLInputElement).files?.[0] ?? null;
+                        (event.target as HTMLInputElement).files?.[0] ?? null;
                     jsonParseError = null;
                 "
             />
@@ -165,7 +175,13 @@ parts.push(t('import.jsonImport.tagsCreated', tags_created));
             @click="parseJsonFile"
         >
             <Upload class="mr-2 size-4" />
-            {{ jsonImporting ? $t('import.jsonImport.importing') : jsonParsing ? $t('import.jsonImport.reading') : $t('import.jsonImport.analyzing') }}
+            {{
+                jsonImporting
+                    ? t('import.jsonImport.importing')
+                    : jsonParsing
+                      ? t('import.jsonImport.reading')
+                      : t('import.jsonImport.analyzing')
+            }}
         </Button>
     </div>
 </template>

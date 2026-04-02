@@ -34,15 +34,15 @@ const { isCurrentOrParentUrl } = useCurrentUrl();
 <template>
     <div class="px-4 py-6">
         <Heading
-            :title="$t('settings.title')"
-            :description="$t('settings.description')"
+            :title="t('settings.title')"
+            :description="t('settings.description')"
         />
 
         <div class="flex flex-col lg:flex-row lg:space-x-12">
             <aside class="w-full max-w-xl lg:w-48">
                 <nav
                     class="flex flex-col space-y-1 space-x-0"
-                    :aria-label="$t('settings.title')"
+                    :aria-label="t('settings.title')"
                 >
                     <Button
                         v-for="item in sidebarNavItems"

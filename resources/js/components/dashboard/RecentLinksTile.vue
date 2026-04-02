@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import LinkCardCondensed from '@/components/links/LinkCardCondensed.vue';
 import type { DashboardLink } from '@/types/dashboard';
 type Props = {
@@ -6,6 +7,8 @@ type Props = {
 };
 
 defineProps<Props>();
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -13,7 +16,7 @@ defineProps<Props>();
         <h2
             class="mb-3 text-sm font-semibold tracking-wide text-muted-foreground uppercase"
         >
-            {{ $t('dashboard.recentLinks.title') }}
+            {{ t('dashboard.recentLinks.title') }}
         </h2>
         <ul>
             <li v-if="links.length > 0" class="flex flex-col gap-1.5">
@@ -28,7 +31,7 @@ defineProps<Props>();
                 />
             </li>
             <li v-else class="text-sm text-muted-foreground">
-                {{ $t('dashboard.recentLinks.empty') }}
+                {{ t('dashboard.recentLinks.empty') }}
             </li>
         </ul>
     </section>

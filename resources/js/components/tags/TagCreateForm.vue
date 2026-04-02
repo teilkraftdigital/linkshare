@@ -35,22 +35,22 @@ const { toast } = useToast();
     >
         <div class="grid gap-4 sm:grid-cols-2">
             <div class="flex flex-col gap-2">
-                <Label for="tag-name">{{ $t('fields.name') }}</Label>
+                <Label for="tag-name">{{ t('fields.name') }}</Label>
                 <Input
                     id="tag-name"
                     name="name"
-                    :placeholder="$t('tags.form.namePlaceholder')"
+                    :placeholder="t('tags.form.namePlaceholder')"
                     autocomplete="off"
                 />
                 <InputError :message="errors.name" />
             </div>
 
             <div class="flex flex-col gap-2">
-                <Label for="tag-description">{{ $t('tags.form.descriptionLabel') }}</Label>
+                <Label for="tag-description">{{ t('tags.form.descriptionLabel') }}</Label>
                 <Textarea
                     id="tag-description"
                     name="description"
-                    :placeholder="$t('tags.form.descriptionPlaceholder')"
+                    :placeholder="t('tags.form.descriptionPlaceholder')"
                     class="resize-none"
                     rows="1"
                 />
@@ -60,7 +60,7 @@ const { toast } = useToast();
 
         <div class="flex flex-wrap items-end gap-6">
             <div class="flex flex-col gap-2">
-                <Label>{{ $t('tags.form.colorLabel') }}</Label>
+                <Label>{{ t('tags.form.colorLabel') }}</Label>
                 <input type="hidden" name="color" :value="createColor" />
                 <ColorPalette v-model="createColor" />
                 <InputError :message="errors.color" />
@@ -73,12 +73,12 @@ const { toast } = useToast();
                     :value="createIsPublic ? '1' : '0'"
                 />
                 <Checkbox id="create-is-public" v-model="createIsPublic" />
-                <Label for="create-is-public">{{ $t('tags.form.isPublicLabel') }}</Label>
+                <Label for="create-is-public">{{ t('tags.form.isPublicLabel') }}</Label>
                 <InputError :message="errors.is_public" />
             </div>
 
             <Button type="submit" :disabled="processing" class="ml-auto">
-                {{ $t('tags.form.addButton') }}
+                {{ t('tags.form.addButton') }}
             </Button>
         </div>
     </Form>

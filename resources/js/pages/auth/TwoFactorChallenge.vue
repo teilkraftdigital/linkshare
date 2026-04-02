@@ -50,7 +50,7 @@ const code = ref<string>('');
 </script>
 
 <template>
-    <Head :title="$t('auth.twoFactor.pageTitle')" />
+    <Head :title="t('auth.twoFactor.pageTitle')" />
 
     <div class="space-y-6">
         <template v-if="!showRecoveryInput">
@@ -85,10 +85,10 @@ const code = ref<string>('');
                     <InputError :message="errors.code" />
                 </div>
                 <Button type="submit" class="w-full" :disabled="processing">
-                    {{ $t('common.continue') }}
+                    {{ t('common.continue') }}
                 </Button>
                 <div class="text-center text-sm text-muted-foreground">
-                    <span>{{ $t('auth.twoFactor.orYouCan') }} </span>
+                    <span>{{ t('auth.twoFactor.orYouCan') }} </span>
                     <button
                         type="button"
                         class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
@@ -110,17 +110,17 @@ const code = ref<string>('');
                 <Input
                     name="recovery_code"
                     type="text"
-                    :placeholder="$t('auth.twoFactor.recoveryCode.placeholder')"
+                    :placeholder="t('auth.twoFactor.recoveryCode.placeholder')"
                     :autofocus="showRecoveryInput"
                     required
                 />
                 <InputError :message="errors.recovery_code" />
                 <Button type="submit" class="w-full" :disabled="processing">
-                    {{ $t('common.continue') }}
+                    {{ t('common.continue') }}
                 </Button>
 
                 <div class="text-center text-sm text-muted-foreground">
-                    <span>{{ $t('auth.twoFactor.orYouCan') }} </span>
+                    <span>{{ t('auth.twoFactor.orYouCan') }} </span>
                     <button
                         type="button"
                         class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"

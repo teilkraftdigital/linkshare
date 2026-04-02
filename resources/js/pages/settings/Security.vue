@@ -47,15 +47,15 @@ onUnmounted(() => clearTwoFactorAuthData());
 </script>
 
 <template>
-    <Head :title="$t('settings.security.pageTitle')" />
+    <Head :title="t('settings.security.pageTitle')" />
 
-    <h1 class="sr-only">{{ $t('settings.security.pageTitle') }}</h1>
+    <h1 class="sr-only">{{ t('settings.security.pageTitle') }}</h1>
 
     <div class="space-y-6">
         <Heading
             variant="small"
-            :title="$t('settings.security.passwordTitle')"
-            :description="$t('settings.security.passwordDescription')"
+            :title="t('settings.security.passwordTitle')"
+            :description="t('settings.security.passwordDescription')"
         />
 
         <Form
@@ -73,37 +73,41 @@ onUnmounted(() => clearTwoFactorAuthData());
             v-slot="{ errors, processing, recentlySuccessful }"
         >
             <div class="grid gap-2">
-                <Label for="current_password">{{ $t('fields.currentPassword') }}</Label>
+                <Label for="current_password">{{
+                    t('fields.currentPassword')
+                }}</Label>
                 <PasswordInput
                     id="current_password"
                     name="current_password"
                     class="mt-1 block w-full"
                     autocomplete="current-password"
-                    :placeholder="$t('fields.currentPassword')"
+                    :placeholder="t('fields.currentPassword')"
                 />
                 <InputError :message="errors.current_password" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="password">{{ $t('fields.newPassword') }}</Label>
+                <Label for="password">{{ t('fields.newPassword') }}</Label>
                 <PasswordInput
                     id="password"
                     name="password"
                     class="mt-1 block w-full"
                     autocomplete="new-password"
-                    :placeholder="$t('fields.newPassword')"
+                    :placeholder="t('fields.newPassword')"
                 />
                 <InputError :message="errors.password" />
             </div>
 
             <div class="grid gap-2">
-                <Label for="password_confirmation">{{ $t('fields.confirmPassword') }}</Label>
+                <Label for="password_confirmation">{{
+                    t('fields.confirmPassword')
+                }}</Label>
                 <PasswordInput
                     id="password_confirmation"
                     name="password_confirmation"
                     class="mt-1 block w-full"
                     autocomplete="new-password"
-                    :placeholder="$t('fields.confirmPassword')"
+                    :placeholder="t('fields.confirmPassword')"
                 />
                 <InputError :message="errors.password_confirmation" />
             </div>
@@ -113,7 +117,7 @@ onUnmounted(() => clearTwoFactorAuthData());
                     :disabled="processing"
                     data-test="update-password-button"
                 >
-                    {{ $t('settings.security.savePassword') }}
+                    {{ t('settings.security.savePassword') }}
                 </Button>
 
                 <Transition
@@ -126,7 +130,7 @@ onUnmounted(() => clearTwoFactorAuthData());
                         v-show="recentlySuccessful"
                         class="text-sm text-neutral-600"
                     >
-                        {{ $t('common.saved') }}
+                        {{ t('common.saved') }}
                     </p>
                 </Transition>
             </div>
@@ -136,8 +140,8 @@ onUnmounted(() => clearTwoFactorAuthData());
     <div v-if="canManageTwoFactor" class="space-y-6">
         <Heading
             variant="small"
-            :title="$t('settings.security.twoFactor.title')"
-            :description="$t('settings.security.twoFactor.description')"
+            :title="t('settings.security.twoFactor.title')"
+            :description="t('settings.security.twoFactor.description')"
         />
 
         <div
@@ -145,12 +149,14 @@ onUnmounted(() => clearTwoFactorAuthData());
             class="flex flex-col items-start justify-start space-y-4"
         >
             <p class="text-sm text-muted-foreground">
-                {{ $t('settings.security.twoFactor.enableDescription') }}
+                {{ t('settings.security.twoFactor.enableDescription') }}
             </p>
 
             <div>
                 <Button v-if="hasSetupData" @click="showSetupModal = true">
-                    <ShieldCheck />{{ $t('settings.security.twoFactor.continueSetup') }}
+                    <ShieldCheck />{{
+                        t('settings.security.twoFactor.continueSetup')
+                    }}
                 </Button>
                 <Form
                     v-else
@@ -159,7 +165,7 @@ onUnmounted(() => clearTwoFactorAuthData());
                     #default="{ processing }"
                 >
                     <Button type="submit" :disabled="processing">
-                        {{ $t('settings.security.twoFactor.enable') }}
+                        {{ t('settings.security.twoFactor.enable') }}
                     </Button>
                 </Form>
             </div>
@@ -167,7 +173,7 @@ onUnmounted(() => clearTwoFactorAuthData());
 
         <div v-else class="flex flex-col items-start justify-start space-y-4">
             <p class="text-sm text-muted-foreground">
-                {{ $t('settings.security.twoFactor.enabledDescription') }}
+                {{ t('settings.security.twoFactor.enabledDescription') }}
             </p>
 
             <div class="relative inline">
@@ -177,7 +183,7 @@ onUnmounted(() => clearTwoFactorAuthData());
                         type="submit"
                         :disabled="processing"
                     >
-                        {{ $t('settings.security.twoFactor.disable') }}
+                        {{ t('settings.security.twoFactor.disable') }}
                     </Button>
                 </Form>
             </div>

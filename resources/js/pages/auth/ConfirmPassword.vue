@@ -19,7 +19,7 @@ defineOptions({
 </script>
 
 <template>
-    <Head :title="$t('auth.confirmPassword.pageTitle')" />
+    <Head :title="t('auth.confirmPassword.pageTitle')" />
 
     <Form
         v-bind="store.form()"
@@ -28,7 +28,7 @@ defineOptions({
     >
         <div class="space-y-6">
             <div class="grid gap-2">
-                <Label htmlFor="password">{{ $t('fields.password') }}</Label>
+                <Label htmlFor="password">{{ t('fields.password') }}</Label>
                 <PasswordInput
                     id="password"
                     name="password"
@@ -48,7 +48,7 @@ defineOptions({
                     data-test="confirm-password-button"
                 >
                     <Spinner v-if="processing" />
-                    {{ $t('auth.confirmPassword.submit') }}
+                    {{ t('auth.confirmPassword.submit') }}
                 </Button>
             </div>
         </div>
