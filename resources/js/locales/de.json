@@ -254,7 +254,8 @@
             "editAriaLabel": "Editiere {title}",
             "deleteAriaLabel": "Lösche {title}",
             "restoreAriaLabel": "Stelle {title} wieder her",
-            "forceDeleteAriaLabel": "Lösche permanent {title}"
+            "forceDeleteAriaLabel": "Lösche permanent {title}",
+            "selectAriaLabel": "Link auswählen: {title}"
         },
         "filter": {
             "allBuckets": "Alle Buckets",
@@ -269,7 +270,14 @@
         "filterByTag": "Filter nach Tag",
         "allTags": "Alle Tags",
         "resetFilters": "Filter zurücksetzen",
-        "clearForm": "Formular zurücksetzen"
+        "clearForm": "Formular zurücksetzen",
+        "bulk": {
+            "toggleMode": "Auswählen",
+            "cancelMode": "Abbrechen",
+            "selectAllAriaLabel": "Alle Links auf dieser Seite auswählen",
+            "selectedCount": "{count} von {total} ausgewählt",
+            "selectedLinks": "{count} ausgewählt"
+        }
     },
     "tags": {
         "pageTitle": "Tags",
