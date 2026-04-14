@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { X } from 'lucide-vue-next';
+import { RotateCcw, Trash2, X } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
 
@@ -14,6 +14,8 @@ defineProps<Props>();
 
 defineEmits<{
     close: [];
+    'bulk-delete': [];
+    'bulk-restore': [];
 }>();
 </script>
 
@@ -25,8 +27,32 @@ defineEmits<{
             </span>
 
             <div class="flex items-center gap-2">
-                <!-- Action slots will be filled in subsequent phases -->
-                <slot />
+                <!-- Normal view actions -->
+                <template v-if="!showTrashed">
+                    <slot name="normal-actions" />
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        class="text-destructive hover:text-destructive"
+                        @click="$emit('bulk-delete')"
+                    >
+                        <Trash2 class="size-4" />
+                        {{ t('common.delete') }}
+                    </Button>
+                </template>
+
+                <!-- Trash view actions -->
+                <template v-else>
+                    <slot name="trash-actions" />
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        @click="$emit('bulk-restore')"
+                    >
+                        <RotateCcw class="size-4" />
+                        {{ t('common.restore') }}
+                    </Button>
+                </template>
 
                 <Button
                     variant="ghost"

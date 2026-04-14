@@ -3,7 +3,6 @@ import { Form, Head } from '@inertiajs/vue3';
 import { ShieldCheck } from 'lucide-vue-next';
 import { onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { i18n } from '@/i18n';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
 import TwoFactorRecoveryCodes from '@/components/settings/TwoFactorRecoveryCodes.vue';
 import TwoFactorSetupModal from '@/components/settings/TwoFactorSetupModal.vue';
@@ -13,6 +12,7 @@ import PasswordInput from '@/components/shared/PasswordInput.vue';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
+import { i18n } from '@/i18n';
 import { edit } from '@/routes/security';
 import { disable, enable } from '@/routes/two-factor';
 

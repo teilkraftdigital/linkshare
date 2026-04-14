@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
-import { i18n } from '@/i18n';
 import BookmarkletCodeSection from '@/components/import/BookmarkletCodeSection.vue';
 import ExportSection from '@/components/import/ExportSection.vue';
 import HtmlImportSection from '@/components/import/HtmlImportSection.vue';
 import JsonImportSection from '@/components/import/JsonImportSection.vue';
 import Heading from '@/components/shared/Heading.vue';
+import { i18n } from '@/i18n';
 import { create as importRoute } from '@/routes/dashboard/import';
 import type { Bucket, Tag } from '@/types/dashboard';
 

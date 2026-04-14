@@ -7,8 +7,8 @@ import {
     ToastRoot,
     ToastViewport,
 } from 'reka-ui';
-import { useToast } from '@/composables/useToast';
 import { useI18n } from 'vue-i18n';
+import { useToast } from '@/composables/useToast';
 
 const { t } = useI18n();
 const { toasts, dismiss } = useToast();

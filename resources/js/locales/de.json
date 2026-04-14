@@ -276,7 +276,9 @@
             "cancelMode": "Abbrechen",
             "selectAllAriaLabel": "Alle Links auf dieser Seite auswählen",
             "selectedCount": "{count} von {total} ausgewählt",
-            "selectedLinks": "{count} ausgewählt"
+            "selectedLinks": "{count} ausgewählt",
+            "deleted": "{count} Link gelöscht | {count} Links gelöscht",
+            "restored": "{count} Link wiederhergestellt | {count} Links wiederhergestellt"
         }
     },
     "tags": {

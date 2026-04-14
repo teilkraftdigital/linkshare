@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
-import { i18n } from '@/i18n';
 import TextLink from '@/components/shared/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import { i18n } from '@/i18n';
 import { logout } from '@/routes';
 import { send } from '@/routes/verification';
 

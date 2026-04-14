@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import { useI18n } from 'vue-i18n';
-import { i18n } from '@/i18n';
 import AppearanceTabs from '@/components/settings/AppearanceTabs.vue';
 import Heading from '@/components/shared/Heading.vue';
+import { i18n } from '@/i18n';
 import { edit } from '@/routes/appearance';
 
 const { t } = useI18n();

@@ -4,6 +4,8 @@ import { CheckSquare, Trash2 } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
+import DeleteBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/DeleteBulkLinksController';
+import RestoreBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/RestoreBulkLinksController';
 import BulkActionBar from '@/components/links/BulkActionBar.vue';
 import BulkSelectRow from '@/components/links/BulkSelectRow.vue';
 import LinkCreateForm from '@/components/links/LinkCreateForm.vue';
@@ -47,7 +49,7 @@ defineOptions({
 const { toast } = useToast();
 
 // — Bulk selection —
-const { bulkMode, selectedCount, toggleMode, toggleId, selectAll, clearSelection, isSelected } =
+const { bulkMode, selectedCount, toggleMode, toggleId, selectAll, clearSelection, isSelected, getSelectedIds } =
     useBulkSelection();
 
 const pageIds = computed(() => props.links.data.map((l) => l.id));
@@ -57,6 +59,33 @@ watch(
     () => props.links.current_page,
     () => clearSelection(),
 );
+
+function bulkDelete() {
+    const ids = getSelectedIds();
+    router.delete(DeleteBulkLinksController.url(), {
+        data: { link_ids: ids },
+        preserveScroll: true,
+        onSuccess: () => {
+            toast(t('links.bulk.deleted', ids.length, { count: ids.length }), 'success');
+            clearSelection();
+        },
+    });
+}
+
+function bulkRestore() {
+    const ids = getSelectedIds();
+    router.post(
+        RestoreBulkLinksController.url(),
+        { link_ids: ids },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast(t('links.bulk.restored', ids.length, { count: ids.length }), 'success');
+                clearSelection();
+            },
+        },
+    );
+}
 
 // — Create form state —
 
@@ -337,6 +366,8 @@ function forceDeleteLink() {
         :selected-count="selectedCount"
         :show-trashed="showTrashed"
         @close="toggleMode"
+        @bulk-delete="bulkDelete"
+        @bulk-restore="bulkRestore"
     />
 
     <ConfirmModal
