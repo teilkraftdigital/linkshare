@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FolderInput, RotateCcw, Trash2, X } from 'lucide-vue-next';
+import { FolderInput, RotateCcw, Tag, Tags, Trash2, X } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
 
@@ -18,6 +18,8 @@ defineEmits<{
     'bulk-restore': [];
     'bulk-force-delete': [];
     'bulk-move-bucket': [];
+    'bulk-add-tags': [];
+    'bulk-remove-tags': [];
 }>();
 </script>
 
@@ -39,6 +41,22 @@ defineEmits<{
                     >
                         <FolderInput class="size-4" />
                         {{ t('links.bulk.moveBucket.button') }}
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        @click="$emit('bulk-add-tags')"
+                    >
+                        <Tag class="size-4" />
+                        {{ t('links.bulk.addTags.button') }}
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        @click="$emit('bulk-remove-tags')"
+                    >
+                        <Tags class="size-4" />
+                        {{ t('links.bulk.removeTags.button') }}
                     </Button>
                     <Button
                         variant="ghost"

@@ -291,6 +291,18 @@
                 "selectPlaceholder": "Bucket auswählen…",
                 "confirm": "Verschieben",
                 "moved": "{n} Link verschoben | {n} Links verschoben"
+            },
+            "addTags": {
+                "button": "Tags hinzufügen",
+                "modalTitle": "Tags hinzufügen",
+                "confirm": "Hinzufügen",
+                "added": "Tags zu {n} Link hinzugefügt | Tags zu {n} Links hinzugefügt"
+            },
+            "removeTags": {
+                "button": "Tags entfernen",
+                "modalTitle": "Tags entfernen",
+                "empty": "Keine gemeinsamen Tags.",
+                "removed": "Tags von {n} Link entfernt | Tags von {n} Links entfernt"
             }
         }
     },

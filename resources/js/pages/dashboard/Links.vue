@@ -6,10 +6,14 @@ import { useI18n } from 'vue-i18n';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import DeleteBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/DeleteBulkLinksController';
 import ForceDeleteBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/ForceDeleteBulkLinksController';
+import AddBulkTagsController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/AddBulkTagsController';
 import MoveBulkBucketController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/MoveBulkBucketController';
+import RemoveBulkTagsController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/RemoveBulkTagsController';
 import RestoreBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/RestoreBulkLinksController';
 import BulkActionBar from '@/components/links/BulkActionBar.vue';
+import BulkAddTagsModal from '@/components/links/BulkAddTagsModal.vue';
 import BulkMoveBucketModal from '@/components/links/BulkMoveBucketModal.vue';
+import BulkRemoveTagsModal from '@/components/links/BulkRemoveTagsModal.vue';
 import BulkSelectRow from '@/components/links/BulkSelectRow.vue';
 import LinkCreateForm from '@/components/links/LinkCreateForm.vue';
 import LinkFilter from '@/components/links/LinkFilter.vue';
@@ -94,6 +98,52 @@ function bulkRestore() {
             onSuccess: () => {
                 toast(t('links.bulk.restored', ids.length), 'success');
                 clearSelection();
+            },
+        },
+    );
+}
+
+const bulkAddTagsOpen = ref(false);
+const bulkRemoveTagsOpen = ref(false);
+
+const bulkTagsOnSelectedLinks = computed(() => {
+    const selectedLinks = props.links.data.filter((l) => isSelected(l.id));
+    const countMap = new Map<number, number>();
+    for (const link of selectedLinks) {
+        for (const tag of link.tags) {
+            countMap.set(tag.id, (countMap.get(tag.id) ?? 0) + 1);
+        }
+    }
+    return props.tags
+        .filter((t) => countMap.has(t.id))
+        .map((t) => ({ ...t, count: countMap.get(t.id)! }));
+});
+
+function bulkAddTags(tagIds: number[]) {
+    const ids = getSelectedIds();
+    router.post(
+        AddBulkTagsController.url(),
+        { link_ids: ids, tag_ids: tagIds },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                bulkAddTagsOpen.value = false;
+                toast(t('links.bulk.addTags.added', ids.length), 'success');
+                clearSelection();
+            },
+        },
+    );
+}
+
+function bulkRemoveTag(tagId: number) {
+    const ids = getSelectedIds();
+    router.post(
+        RemoveBulkTagsController.url(),
+        { link_ids: ids, tag_ids: [tagId] },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast(t('links.bulk.removeTags.removed', ids.length), 'success');
             },
         },
     );
@@ -425,8 +475,26 @@ function forceDeleteLink() {
         @close="toggleMode"
         @bulk-delete="bulkDelete"
         @bulk-restore="bulkRestore"
+        @bulk-add-tags="bulkAddTagsOpen = true"
+        @bulk-remove-tags="bulkRemoveTagsOpen = true"
         @bulk-move-bucket="bulkMoveBucketOpen = true"
         @bulk-force-delete="bulkForceDeleteConfirmOpen = true"
+    />
+
+    <!-- Bulk add tags modal -->
+    <BulkAddTagsModal
+        :open="bulkAddTagsOpen"
+        :tags="tags"
+        @update:open="bulkAddTagsOpen = $event"
+        @confirm="bulkAddTags"
+    />
+
+    <!-- Bulk remove tags modal -->
+    <BulkRemoveTagsModal
+        :open="bulkRemoveTagsOpen"
+        :tags="bulkTagsOnSelectedLinks"
+        @update:open="bulkRemoveTagsOpen = $event"
+        @remove="bulkRemoveTag"
     />
 
     <!-- Bulk move bucket modal -->
