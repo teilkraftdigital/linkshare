@@ -3,6 +3,7 @@
 use App\Http\Controllers\Dashboard\BucketController;
 use App\Http\Controllers\Dashboard\BulkActions\DeleteBulkLinksController;
 use App\Http\Controllers\Dashboard\BulkActions\ForceDeleteBulkLinksController;
+use App\Http\Controllers\Dashboard\BulkActions\MoveBulkBucketController;
 use App\Http\Controllers\Dashboard\BulkActions\RestoreBulkLinksController;
 use App\Http\Controllers\Dashboard\CheckDuplicateController;
 use App\Http\Controllers\Dashboard\ExportController;
@@ -52,6 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('dashboard/links/bulk-delete', DeleteBulkLinksController::class)->name('dashboard.links.bulk-delete');
     Route::post('dashboard/links/bulk-restore', RestoreBulkLinksController::class)->name('dashboard.links.bulk-restore');
     Route::delete('dashboard/links/bulk-force-delete', ForceDeleteBulkLinksController::class)->name('dashboard.links.bulk-force-delete');
+    Route::patch('dashboard/links/bulk-move-bucket', MoveBulkBucketController::class)->name('dashboard.links.bulk-move-bucket');
 
     Route::get('dashboard/links', [LinkController::class, 'index'])->name('dashboard.links.index');
     Route::post('dashboard/links', [LinkController::class, 'store'])->name('dashboard.links.store');
