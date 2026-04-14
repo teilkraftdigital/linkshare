@@ -16,6 +16,7 @@ defineEmits<{
     close: [];
     'bulk-delete': [];
     'bulk-restore': [];
+    'bulk-force-delete': [];
 }>();
 </script>
 
@@ -51,6 +52,15 @@ defineEmits<{
                     >
                         <RotateCcw class="size-4" />
                         {{ t('common.restore') }}
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        class="text-destructive hover:text-destructive"
+                        @click="$emit('bulk-force-delete')"
+                    >
+                        <Trash2 class="size-4" />
+                        {{ t('common.forceDelete') }}
                     </Button>
                 </template>
 

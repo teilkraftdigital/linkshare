@@ -5,6 +5,7 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import DeleteBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/DeleteBulkLinksController';
+import ForceDeleteBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/ForceDeleteBulkLinksController';
 import RestoreBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/RestoreBulkLinksController';
 import BulkActionBar from '@/components/links/BulkActionBar.vue';
 import BulkSelectRow from '@/components/links/BulkSelectRow.vue';
@@ -75,10 +76,7 @@ function bulkDelete() {
         data: { link_ids: ids },
         preserveScroll: true,
         onSuccess: () => {
-            toast(
-                t('links.bulk.deleted', ids.length, { count: ids.length }),
-                'success',
-            );
+            toast(t('links.bulk.deleted', ids.length), 'success');
             clearSelection();
         },
     });
@@ -92,14 +90,26 @@ function bulkRestore() {
         {
             preserveScroll: true,
             onSuccess: () => {
-                toast(
-                    t('links.bulk.restored', ids.length, { count: ids.length }),
-                    'success',
-                );
+                toast(t('links.bulk.restored', ids.length), 'success');
                 clearSelection();
             },
         },
     );
+}
+
+const bulkForceDeleteConfirmOpen = ref(false);
+
+function bulkForceDelete() {
+    const ids = getSelectedIds();
+    router.delete(ForceDeleteBulkLinksController.url(), {
+        data: { link_ids: ids },
+        preserveScroll: true,
+        onSuccess: () => {
+            bulkForceDeleteConfirmOpen.value = false;
+            toast(t('links.bulk.forceDeleted', ids.length), 'success');
+            clearSelection();
+        },
+    });
 }
 
 // — Create form state —
@@ -391,6 +401,17 @@ function forceDeleteLink() {
         @close="toggleMode"
         @bulk-delete="bulkDelete"
         @bulk-restore="bulkRestore"
+        @bulk-force-delete="bulkForceDeleteConfirmOpen = true"
+    />
+
+    <!-- Bulk force delete confirm -->
+    <ConfirmModal
+        :open="bulkForceDeleteConfirmOpen"
+        :title="t('links.bulk.forceDeleteDialog.title')"
+        :description="t('links.bulk.forceDeleteDialog.description', selectedCount)"
+        :confirm-label="t('links.bulk.forceDeleteDialog.confirm')"
+        @update:open="(val) => { if (!val) bulkForceDeleteConfirmOpen = false; }"
+        @confirm="bulkForceDelete"
     />
 
     <ConfirmModal
