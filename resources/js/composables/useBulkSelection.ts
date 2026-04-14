@@ -8,6 +8,7 @@ export function useBulkSelection() {
 
     function toggleMode() {
         bulkMode.value = !bulkMode.value;
+
         if (!bulkMode.value) {
             clearSelection();
         }
@@ -15,11 +16,13 @@ export function useBulkSelection() {
 
     function toggleId(id: number) {
         const next = new Set(selectedIds.value);
+
         if (next.has(id)) {
             next.delete(id);
         } else {
             next.add(id);
         }
+
         selectedIds.value = next;
     }
 

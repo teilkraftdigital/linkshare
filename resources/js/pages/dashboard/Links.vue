@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { Trash2 } from 'lucide-vue-next';
-import { ref, watch } from 'vue';
+import { CheckSquare, Trash2 } from 'lucide-vue-next';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { i18n } from '@/i18n';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
+import BulkActionBar from '@/components/links/BulkActionBar.vue';
+import BulkSelectRow from '@/components/links/BulkSelectRow.vue';
 import LinkCreateForm from '@/components/links/LinkCreateForm.vue';
 import LinkFilter from '@/components/links/LinkFilter.vue';
 import LinkItem from '@/components/links/LinkItem.vue';
@@ -12,8 +13,10 @@ import ConfirmModal from '@/components/shared/ConfirmModal.vue';
 import Heading from '@/components/shared/Heading.vue';
 import Pagination from '@/components/shared/Pagination.vue';
 import { Button } from '@/components/ui/button';
+import { useBulkSelection } from '@/composables/useBulkSelection';
 import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
 import { useToast } from '@/composables/useToast';
+import { i18n } from '@/i18n';
 import { index } from '@/routes/dashboard/links';
 import type { Bucket, Link, Paginator, Tag, Filters } from '@/types/dashboard';
 
@@ -42,6 +45,18 @@ defineOptions({
 });
 
 const { toast } = useToast();
+
+// — Bulk selection —
+const { bulkMode, selectedCount, toggleMode, toggleId, selectAll, clearSelection, isSelected } =
+    useBulkSelection();
+
+const pageIds = computed(() => props.links.data.map((l) => l.id));
+
+// Clear selection on pagination change
+watch(
+    () => props.links.current_page,
+    () => clearSelection(),
+);
 
 // — Create form state —
 
@@ -202,17 +217,26 @@ function forceDeleteLink() {
                 :title="t('links.pageTitle')"
                 :description="t('links.description')"
             />
-            <Button
-                variant="ghost"
-                size="sm"
-                :class="
-                    showTrashed ? 'text-destructive' : 'text-muted-foreground'
-                "
-                @click="toggleTrashed"
-            >
-                <Trash2 class="size-4" />
-                {{ t('common.trash') }}
-            </Button>
+            <div class="flex items-center gap-1">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    :class="bulkMode ? 'text-primary' : 'text-muted-foreground'"
+                    @click="toggleMode"
+                >
+                    <CheckSquare class="size-4" />
+                    {{ bulkMode ? t('links.bulk.cancelMode') : t('links.bulk.toggleMode') }}
+                </Button>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    :class="showTrashed ? 'text-destructive' : 'text-muted-foreground'"
+                    @click="toggleTrashed"
+                >
+                    <Trash2 class="size-4" />
+                    {{ t('common.trash') }}
+                </Button>
+            </div>
         </div>
 
         <!-- Create form -->
@@ -249,6 +273,15 @@ function forceDeleteLink() {
         <!-- Pagination -->
         <Pagination v-if="links.last_page > 1" :items="links" />
 
+        <!-- Bulk select row -->
+        <BulkSelectRow
+            v-if="bulkMode"
+            :selected-count="selectedCount"
+            :total="links.data.length"
+            @select-all="selectAll(pageIds)"
+            @clear-all="clearSelection"
+        />
+
         <!-- Link list -->
         <ul class="flex flex-col gap-2">
             <LinkItem
@@ -259,10 +292,13 @@ function forceDeleteLink() {
                 :tags="tags"
                 :showTrashed="showTrashed"
                 :refetchingLinkId="refetchingLinkId"
+                :bulk-mode="bulkMode"
+                :selected="isSelected(link.id)"
                 @confirm-delete="confirmDelete"
                 @restore="restoreLink"
                 @confirm-force-delete="confirmForceDelete"
                 @refetch-meta="refetchMeta"
+                @toggle-select="toggleId"
             />
         </ul>
 
@@ -293,6 +329,14 @@ function forceDeleteLink() {
             }
         "
         @confirm="deleteLink"
+    />
+
+    <!-- Bulk action bar -->
+    <BulkActionBar
+        v-if="bulkMode && selectedCount > 0"
+        :selected-count="selectedCount"
+        :show-trashed="showTrashed"
+        @close="toggleMode"
     />
 
     <ConfirmModal
