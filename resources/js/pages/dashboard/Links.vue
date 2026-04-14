@@ -6,8 +6,10 @@ import { useI18n } from 'vue-i18n';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import DeleteBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/DeleteBulkLinksController';
 import ForceDeleteBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/ForceDeleteBulkLinksController';
+import MoveBulkBucketController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/MoveBulkBucketController';
 import RestoreBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/RestoreBulkLinksController';
 import BulkActionBar from '@/components/links/BulkActionBar.vue';
+import BulkMoveBucketModal from '@/components/links/BulkMoveBucketModal.vue';
 import BulkSelectRow from '@/components/links/BulkSelectRow.vue';
 import LinkCreateForm from '@/components/links/LinkCreateForm.vue';
 import LinkFilter from '@/components/links/LinkFilter.vue';
@@ -91,6 +93,28 @@ function bulkRestore() {
             preserveScroll: true,
             onSuccess: () => {
                 toast(t('links.bulk.restored', ids.length), 'success');
+                clearSelection();
+            },
+        },
+    );
+}
+
+const bulkMoveBucketOpen = ref(false);
+
+function bulkMoveBucket(bucketId: number) {
+    const ids = getSelectedIds();
+    const bucket = props.buckets.find((b) => b.id === bucketId);
+    router.patch(
+        MoveBulkBucketController.url(),
+        { link_ids: ids, bucket_id: bucketId },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                bulkMoveBucketOpen.value = false;
+                toast(
+                    `${t('links.bulk.moveBucket.moved', ids.length)} → ${bucket?.name}`,
+                    'success',
+                );
                 clearSelection();
             },
         },
@@ -401,7 +425,16 @@ function forceDeleteLink() {
         @close="toggleMode"
         @bulk-delete="bulkDelete"
         @bulk-restore="bulkRestore"
+        @bulk-move-bucket="bulkMoveBucketOpen = true"
         @bulk-force-delete="bulkForceDeleteConfirmOpen = true"
+    />
+
+    <!-- Bulk move bucket modal -->
+    <BulkMoveBucketModal
+        :open="bulkMoveBucketOpen"
+        :buckets="buckets"
+        @update:open="bulkMoveBucketOpen = $event"
+        @confirm="bulkMoveBucket"
     />
 
     <!-- Bulk force delete confirm -->

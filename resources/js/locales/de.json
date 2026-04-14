@@ -284,6 +284,13 @@
                 "title": "Endgültig löschen?",
                 "description": "Es wird {n} Link endgültig gelöscht und kann nicht wiederhergestellt werden. | Es werden {n} Links endgültig gelöscht und können nicht wiederhergestellt werden.",
                 "confirm": "Endgültig löschen"
+            },
+            "moveBucket": {
+                "button": "Bucket verschieben",
+                "modalTitle": "Bucket verschieben",
+                "selectPlaceholder": "Bucket auswählen…",
+                "confirm": "Verschieben",
+                "moved": "{n} Link verschoben | {n} Links verschoben"
             }
         }
     },

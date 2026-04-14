@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RotateCcw, Trash2, X } from 'lucide-vue-next';
+import { FolderInput, RotateCcw, Trash2, X } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
 
@@ -17,6 +17,7 @@ defineEmits<{
     'bulk-delete': [];
     'bulk-restore': [];
     'bulk-force-delete': [];
+    'bulk-move-bucket': [];
 }>();
 </script>
 
@@ -31,6 +32,14 @@ defineEmits<{
                 <!-- Normal view actions -->
                 <template v-if="!showTrashed">
                     <slot name="normal-actions" />
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        @click="$emit('bulk-move-bucket')"
+                    >
+                        <FolderInput class="size-4" />
+                        {{ t('links.bulk.moveBucket.button') }}
+                    </Button>
                     <Button
                         variant="ghost"
                         size="sm"
