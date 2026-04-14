@@ -24,8 +24,12 @@ defineEmits<{
 </script>
 
 <template>
-    <div class="fixed inset-x-0 bottom-0 z-50 border-t bg-background shadow-lg">
-        <div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
+    <aside
+        class="fixed inset-x-0 bottom-0 z-50 border-t bg-background shadow-lg"
+    >
+        <div
+            class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3"
+        >
             <span class="text-sm font-medium">
                 {{ t('links.bulk.selectedLinks', { count: selectedCount }) }}
             </span>
@@ -39,7 +43,7 @@ defineEmits<{
                         size="sm"
                         @click="$emit('bulk-move-bucket')"
                     >
-                        <FolderInput class="size-4" />
+                        <FolderInput class="size-4" aria-hidden="true" />
                         {{ t('links.bulk.moveBucket.button') }}
                     </Button>
                     <Button
@@ -47,7 +51,7 @@ defineEmits<{
                         size="sm"
                         @click="$emit('bulk-add-tags')"
                     >
-                        <Tag class="size-4" />
+                        <Tag class="size-4" aria-hidden="true" />
                         {{ t('links.bulk.addTags.button') }}
                     </Button>
                     <Button
@@ -55,7 +59,7 @@ defineEmits<{
                         size="sm"
                         @click="$emit('bulk-remove-tags')"
                     >
-                        <Tags class="size-4" />
+                        <Tags class="size-4" aria-hidden="true" />
                         {{ t('links.bulk.removeTags.button') }}
                     </Button>
                     <Button
@@ -64,7 +68,7 @@ defineEmits<{
                         class="text-destructive hover:text-destructive"
                         @click="$emit('bulk-delete')"
                     >
-                        <Trash2 class="size-4" />
+                        <Trash2 class="size-4" aria-hidden="true" />
                         {{ t('common.delete') }}
                     </Button>
                 </template>
@@ -77,7 +81,7 @@ defineEmits<{
                         size="sm"
                         @click="$emit('bulk-restore')"
                     >
-                        <RotateCcw class="size-4" />
+                        <RotateCcw class="size-4" aria-hidden="true" />
                         {{ t('common.restore') }}
                     </Button>
                     <Button
@@ -86,20 +90,16 @@ defineEmits<{
                         class="text-destructive hover:text-destructive"
                         @click="$emit('bulk-force-delete')"
                     >
-                        <Trash2 class="size-4" />
+                        <Trash2 class="size-4" aria-hidden="true" />
                         {{ t('common.forceDelete') }}
                     </Button>
                 </template>
 
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    @click="$emit('close')"
-                >
-                    <X class="size-4" />
+                <Button variant="ghost" size="sm" @click="$emit('close')">
+                    <X class="size-4" aria-hidden="true" />
                     {{ t('common.cancel') }}
                 </Button>
             </div>
         </div>
-    </div>
+    </aside>
 </template>
