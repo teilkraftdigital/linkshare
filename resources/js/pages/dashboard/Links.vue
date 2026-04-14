@@ -49,8 +49,17 @@ defineOptions({
 const { toast } = useToast();
 
 // — Bulk selection —
-const { bulkMode, selectedCount, toggleMode, toggleId, selectAll, clearSelection, isSelected, getSelectedIds } =
-    useBulkSelection();
+const {
+    bulkMode,
+    selectedCount,
+    toggleMode,
+    toggleId,
+    selectAll,
+    clearSelection,
+    isSelected,
+    selectedIds,
+    getSelectedIds,
+} = useBulkSelection();
 
 const pageIds = computed(() => props.links.data.map((l) => l.id));
 
@@ -66,7 +75,10 @@ function bulkDelete() {
         data: { link_ids: ids },
         preserveScroll: true,
         onSuccess: () => {
-            toast(t('links.bulk.deleted', ids.length, { count: ids.length }), 'success');
+            toast(
+                t('links.bulk.deleted', ids.length, { count: ids.length }),
+                'success',
+            );
             clearSelection();
         },
     });
@@ -80,7 +92,10 @@ function bulkRestore() {
         {
             preserveScroll: true,
             onSuccess: () => {
-                toast(t('links.bulk.restored', ids.length, { count: ids.length }), 'success');
+                toast(
+                    t('links.bulk.restored', ids.length, { count: ids.length }),
+                    'success',
+                );
                 clearSelection();
             },
         },
@@ -254,12 +269,20 @@ function forceDeleteLink() {
                     @click="toggleMode"
                 >
                     <CheckSquare class="size-4" />
-                    {{ bulkMode ? t('links.bulk.cancelMode') : t('links.bulk.toggleMode') }}
+                    {{
+                        bulkMode
+                            ? t('links.bulk.cancelMode')
+                            : t('links.bulk.toggleMode')
+                    }}
                 </Button>
                 <Button
                     variant="ghost"
                     size="sm"
-                    :class="showTrashed ? 'text-destructive' : 'text-muted-foreground'"
+                    :class="
+                        showTrashed
+                            ? 'text-destructive'
+                            : 'text-muted-foreground'
+                    "
                     @click="toggleTrashed"
                 >
                     <Trash2 class="size-4" />
