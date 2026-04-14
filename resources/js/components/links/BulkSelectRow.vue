@@ -28,9 +28,9 @@ function onCheckedChange(val: boolean | 'indeterminate') {
 <template>
     <div class="flex items-center gap-3 text-sm text-muted-foreground">
         <Checkbox
-            :checked="selectedCount > 0 && selectedCount === total ? true : selectedCount > 0 ? 'indeterminate' : false"
+            :model-value="selectedCount > 0 && selectedCount === total ? true : selectedCount > 0 ? 'indeterminate' : false"
             :aria-label="t('links.bulk.selectAllAriaLabel')"
-            @update:checked="onCheckedChange"
+            @update:model-value="onCheckedChange"
         />
         <span>{{ t('links.bulk.selectedCount', { count: selectedCount, total }) }}</span>
     </div>

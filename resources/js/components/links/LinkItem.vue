@@ -67,9 +67,9 @@ function refetchMeta(link: Link) {
         <!-- Bulk mode checkbox -->
         <div v-if="bulkMode" class="flex shrink-0 items-center pt-3.5">
             <Checkbox
-                :checked="selected"
+                :model-value="selected"
                 :aria-label="t('links.actions.selectAriaLabel', { title: link.title })"
-                @update:checked="event('toggle-select', link.id)"
+                @update:model-value="event('toggle-select', link.id)"
             />
         </div>
 
