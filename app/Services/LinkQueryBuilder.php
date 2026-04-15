@@ -25,7 +25,8 @@ class LinkQueryBuilder
         }
 
         if (! $trashed && ! empty($filters['tag_id'])) {
-            $query->whereHas('tags', fn ($q) => $q->where('tags.id', $filters['tag_id']));
+            $tagId = (int) $filters['tag_id'];
+            $query->whereHas('tags', fn ($q) => $q->where('tags.id', $tagId)->orWhere('tags.parent_id', $tagId));
         }
 
         if (! empty($filters['search'])) {

@@ -34,7 +34,8 @@ class TagController extends Controller
     public function store(StoreTagRequest $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validated();
-        $validated['slug'] = $this->slugGenerator->generate($validated['name']);
+        $parentId = $validated['parent_id'] ?? null;
+        $validated['slug'] = $this->slugGenerator->generate($validated['name'], null, $parentId);
 
         $tag = Tag::create($validated);
 
@@ -48,7 +49,8 @@ class TagController extends Controller
     public function update(UpdateTagRequest $request, Tag $tag): RedirectResponse
     {
         $validated = $request->validated();
-        $validated['slug'] = $this->slugGenerator->generate($validated['name'], $tag->id);
+        $parentId = $validated['parent_id'] ?? $tag->parent_id;
+        $validated['slug'] = $this->slugGenerator->generate($validated['name'], $tag->id, $parentId);
 
         $tag->update($validated);
 
