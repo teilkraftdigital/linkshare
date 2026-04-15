@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { X } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
-import type { Tag } from '@/types/dashboard';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -10,6 +9,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { COLOR_BG, COLOR_BG_OPACITY, HAS_COLOR } from '@/lib/colors';
+import type { Tag } from '@/types/dashboard';
 
 const { t } = useI18n();
 

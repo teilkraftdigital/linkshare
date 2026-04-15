@@ -22,7 +22,24 @@ class TagController extends Controller
         $showTrashed = $request->boolean('trashed');
 
         if ($showTrashed) {
-            $tags = Tag::onlyTrashed()->withCount('links')->orderBy('name')->get();
+            // Find which parent IDs are also trashed (cascade-deleted with parent)
+            $trashedChildParentIds = Tag::onlyTrashed()->whereNotNull('parent_id')->pluck('parent_id')->unique();
+            $trashedParentIdSet = Tag::withTrashed()
+                ->whereIn('id', $trashedChildParentIds)
+                ->whereNotNull('deleted_at')
+                ->pluck('id')
+                ->flip();
+
+            $tags = Tag::onlyTrashed()
+                ->with([
+                    'children' => fn ($q) => $q->onlyTrashed()->withCount('links')->orderBy('name'),
+                ])
+                ->withCount('links')
+                ->orderBy('name')
+                ->get()
+                ->each(function (Tag $tag) use ($trashedParentIdSet) {
+                    $tag->parent_trashed = $tag->parent_id && $trashedParentIdSet->has($tag->parent_id);
+                });
         } else {
             $tags = Tag::with([
                 'children' => fn ($q) => $q->withCount('links')->orderBy('name'),
@@ -89,16 +106,35 @@ class TagController extends Controller
         return back();
     }
 
-    public function destroy(Tag $tag): RedirectResponse
+    public function destroy(Request $request, Tag $tag): RedirectResponse
     {
+        if ($request->boolean('cascade')) {
+            $tag->children()->each(fn (Tag $child) => $child->delete());
+        } else {
+            // Orphan mode: children become root tags
+            $tag->children()->update(['parent_id' => null]);
+        }
+
         $tag->delete();
 
         return back();
     }
 
-    public function restore(Tag $tag): RedirectResponse
+    public function restore(Request $request, Tag $tag): RedirectResponse
     {
+        if ($request->boolean('orphan')) {
+            $tag->parent_id = null;
+        }
+
         $tag->restore();
+
+        $childIds = array_filter(array_map('intval', $request->input('child_ids', [])));
+        if (! empty($childIds)) {
+            Tag::onlyTrashed()
+                ->whereIn('id', $childIds)
+                ->where('parent_id', $tag->id)
+                ->each(fn (Tag $child) => $child->restore());
+        }
 
         return back();
     }

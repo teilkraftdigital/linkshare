@@ -3,13 +3,13 @@ import { Head, router, usePage } from '@inertiajs/vue3';
 import { CheckSquare, Trash2 } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
+import AddBulkTagsController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/AddBulkTagsController';
 import DeleteBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/DeleteBulkLinksController';
 import ForceDeleteBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/ForceDeleteBulkLinksController';
-import AddBulkTagsController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/AddBulkTagsController';
 import MoveBulkBucketController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/MoveBulkBucketController';
 import RemoveBulkTagsController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/RemoveBulkTagsController';
 import RestoreBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/RestoreBulkLinksController';
+import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
 import BulkActionBar from '@/components/links/BulkActionBar.vue';
 import BulkAddTagsModal from '@/components/links/BulkAddTagsModal.vue';
 import BulkMoveBucketModal from '@/components/links/BulkMoveBucketModal.vue';
@@ -64,7 +64,6 @@ const {
     selectAll,
     clearSelection,
     isSelected,
-    selectedIds,
     getSelectedIds,
 } = useBulkSelection();
 
@@ -109,11 +108,13 @@ const bulkRemoveTagsOpen = ref(false);
 const bulkTagsOnSelectedLinks = computed(() => {
     const selectedLinks = props.links.data.filter((l) => isSelected(l.id));
     const countMap = new Map<number, number>();
+
     for (const link of selectedLinks) {
         for (const tag of link.tags) {
             countMap.set(tag.id, (countMap.get(tag.id) ?? 0) + 1);
         }
     }
+
     return props.tags
         .filter((t) => countMap.has(t.id))
         .map((t) => ({ ...t, count: countMap.get(t.id)! }));
@@ -143,7 +144,10 @@ function bulkRemoveTag(tagId: number) {
         {
             preserveScroll: true,
             onSuccess: () => {
-                toast(t('links.bulk.removeTags.removed', ids.length), 'success');
+                toast(
+                    t('links.bulk.removeTags.removed', ids.length),
+                    'success',
+                );
             },
         },
     );
@@ -509,9 +513,15 @@ function forceDeleteLink() {
     <ConfirmModal
         :open="bulkForceDeleteConfirmOpen"
         :title="t('links.bulk.forceDeleteDialog.title')"
-        :description="t('links.bulk.forceDeleteDialog.description', selectedCount)"
+        :description="
+            t('links.bulk.forceDeleteDialog.description', selectedCount)
+        "
         :confirm-label="t('links.bulk.forceDeleteDialog.confirm')"
-        @update:open="(val) => { if (!val) bulkForceDeleteConfirmOpen = false; }"
+        @update:open="
+            (val) => {
+                if (!val) bulkForceDeleteConfirmOpen = false;
+            }
+        "
         @confirm="bulkForceDelete"
     />
 

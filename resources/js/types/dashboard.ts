@@ -18,6 +18,8 @@ export type Tag = {
     links_count?: number;
     children?: Tag[];
     deleted_at?: string | null;
+    /** Populated in trash view: whether this tag's parent is also trashed */
+    parent_trashed?: boolean;
 };
 
 export type TagCreatePayload = {

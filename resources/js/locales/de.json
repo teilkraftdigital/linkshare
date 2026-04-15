@@ -331,6 +331,22 @@
             "description": "Tag '{name}' löschen? Diese Aktion kann rückgängig gemacht werden.",
             "confirm": "Löschen"
         },
+        "deleteWithChildren": {
+            "title": "\u201e{name}\u201c löschen?",
+            "description": "Dieser Tag hat {count} Sub-Tag | Dieser Tag hat {count} Sub-Tags",
+            "cascade": "Mit allen Sub-Tags löschen",
+            "orphan": "Nur diesen Tag löschen (Sub-Tags bleiben als Root-Tags erhalten)"
+        },
+        "restoreWithChildren": {
+            "title": "\u201e{name}\u201c wiederherstellen",
+            "description": "Welche Sub-Tags sollen ebenfalls wiederhergestellt werden?",
+            "confirm": "Wiederherstellen"
+        },
+        "restoreOrphan": {
+            "title": "\u201e{name}\u201c wiederherstellen",
+            "description": "Der Parent-Tag dieses Sub-Tags wurde ebenfalls gelöscht. Er kann als eigenständiger Root-Tag wiederhergestellt werden.",
+            "confirm": "Als Root-Tag wiederherstellen"
+        },
         "forceDeleteDialog": {
             "title": "Endgültig löschen?",
             "description": "'{name}' wird permanent gelöscht und kann nicht wiederhergestellt werden.",
