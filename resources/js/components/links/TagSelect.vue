@@ -43,6 +43,7 @@ const filteredGroups = computed(() => {
     const q = searchTerm.value.toLowerCase().trim();
 
     const childrenByParentId = new Map<number, Tag[]>();
+
     for (const tag of props.tags) {
         if (tag.parent_id) {
             const list = childrenByParentId.get(tag.parent_id) ?? [];
@@ -103,6 +104,7 @@ function remove(id: number) {
 
 function handleEnter(e: KeyboardEvent) {
     const term = searchTerm.value.trim();
+
     if (!hasResults.value && term) {
         e.preventDefault();
 
@@ -111,7 +113,9 @@ function handleEnter(e: KeyboardEvent) {
             const parentPart = term.slice(0, slashIndex).trim();
             const childPart = term.slice(slashIndex + 1).trim();
 
-            if (!parentPart || !childPart) return;
+            if (!parentPart || !childPart) {
+                return;
+            }
 
             const existingParent = props.tags.find(
                 (t) =>
@@ -136,7 +140,11 @@ function handleEnter(e: KeyboardEvent) {
 // Hint text for the empty state
 const createHintTerm = computed(() => {
     const term = searchTerm.value.trim();
-    if (!term) return null;
+
+    if (!term) {
+        return null;
+    }
+
     return term;
 });
 </script>

@@ -3,7 +3,6 @@ import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Button } from '@/components/ui/button';
 import Checkbox from '@/components/ui/checkbox/Checkbox.vue';
-import Label from '@/components/ui/label/Label.vue';
 import {
     Dialog,
     DialogContent,
@@ -12,6 +11,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import Label from '@/components/ui/label/Label.vue';
 import { COLOR_BG } from '@/lib/colors';
 import type { Tag } from '@/types/dashboard';
 

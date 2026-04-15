@@ -53,17 +53,22 @@ const selectedParent = computed(
 );
 
 const isPublicWarning = computed(() => {
-    if (!selectedParent.value) return null;
+    if (!selectedParent.value) {
+        return null;
+    }
+
     if (selectedParent.value.is_public && !props.tag.is_public) {
         return t('tags.form.isPublicWillBePublic', {
             parent: selectedParent.value.name,
         });
     }
+
     if (!selectedParent.value.is_public && props.tag.is_public) {
         return t('tags.form.isPublicWillBePrivate', {
             parent: selectedParent.value.name,
         });
     }
+
     return null;
 });
 

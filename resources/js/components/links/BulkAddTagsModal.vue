@@ -56,12 +56,17 @@ async function handleTagCreated(payload: TagCreatePayload) {
 
     if (payload.parentName && parentId === undefined) {
         const parent = await createTag(payload.parentName);
-        if (!parent) return;
+
+        if (!parent) {
+            return;
+        }
+
         localTags.value = [...localTags.value, parent];
         parentId = parent.id;
     }
 
     const tag = await createTag(payload.name, parentId);
+
     if (tag) {
         localTags.value = [...localTags.value, tag];
         selectedTagIds.value = [...selectedTagIds.value, tag.id];

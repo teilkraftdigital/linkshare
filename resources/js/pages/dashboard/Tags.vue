@@ -29,7 +29,9 @@ const { t } = useI18n();
 
 defineOptions({
     layout: {
-        breadcrumbs: [{ title: i18n.global.t('tags.pageTitle'), href: index() }],
+        breadcrumbs: [
+            { title: i18n.global.t('tags.pageTitle'), href: index() },
+        ],
     },
 });
 
@@ -64,7 +66,9 @@ function confirmDelete(tag: Tag) {
 }
 
 function deleteTag() {
-    if (!deleteTarget.value) return;
+    if (!deleteTarget.value) {
+        return;
+    }
 
     router.delete(TagController.destroy.url(deleteTarget.value), {
         preserveScroll: true,
@@ -76,7 +80,9 @@ function deleteTag() {
 }
 
 function deleteTagCascade() {
-    if (!deleteWithChildrenTarget.value) return;
+    if (!deleteWithChildrenTarget.value) {
+        return;
+    }
 
     router.delete(TagController.destroy.url(deleteWithChildrenTarget.value), {
         data: { cascade: true },
@@ -89,7 +95,9 @@ function deleteTagCascade() {
 }
 
 function deleteTagOrphan() {
-    if (!deleteWithChildrenTarget.value) return;
+    if (!deleteWithChildrenTarget.value) {
+        return;
+    }
 
     router.delete(TagController.destroy.url(deleteWithChildrenTarget.value), {
         data: { cascade: false },
@@ -121,7 +129,9 @@ function restoreTag(tag: Tag) {
 }
 
 function restoreTagWithChildren(childIds: number[]) {
-    if (!restoreWithChildrenTarget.value) return;
+    if (!restoreWithChildrenTarget.value) {
+        return;
+    }
 
     router.post(
         TagController.restore.url(restoreWithChildrenTarget.value),
@@ -137,7 +147,9 @@ function restoreTagWithChildren(childIds: number[]) {
 }
 
 function restoreTagAsOrphan() {
-    if (!restoreOrphanTarget.value) return;
+    if (!restoreOrphanTarget.value) {
+        return;
+    }
 
     router.post(
         TagController.restore.url(restoreOrphanTarget.value),
@@ -157,7 +169,9 @@ function confirmForceDelete(tag: Tag) {
 }
 
 function forceDeleteTag() {
-    if (!forceDeleteTarget.value) return;
+    if (!forceDeleteTarget.value) {
+        return;
+    }
 
     router.delete(TagController.forceDelete.url(forceDeleteTarget.value), {
         preserveScroll: true,
@@ -171,7 +185,9 @@ function forceDeleteTag() {
 function handleAddChild(parentTag: Tag) {
     addChildParentId.value = parentTag.id;
     // Scroll create form into view
-    document.getElementById('tag-create-form')?.scrollIntoView({ behavior: 'smooth' });
+    document
+        .getElementById('tag-create-form')
+        ?.scrollIntoView({ behavior: 'smooth' });
 }
 </script>
 
@@ -187,7 +203,9 @@ function handleAddChild(parentTag: Tag) {
             <Button
                 variant="ghost"
                 size="sm"
-                :class="showTrashed ? 'text-destructive' : 'text-muted-foreground'"
+                :class="
+                    showTrashed ? 'text-destructive' : 'text-muted-foreground'
+                "
                 @click="toggleTrashed"
             >
                 <Trash2 class="size-4" />
@@ -227,9 +245,15 @@ function handleAddChild(parentTag: Tag) {
     <ConfirmModal
         :open="deleteTarget !== null"
         :title="t('tags.delete.title')"
-        :description="t('tags.delete.description', { name: deleteTarget?.name })"
+        :description="
+            t('tags.delete.description', { name: deleteTarget?.name })
+        "
         :confirm-label="t('tags.delete.confirm')"
-        @update:open="(val) => { if (!val) deleteTarget = null; }"
+        @update:open="
+            (val) => {
+                if (!val) deleteTarget = null;
+            }
+        "
         @confirm="deleteTag"
     />
 
@@ -237,7 +261,11 @@ function handleAddChild(parentTag: Tag) {
     <TagDeleteWithChildrenModal
         :open="deleteWithChildrenTarget !== null"
         :tag="deleteWithChildrenTarget"
-        @update:open="(val) => { if (!val) deleteWithChildrenTarget = null; }"
+        @update:open="
+            (val) => {
+                if (!val) deleteWithChildrenTarget = null;
+            }
+        "
         @cascade="deleteTagCascade"
         @orphan="deleteTagOrphan"
     />
@@ -246,7 +274,11 @@ function handleAddChild(parentTag: Tag) {
     <TagRestoreWithChildrenModal
         :open="restoreWithChildrenTarget !== null"
         :tag="restoreWithChildrenTarget"
-        @update:open="(val) => { if (!val) restoreWithChildrenTarget = null; }"
+        @update:open="
+            (val) => {
+                if (!val) restoreWithChildrenTarget = null;
+            }
+        "
         @confirm="restoreTagWithChildren"
     />
 
@@ -254,16 +286,28 @@ function handleAddChild(parentTag: Tag) {
     <TagRestoreOrphanModal
         :open="restoreOrphanTarget !== null"
         :tag="restoreOrphanTarget"
-        @update:open="(val) => { if (!val) restoreOrphanTarget = null; }"
+        @update:open="
+            (val) => {
+                if (!val) restoreOrphanTarget = null;
+            }
+        "
         @confirm="restoreTagAsOrphan"
     />
 
     <ConfirmModal
         :open="forceDeleteTarget !== null"
         :title="t('tags.forceDeleteDialog.title')"
-        :description="t('tags.forceDeleteDialog.description', { name: forceDeleteTarget?.name })"
+        :description="
+            t('tags.forceDeleteDialog.description', {
+                name: forceDeleteTarget?.name,
+            })
+        "
         :confirm-label="t('tags.forceDeleteDialog.confirm')"
-        @update:open="(val) => { if (!val) forceDeleteTarget = null; }"
+        @update:open="
+            (val) => {
+                if (!val) forceDeleteTarget = null;
+            }
+        "
         @confirm="forceDeleteTag"
     />
 </template>

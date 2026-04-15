@@ -65,12 +65,12 @@ const {
     reset: resetMeta,
 } = useMetaFetch((meta) => {
     if (meta.title && !title.value) {
-title.value = meta.title;
-}
+        title.value = meta.title;
+    }
 
     if (meta.description && !description.value) {
-description.value = meta.description;
-}
+        description.value = meta.description;
+    }
 });
 
 const {
@@ -117,12 +117,17 @@ async function handleTagCreated(payload: TagCreatePayload) {
 
     if (payload.parentName && parentId === undefined) {
         const parent = await createTag(payload.parentName);
-        if (!parent) return;
+
+        if (!parent) {
+            return;
+        }
+
         localTags.value = [...localTags.value, parent];
         parentId = parent.id;
     }
 
     const tag = await createTag(payload.name, parentId);
+
     if (tag) {
         localTags.value = [...localTags.value, tag];
         tagIds.value = [...tagIds.value, tag.id];
@@ -206,7 +211,9 @@ async function handleTagCreated(payload: TagCreatePayload) {
             </div>
 
             <div class="flex flex-col gap-1.5">
-                <Label for="qa-description">{{ t('fields.description') }}</Label>
+                <Label for="qa-description">
+                    {{ t('fields.description') }}
+                </Label>
                 <Textarea
                     id="qa-description"
                     v-model="description"
@@ -221,8 +228,10 @@ async function handleTagCreated(payload: TagCreatePayload) {
             <div class="flex flex-col gap-1.5">
                 <Label for="qa-notes">
                     {{ t('fields.notes') }}
-                    <span class="text-muted-foreground">({{ t('fields.notesPrivate') }})</span></Label
-                >
+                    <span class="text-muted-foreground">
+                        ({{ t('fields.notesPrivate') }})
+                    </span>
+                </Label>
                 <Textarea
                     id="qa-notes"
                     v-model="notes"

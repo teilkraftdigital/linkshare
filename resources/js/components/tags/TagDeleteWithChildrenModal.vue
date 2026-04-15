@@ -13,7 +13,7 @@ import type { Tag } from '@/types/dashboard';
 
 const { t } = useI18n();
 
-const props = defineProps<{
+defineProps<{
     open: boolean;
     tag: Tag | null;
 }>();
@@ -29,9 +29,18 @@ const emit = defineEmits<{
     <Dialog :open="open" @update:open="emit('update:open', $event)">
         <DialogContent>
             <DialogHeader>
-                <DialogTitle>{{ t('tags.deleteWithChildren.title', { name: tag?.name }) }}</DialogTitle>
+                <DialogTitle>
+                    {{
+                        t('tags.deleteWithChildren.title', { name: tag?.name })
+                    }}
+                </DialogTitle>
                 <DialogDescription>
-                    {{ t('tags.deleteWithChildren.description', tag?.children?.length ?? 0) }}
+                    {{
+                        t(
+                            'tags.deleteWithChildren.description',
+                            tag?.children?.length ?? 0,
+                        )
+                    }}
                 </DialogDescription>
             </DialogHeader>
 

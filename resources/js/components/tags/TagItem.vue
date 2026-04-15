@@ -25,7 +25,7 @@ type Props = {
 
 const props = defineProps<Props>();
 
-const emit = defineEmits<{
+defineEmits<{
     restore: [tag: Tag];
     'confirm-delete': [tag: Tag];
     'force-delete': [tag: Tag];

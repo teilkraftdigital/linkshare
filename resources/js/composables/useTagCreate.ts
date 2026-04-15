@@ -14,6 +14,7 @@ export function useTagCreate() {
             document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
 
         const body: Record<string, unknown> = { name, color: 'gray', is_public: false };
+
         if (parentId !== undefined) {
             body.parent_id = parentId;
         }
