@@ -3,7 +3,6 @@ import { Head, router } from '@inertiajs/vue3';
 import { Trash2 } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { i18n } from '@/i18n';
 import TagController from '@/actions/App/Http/Controllers/Dashboard/TagController';
 import ConfirmModal from '@/components/shared/ConfirmModal.vue';
 import Heading from '@/components/shared/Heading.vue';
@@ -11,6 +10,7 @@ import TagCreateForm from '@/components/tags/TagCreateForm.vue';
 import TagItem from '@/components/tags/TagItem.vue';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/composables/useToast';
+import { i18n } from '@/i18n';
 import { index } from '@/routes/dashboard/tags';
 import type { Tag } from '@/types/dashboard';
 

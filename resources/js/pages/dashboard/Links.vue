@@ -1,10 +1,20 @@
 <script setup lang="ts">
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { Trash2 } from 'lucide-vue-next';
-import { ref, watch } from 'vue';
+import { CheckSquare, Trash2 } from 'lucide-vue-next';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { i18n } from '@/i18n';
 import LinkController from '@/actions/App/Http/Controllers/Dashboard/LinkController';
+import DeleteBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/DeleteBulkLinksController';
+import ForceDeleteBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/ForceDeleteBulkLinksController';
+import AddBulkTagsController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/AddBulkTagsController';
+import MoveBulkBucketController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/MoveBulkBucketController';
+import RemoveBulkTagsController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/RemoveBulkTagsController';
+import RestoreBulkLinksController from '@/actions/App/Http/Controllers/Dashboard/BulkActions/RestoreBulkLinksController';
+import BulkActionBar from '@/components/links/BulkActionBar.vue';
+import BulkAddTagsModal from '@/components/links/BulkAddTagsModal.vue';
+import BulkMoveBucketModal from '@/components/links/BulkMoveBucketModal.vue';
+import BulkRemoveTagsModal from '@/components/links/BulkRemoveTagsModal.vue';
+import BulkSelectRow from '@/components/links/BulkSelectRow.vue';
 import LinkCreateForm from '@/components/links/LinkCreateForm.vue';
 import LinkFilter from '@/components/links/LinkFilter.vue';
 import LinkItem from '@/components/links/LinkItem.vue';
@@ -12,8 +22,10 @@ import ConfirmModal from '@/components/shared/ConfirmModal.vue';
 import Heading from '@/components/shared/Heading.vue';
 import Pagination from '@/components/shared/Pagination.vue';
 import { Button } from '@/components/ui/button';
+import { useBulkSelection } from '@/composables/useBulkSelection';
 import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
 import { useToast } from '@/composables/useToast';
+import { i18n } from '@/i18n';
 import { index } from '@/routes/dashboard/links';
 import type { Bucket, Link, Paginator, Tag, Filters } from '@/types/dashboard';
 
@@ -42,6 +54,137 @@ defineOptions({
 });
 
 const { toast } = useToast();
+
+// — Bulk selection —
+const {
+    bulkMode,
+    selectedCount,
+    toggleMode,
+    toggleId,
+    selectAll,
+    clearSelection,
+    isSelected,
+    selectedIds,
+    getSelectedIds,
+} = useBulkSelection();
+
+const pageIds = computed(() => props.links.data.map((l) => l.id));
+
+// Clear selection on pagination change
+watch(
+    () => props.links.current_page,
+    () => clearSelection(),
+);
+
+function bulkDelete() {
+    const ids = getSelectedIds();
+    router.delete(DeleteBulkLinksController.url(), {
+        data: { link_ids: ids },
+        preserveScroll: true,
+        onSuccess: () => {
+            toast(t('links.bulk.deleted', ids.length), 'success');
+            clearSelection();
+        },
+    });
+}
+
+function bulkRestore() {
+    const ids = getSelectedIds();
+    router.post(
+        RestoreBulkLinksController.url(),
+        { link_ids: ids },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast(t('links.bulk.restored', ids.length), 'success');
+                clearSelection();
+            },
+        },
+    );
+}
+
+const bulkAddTagsOpen = ref(false);
+const bulkRemoveTagsOpen = ref(false);
+
+const bulkTagsOnSelectedLinks = computed(() => {
+    const selectedLinks = props.links.data.filter((l) => isSelected(l.id));
+    const countMap = new Map<number, number>();
+    for (const link of selectedLinks) {
+        for (const tag of link.tags) {
+            countMap.set(tag.id, (countMap.get(tag.id) ?? 0) + 1);
+        }
+    }
+    return props.tags
+        .filter((t) => countMap.has(t.id))
+        .map((t) => ({ ...t, count: countMap.get(t.id)! }));
+});
+
+function bulkAddTags(tagIds: number[]) {
+    const ids = getSelectedIds();
+    router.post(
+        AddBulkTagsController.url(),
+        { link_ids: ids, tag_ids: tagIds },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                bulkAddTagsOpen.value = false;
+                toast(t('links.bulk.addTags.added', ids.length), 'success');
+                clearSelection();
+            },
+        },
+    );
+}
+
+function bulkRemoveTag(tagId: number) {
+    const ids = getSelectedIds();
+    router.post(
+        RemoveBulkTagsController.url(),
+        { link_ids: ids, tag_ids: [tagId] },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast(t('links.bulk.removeTags.removed', ids.length), 'success');
+            },
+        },
+    );
+}
+
+const bulkMoveBucketOpen = ref(false);
+
+function bulkMoveBucket(bucketId: number) {
+    const ids = getSelectedIds();
+    const bucket = props.buckets.find((b) => b.id === bucketId);
+    router.patch(
+        MoveBulkBucketController.url(),
+        { link_ids: ids, bucket_id: bucketId },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                bulkMoveBucketOpen.value = false;
+                toast(
+                    `${t('links.bulk.moveBucket.moved', ids.length)} → ${bucket?.name}`,
+                    'success',
+                );
+                clearSelection();
+            },
+        },
+    );
+}
+
+const bulkForceDeleteConfirmOpen = ref(false);
+
+function bulkForceDelete() {
+    const ids = getSelectedIds();
+    router.delete(ForceDeleteBulkLinksController.url(), {
+        data: { link_ids: ids },
+        preserveScroll: true,
+        onSuccess: () => {
+            bulkForceDeleteConfirmOpen.value = false;
+            toast(t('links.bulk.forceDeleted', ids.length), 'success');
+            clearSelection();
+        },
+    });
+}
 
 // — Create form state —
 
@@ -202,17 +345,34 @@ function forceDeleteLink() {
                 :title="t('links.pageTitle')"
                 :description="t('links.description')"
             />
-            <Button
-                variant="ghost"
-                size="sm"
-                :class="
-                    showTrashed ? 'text-destructive' : 'text-muted-foreground'
-                "
-                @click="toggleTrashed"
-            >
-                <Trash2 class="size-4" />
-                {{ t('common.trash') }}
-            </Button>
+            <div class="flex items-center gap-1">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    :class="bulkMode ? 'text-primary' : 'text-muted-foreground'"
+                    @click="toggleMode"
+                >
+                    <CheckSquare class="size-4" />
+                    {{
+                        bulkMode
+                            ? t('links.bulk.cancelMode')
+                            : t('links.bulk.toggleMode')
+                    }}
+                </Button>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    :class="
+                        showTrashed
+                            ? 'text-destructive'
+                            : 'text-muted-foreground'
+                    "
+                    @click="toggleTrashed"
+                >
+                    <Trash2 class="size-4" />
+                    {{ t('common.trash') }}
+                </Button>
+            </div>
         </div>
 
         <!-- Create form -->
@@ -249,6 +409,15 @@ function forceDeleteLink() {
         <!-- Pagination -->
         <Pagination v-if="links.last_page > 1" :items="links" />
 
+        <!-- Bulk select row -->
+        <BulkSelectRow
+            v-if="bulkMode"
+            :selected-count="selectedCount"
+            :total="links.data.length"
+            @select-all="selectAll(pageIds)"
+            @clear-all="clearSelection"
+        />
+
         <!-- Link list -->
         <ul class="flex flex-col gap-2">
             <LinkItem
@@ -259,10 +428,13 @@ function forceDeleteLink() {
                 :tags="tags"
                 :showTrashed="showTrashed"
                 :refetchingLinkId="refetchingLinkId"
+                :bulk-mode="bulkMode"
+                :selected="isSelected(link.id)"
                 @confirm-delete="confirmDelete"
                 @restore="restoreLink"
                 @confirm-force-delete="confirmForceDelete"
                 @refetch-meta="refetchMeta"
+                @toggle-select="toggleId"
             />
         </ul>
 
@@ -293,6 +465,54 @@ function forceDeleteLink() {
             }
         "
         @confirm="deleteLink"
+    />
+
+    <!-- Bulk action bar -->
+    <BulkActionBar
+        v-if="bulkMode && selectedCount > 0"
+        :selected-count="selectedCount"
+        :show-trashed="showTrashed"
+        @close="toggleMode"
+        @bulk-delete="bulkDelete"
+        @bulk-restore="bulkRestore"
+        @bulk-add-tags="bulkAddTagsOpen = true"
+        @bulk-remove-tags="bulkRemoveTagsOpen = true"
+        @bulk-move-bucket="bulkMoveBucketOpen = true"
+        @bulk-force-delete="bulkForceDeleteConfirmOpen = true"
+    />
+
+    <!-- Bulk add tags modal -->
+    <BulkAddTagsModal
+        :open="bulkAddTagsOpen"
+        :tags="tags"
+        @update:open="bulkAddTagsOpen = $event"
+        @confirm="bulkAddTags"
+    />
+
+    <!-- Bulk remove tags modal -->
+    <BulkRemoveTagsModal
+        :open="bulkRemoveTagsOpen"
+        :tags="bulkTagsOnSelectedLinks"
+        @update:open="bulkRemoveTagsOpen = $event"
+        @remove="bulkRemoveTag"
+    />
+
+    <!-- Bulk move bucket modal -->
+    <BulkMoveBucketModal
+        :open="bulkMoveBucketOpen"
+        :buckets="buckets"
+        @update:open="bulkMoveBucketOpen = $event"
+        @confirm="bulkMoveBucket"
+    />
+
+    <!-- Bulk force delete confirm -->
+    <ConfirmModal
+        :open="bulkForceDeleteConfirmOpen"
+        :title="t('links.bulk.forceDeleteDialog.title')"
+        :description="t('links.bulk.forceDeleteDialog.description', selectedCount)"
+        :confirm-label="t('links.bulk.forceDeleteDialog.confirm')"
+        @update:open="(val) => { if (!val) bulkForceDeleteConfirmOpen = false; }"
+        @confirm="bulkForceDelete"
     />
 
     <ConfirmModal

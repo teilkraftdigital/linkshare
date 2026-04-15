@@ -254,7 +254,8 @@
             "editAriaLabel": "Editiere {title}",
             "deleteAriaLabel": "Lösche {title}",
             "restoreAriaLabel": "Stelle {title} wieder her",
-            "forceDeleteAriaLabel": "Lösche permanent {title}"
+            "forceDeleteAriaLabel": "Lösche permanent {title}",
+            "selectAriaLabel": "Link auswählen: {title}"
         },
         "filter": {
             "allBuckets": "Alle Buckets",
@@ -269,7 +270,41 @@
         "filterByTag": "Filter nach Tag",
         "allTags": "Alle Tags",
         "resetFilters": "Filter zurücksetzen",
-        "clearForm": "Formular zurücksetzen"
+        "clearForm": "Formular zurücksetzen",
+        "bulk": {
+            "toggleMode": "Auswählen",
+            "cancelMode": "Abbrechen",
+            "selectAllAriaLabel": "Alle Links auf dieser Seite auswählen",
+            "selectedCount": "{count} von {total} ausgewählt",
+            "selectedLinks": "{count} ausgewählt",
+            "deleted": "{n} Link gelöscht | {n} Links gelöscht",
+            "restored": "{n} Link wiederhergestellt | {n} Links wiederhergestellt",
+            "forceDeleted": "{n} Link endgültig gelöscht | {n} Links endgültig gelöscht",
+            "forceDeleteDialog": {
+                "title": "Endgültig löschen?",
+                "description": "Es wird {n} Link endgültig gelöscht und kann nicht wiederhergestellt werden. | Es werden {n} Links endgültig gelöscht und können nicht wiederhergestellt werden.",
+                "confirm": "Endgültig löschen"
+            },
+            "moveBucket": {
+                "button": "Bucket verschieben",
+                "modalTitle": "Bucket verschieben",
+                "selectPlaceholder": "Bucket auswählen…",
+                "confirm": "Verschieben",
+                "moved": "{n} Link verschoben | {n} Links verschoben"
+            },
+            "addTags": {
+                "button": "Tags hinzufügen",
+                "modalTitle": "Tags hinzufügen",
+                "confirm": "Hinzufügen",
+                "added": "Tags zu {n} Link hinzugefügt | Tags zu {n} Links hinzugefügt"
+            },
+            "removeTags": {
+                "button": "Tags entfernen",
+                "modalTitle": "Tags entfernen",
+                "empty": "Keine gemeinsamen Tags.",
+                "removed": "Tags von {n} Link entfernt | Tags von {n} Links entfernt"
+            }
+        }
     },
     "tags": {
         "pageTitle": "Tags",

@@ -6,10 +6,10 @@ import AllTagsTile from '@/components/dashboard/AllTagsTile.vue';
 import PublicTagsTile from '@/components/dashboard/PublicTagsTile.vue';
 import RecentLinksTile from '@/components/dashboard/RecentLinksTile.vue';
 import StatsTile from '@/components/dashboard/StatsTile.vue';
+import { i18n } from '@/i18n';
 import { formatDate } from '@/lib/datetime';
 import { index as dashboardRoute } from '@/routes/dashboard';
 import type { DashboardTag, DashboardLink } from '@/types/dashboard';
-import { i18n } from '@/i18n';
 
 const { t } = useI18n();
 
