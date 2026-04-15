@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { Bucket } from '@/types/dashboard';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -17,6 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import type { Bucket } from '@/types/dashboard';
 
 const { t } = useI18n();
 
@@ -38,6 +38,7 @@ function handleConfirm() {
     if (!selectedBucketId.value) {
         return;
     }
+
     emit('confirm', Number(selectedBucketId.value));
     selectedBucketId.value = '';
 }
@@ -46,6 +47,7 @@ function handleOpenChange(val: boolean) {
     if (!val) {
         selectedBucketId.value = '';
     }
+
     emit('update:open', val);
 }
 </script>

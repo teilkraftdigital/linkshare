@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useTagCreate } from '@/composables/useTagCreate';
-import type { Link, Bucket, Tag } from '@/types/dashboard';
+import type { Link, Bucket, Tag, TagCreatePayload } from '@/types/dashboard';
 
 type Props = {
     buckets: Bucket[];
@@ -44,8 +44,21 @@ const editTagIds = defineModel<number[]>('tag_ids', {
     default: () => [],
 });
 
-async function handleTagCreated(name: string) {
-    const tag = await createTag(name);
+async function handleTagCreated(payload: TagCreatePayload) {
+    let parentId = payload.parentId;
+
+    if (payload.parentName && parentId === undefined) {
+        const parent = await createTag(payload.parentName);
+
+        if (!parent) {
+            return;
+        }
+
+        localTags.value = [...localTags.value, parent];
+        parentId = parent.id;
+    }
+
+    const tag = await createTag(payload.name, parentId);
 
     if (tag) {
         localTags.value = [...localTags.value, tag];

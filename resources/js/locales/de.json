@@ -318,6 +318,7 @@
         "empty": "Keine Tags vorhanden.",
         "emptyTrashed": "Keine gelöschten Tags.",
         "showEmpty": "Es wurden noch keine Links mit diesem Tag versehen.",
+        "showParentLinks": "Allgemein",
         "select": {
             "placeholder": "Tags suchen…",
             "createHint": "Enter drücken um \u201e{term}\u201c zu erstellen",
@@ -330,6 +331,22 @@
             "title": "Tag löschen?",
             "description": "Tag '{name}' löschen? Diese Aktion kann rückgängig gemacht werden.",
             "confirm": "Löschen"
+        },
+        "deleteWithChildren": {
+            "title": "\u201e{name}\u201c löschen?",
+            "description": "Dieser Tag hat {count} Sub-Tag | Dieser Tag hat {count} Sub-Tags",
+            "cascade": "Mit allen Sub-Tags löschen",
+            "orphan": "Nur diesen Tag löschen (Sub-Tags bleiben als Root-Tags erhalten)"
+        },
+        "restoreWithChildren": {
+            "title": "\u201e{name}\u201c wiederherstellen",
+            "description": "Welche Sub-Tags sollen ebenfalls wiederhergestellt werden?",
+            "confirm": "Wiederherstellen"
+        },
+        "restoreOrphan": {
+            "title": "\u201e{name}\u201c wiederherstellen",
+            "description": "Der Parent-Tag dieses Sub-Tags wurde ebenfalls gelöscht. Er kann als eigenständiger Root-Tag wiederhergestellt werden.",
+            "confirm": "Als Root-Tag wiederherstellen"
         },
         "forceDeleteDialog": {
             "title": "Endgültig löschen?",
@@ -357,7 +374,18 @@
             "descriptionPlaceholder": "Optionale Beschreibung",
             "colorLabel": "Farbe",
             "isPublicLabel": "Öffentlich",
-            "addButton": "Hinzufügen"
+            "addButton": "Hinzufügen",
+            "parentLabel": "Parent-Tag (optional)",
+            "noParent": "Kein Parent-Tag",
+            "colorInherited": "Farbe wird vom Parent-Tag übernommen",
+            "hasChildrenHint": "Hat Sub-Tags — kann kein Sub-Tag werden",
+            "isPublicWillBePublic": "Dieser Tag wird öffentlich, da \u201e{parent}\u201c ein öffentlicher Tag ist",
+            "isPublicWillBePrivate": "Dieser Tag wird privat, da \u201e{parent}\u201c ein privater Tag ist"
+        },
+        "children": {
+            "count": "{n} Sub-Tag | {n} Sub-Tags",
+            "addButton": "Sub-Tag hinzufügen",
+            "toggleAriaLabel": "Sub-Tags von {name} ein-/ausblenden"
         }
     },
     "buckets": {

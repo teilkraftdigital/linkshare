@@ -31,4 +31,13 @@ class TagFactory extends Factory
     {
         return $this->state(['is_public' => true]);
     }
+
+    public function childOf(Tag $parent): static
+    {
+        return $this->state([
+            'parent_id' => $parent->id,
+            'color' => $parent->color,
+            'is_public' => $parent->is_public,
+        ]);
+    }
 }

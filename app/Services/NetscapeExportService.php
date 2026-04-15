@@ -40,7 +40,6 @@ class NetscapeExportService
 
             $lines[] = '    </DL><p>';
         }
-
         $lines[] = '</DL><p>';
 
         return implode("\n", $lines)."\n";

@@ -12,10 +12,21 @@ export type Tag = {
     name: string;
     color: string;
     is_public: boolean;
+    parent_id?: number | null;
     slug?: string;
     description?: string;
     links_count?: number;
+    children?: Tag[];
+    parent?: Tag;
     deleted_at?: string | null;
+    /** Populated in trash view: whether this tag's parent is also trashed */
+    parent_trashed?: boolean;
+};
+
+export type TagCreatePayload = {
+    name: string;
+    parentId?: number;
+    parentName?: string;
 };
 
 export type Link = {

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { Tag } from '@/types/dashboard';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -10,8 +9,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import TagSelect from './TagSelect.vue';
 import { useTagCreate } from '@/composables/useTagCreate';
+import type { Tag, TagCreatePayload } from '@/types/dashboard';
+import TagSelect from './TagSelect.vue';
 
 const { t } = useI18n();
 const { createError: tagCreateError, createTag } = useTagCreate();
@@ -47,11 +47,25 @@ function handleOpenChange(val: boolean) {
     if (!val) {
         selectedTagIds.value = [];
     }
+
     emit('update:open', val);
 }
 
-async function handleTagCreated(name: string) {
-    const tag = await createTag(name);
+async function handleTagCreated(payload: TagCreatePayload) {
+    let parentId = payload.parentId;
+
+    if (payload.parentName && parentId === undefined) {
+        const parent = await createTag(payload.parentName);
+
+        if (!parent) {
+            return;
+        }
+
+        localTags.value = [...localTags.value, parent];
+        parentId = parent.id;
+    }
+
+    const tag = await createTag(payload.name, parentId);
 
     if (tag) {
         localTags.value = [...localTags.value, tag];

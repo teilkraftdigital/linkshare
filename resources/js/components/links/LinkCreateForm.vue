@@ -15,7 +15,7 @@ import { useDuplicateCheck } from '@/composables/useDuplicateCheck';
 import { useMetaFetch } from '@/composables/useMetaFetch';
 import { useTagCreate } from '@/composables/useTagCreate';
 import { useToast } from '@/composables/useToast';
-import type { Bucket, Tag } from '@/types/dashboard';
+import type { Bucket, Tag, TagCreatePayload } from '@/types/dashboard';
 
 const props = defineProps<{
     buckets: Bucket[];
@@ -94,8 +94,21 @@ const handleCreateSubmit = (value: any) => {
     events('created', value);
 };
 
-async function handleTagCreated(name: string) {
-    const tag = await createTag(name);
+async function handleTagCreated(payload: TagCreatePayload) {
+    let parentId = payload.parentId;
+
+    if (payload.parentName && parentId === undefined) {
+        const parent = await createTag(payload.parentName);
+
+        if (!parent) {
+            return;
+        }
+
+        localTags.value = [...localTags.value, parent];
+        parentId = parent.id;
+    }
+
+    const tag = await createTag(payload.name, parentId);
 
     if (tag) {
         localTags.value = [...localTags.value, tag];

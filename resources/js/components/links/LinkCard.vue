@@ -41,7 +41,10 @@ defineProps<{
             </div>
         </div>
 
-        <div v-if="bucket || tags?.length" class="flex flex-wrap items-center gap-2 pl-7">
+        <div
+            v-if="bucket || tags?.length"
+            class="flex flex-wrap items-center gap-2 pl-7"
+        >
             <PillBucket v-if="bucket" :bucket="bucket" />
             <PillTag v-for="tag in tags" :key="tag.id" :tag="tag" />
         </div>
