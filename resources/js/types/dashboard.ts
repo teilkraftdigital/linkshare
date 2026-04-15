@@ -16,6 +16,7 @@ export type Tag = {
     slug?: string;
     description?: string;
     links_count?: number;
+    children?: Tag[];
     deleted_at?: string | null;
 };
 

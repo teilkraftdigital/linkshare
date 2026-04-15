@@ -17,6 +17,7 @@ class UpdateTagRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:1000'],
             'color' => ['required', 'string', 'in:gray,red,orange,amber,yellow,lime,green,teal,cyan,blue,indigo,violet'],
             'is_public' => ['boolean'],
+            'parent_id' => ['nullable', 'integer', 'exists:tags,id'],
         ];
     }
 }

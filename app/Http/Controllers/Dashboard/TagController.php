@@ -21,12 +21,25 @@ class TagController extends Controller
     {
         $showTrashed = $request->boolean('trashed');
 
-        $tags = $showTrashed
-            ? Tag::onlyTrashed()->withCount('links')->orderBy('name')->get()
-            : Tag::withCount('links')->orderBy('name')->get();
+        if ($showTrashed) {
+            $tags = Tag::onlyTrashed()->withCount('links')->orderBy('name')->get();
+        } else {
+            $tags = Tag::with([
+                'children' => fn ($q) => $q->withCount('links')->orderBy('name'),
+            ])
+                ->whereNull('parent_id')
+                ->withCount('links')
+                ->orderBy('name')
+                ->get();
+        }
+
+        $rootTags = $showTrashed
+            ? collect()
+            : Tag::whereNull('parent_id')->orderBy('name')->get(['id', 'name', 'color', 'is_public']);
 
         return Inertia::render('dashboard/Tags', [
             'tags' => $tags,
+            'rootTags' => $rootTags,
             'showTrashed' => $showTrashed,
         ]);
     }
@@ -56,8 +69,20 @@ class TagController extends Controller
     public function update(UpdateTagRequest $request, Tag $tag): RedirectResponse
     {
         $validated = $request->validated();
-        $parentId = $validated['parent_id'] ?? $tag->parent_id;
-        $validated['slug'] = $this->slugGenerator->generate($validated['name'], $tag->id, $parentId);
+        $newParentId = array_key_exists('parent_id', $validated) ? $validated['parent_id'] : $tag->parent_id;
+
+        // A tag with children cannot become a child itself
+        if ($newParentId && $tag->children()->exists()) {
+            return back()->withErrors(['parent_id' => __('tags.form.hasChildrenHint')]);
+        }
+
+        if ($newParentId) {
+            $parent = Tag::findOrFail($newParentId);
+            $validated['color'] = $parent->color;
+            $validated['is_public'] = $parent->is_public;
+        }
+
+        $validated['slug'] = $this->slugGenerator->generate($validated['name'], $tag->id, $newParentId);
 
         $tag->update($validated);
 

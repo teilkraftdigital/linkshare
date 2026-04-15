@@ -16,6 +16,7 @@ import type { Tag } from '@/types/dashboard';
 
 type Props = {
     tags: Tag[];
+    rootTags: Tag[];
     showTrashed: boolean;
 };
 
@@ -34,6 +35,9 @@ const { toast } = useToast();
 const deleteTarget = ref<Tag | null>(null);
 const forceDeleteTarget = ref<Tag | null>(null);
 
+// When user clicks "Add child" on a tag card — pre-fill create form with parent
+const addChildParentId = ref<number | null>(null);
+
 function toggleTrashed() {
     router.get(index(), props.showTrashed ? {} : { trashed: '1' }, {
         preserveState: false,
@@ -45,9 +49,7 @@ function confirmDelete(tag: Tag) {
 }
 
 function deleteTag() {
-    if (!deleteTarget.value) {
-        return;
-    }
+    if (!deleteTarget.value) return;
 
     router.delete(TagController.destroy.url(deleteTarget.value), {
         preserveScroll: true,
@@ -74,9 +76,7 @@ function confirmForceDelete(tag: Tag) {
 }
 
 function forceDeleteTag() {
-    if (!forceDeleteTarget.value) {
-        return;
-    }
+    if (!forceDeleteTarget.value) return;
 
     router.delete(TagController.forceDelete.url(forceDeleteTarget.value), {
         preserveScroll: true,
@@ -85,6 +85,12 @@ function forceDeleteTag() {
             toast(t('tags.forceDeleted'), 'success');
         },
     });
+}
+
+function handleAddChild(parentTag: Tag) {
+    addChildParentId.value = parentTag.id;
+    // Scroll create form into view
+    document.getElementById('tag-create-form')?.scrollIntoView({ behavior: 'smooth' });
 }
 </script>
 
@@ -100,9 +106,7 @@ function forceDeleteTag() {
             <Button
                 variant="ghost"
                 size="sm"
-                :class="
-                    showTrashed ? 'text-destructive' : 'text-muted-foreground'
-                "
+                :class="showTrashed ? 'text-destructive' : 'text-muted-foreground'"
                 @click="toggleTrashed"
             >
                 <Trash2 class="size-4" />
@@ -111,7 +115,13 @@ function forceDeleteTag() {
         </div>
 
         <!-- Create form (hidden in trash view) -->
-        <TagCreateForm v-if="!showTrashed" />
+        <div v-if="!showTrashed" id="tag-create-form">
+            <TagCreateForm
+                :root-tags="rootTags"
+                :prefill-parent-id="addChildParentId"
+                @success="addChildParentId = null"
+            />
+        </div>
 
         <!-- Tag list -->
         <ul class="flex flex-col gap-2">
@@ -119,17 +129,16 @@ function forceDeleteTag() {
                 v-for="tag in tags"
                 :key="tag.id"
                 :tag="tag"
-                :showTrashed="showTrashed"
+                :show-trashed="showTrashed"
                 @confirm-delete="confirmDelete"
                 @restore="restoreTag"
                 @force-delete="confirmForceDelete"
+                @add-child="handleAddChild"
             />
         </ul>
 
         <p v-if="tags.length === 0" class="text-sm text-muted-foreground">
-            {{
-                showTrashed ? t('tags.emptyTrashed') : t('tags.empty')
-            }}
+            {{ showTrashed ? t('tags.emptyTrashed') : t('tags.empty') }}
         </p>
     </div>
 
@@ -138,11 +147,7 @@ function forceDeleteTag() {
         :title="t('tags.delete.title')"
         :description="t('tags.delete.description', { name: deleteTarget?.name })"
         :confirm-label="t('tags.delete.confirm')"
-        @update:open="
-            (val) => {
-                if (!val) deleteTarget = null;
-            }
-        "
+        @update:open="(val) => { if (!val) deleteTarget = null; }"
         @confirm="deleteTag"
     />
 
@@ -151,11 +156,7 @@ function forceDeleteTag() {
         :title="t('tags.forceDeleteDialog.title')"
         :description="t('tags.forceDeleteDialog.description', { name: forceDeleteTarget?.name })"
         :confirm-label="t('tags.forceDeleteDialog.confirm')"
-        @update:open="
-            (val) => {
-                if (!val) forceDeleteTarget = null;
-            }
-        "
+        @update:open="(val) => { if (!val) forceDeleteTarget = null; }"
         @confirm="forceDeleteTag"
     />
 </template>

@@ -357,7 +357,18 @@
             "descriptionPlaceholder": "Optionale Beschreibung",
             "colorLabel": "Farbe",
             "isPublicLabel": "Öffentlich",
-            "addButton": "Hinzufügen"
+            "addButton": "Hinzufügen",
+            "parentLabel": "Parent-Tag (optional)",
+            "noParent": "Kein Parent-Tag",
+            "colorInherited": "Farbe wird vom Parent-Tag übernommen",
+            "hasChildrenHint": "Hat Sub-Tags — kann kein Sub-Tag werden",
+            "isPublicWillBePublic": "Dieser Tag wird öffentlich, da \u201e{parent}\u201c ein öffentlicher Tag ist",
+            "isPublicWillBePrivate": "Dieser Tag wird privat, da \u201e{parent}\u201c ein privater Tag ist"
+        },
+        "children": {
+            "count": "{n} Sub-Tag | {n} Sub-Tags",
+            "addButton": "Sub-Tag hinzufügen",
+            "toggleAriaLabel": "Sub-Tags von {name} ein-/ausblenden"
         }
     },
     "buckets": {
