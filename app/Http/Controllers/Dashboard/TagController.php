@@ -10,6 +10,7 @@ use App\Services\SlugGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -22,32 +23,9 @@ class TagController extends Controller
         $showTrashed = $request->boolean('trashed');
 
         if ($showTrashed) {
-            // Find which parent IDs are also trashed (cascade-deleted with parent)
-            $trashedChildParentIds = Tag::onlyTrashed()->whereNotNull('parent_id')->pluck('parent_id')->unique();
-            $trashedParentIdSet = Tag::withTrashed()
-                ->whereIn('id', $trashedChildParentIds)
-                ->whereNotNull('deleted_at')
-                ->pluck('id')
-                ->flip();
-
-            $tags = Tag::onlyTrashed()
-                ->with([
-                    'children' => fn ($q) => $q->onlyTrashed()->withCount('links')->orderBy('name'),
-                ])
-                ->withCount('links')
-                ->orderBy('name')
-                ->get()
-                ->each(function (Tag $tag) use ($trashedParentIdSet) {
-                    $tag->parent_trashed = $tag->parent_id && $trashedParentIdSet->has($tag->parent_id);
-                });
+            $tags = $this->getTrashedTags();
         } else {
-            $tags = Tag::with([
-                'children' => fn ($q) => $q->withCount('links')->orderBy('name'),
-            ])
-                ->whereNull('parent_id')
-                ->withCount('links')
-                ->orderBy('name')
-                ->get();
+            $tags = $this->getTags();
         }
 
         $rootTags = $showTrashed
@@ -145,5 +123,38 @@ class TagController extends Controller
         $tag->forceDelete();
 
         return back();
+    }
+
+    private function getTags(): Collection
+    {
+        return Tag::with([
+            'children' => fn ($q) => $q->withCount('links')->orderBy('name'),
+        ])
+            ->whereNull('parent_id')
+            ->withCount('links')
+            ->orderBy('name')
+            ->get();
+    }
+
+    private function getTrashedTags(): Collection
+    {
+        // Find which parent IDs are also trashed (cascade-deleted with parent)
+        $trashedChildParentIds = Tag::onlyTrashed()->whereNotNull('parent_id')->pluck('parent_id')->unique();
+        $trashedParentIdSet = Tag::withTrashed()
+            ->whereIn('id', $trashedChildParentIds)
+            ->whereNotNull('deleted_at')
+            ->pluck('id')
+            ->flip();
+
+        return Tag::onlyTrashed()
+            ->with([
+                'children' => fn ($q) => $q->onlyTrashed()->withCount('links')->orderBy('name'),
+            ])
+            ->withCount('links')
+            ->orderBy('name')
+            ->get()
+            ->each(function (Tag $tag) use ($trashedParentIdSet) {
+                $tag->parent_trashed = $tag->parent_id && $trashedParentIdSet->has($tag->parent_id);
+            });
     }
 }

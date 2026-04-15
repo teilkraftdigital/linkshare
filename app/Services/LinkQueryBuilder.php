@@ -18,7 +18,7 @@ class LinkQueryBuilder
 
         $query = $trashed
             ? Link::onlyTrashed()->with(['bucket', 'tags', 'media'])->orderByDesc('deleted_at')
-            : Link::with(['bucket', 'tags', 'media'])->orderByDesc('id');
+            : Link::with(['bucket', 'tags.parent', 'media'])->orderByDesc('id');
 
         if (! $trashed && ! empty($filters['bucket_id'])) {
             $query->where('bucket_id', $filters['bucket_id']);

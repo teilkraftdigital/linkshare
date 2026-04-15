@@ -59,7 +59,10 @@ function displaySlug(tag: Tag) {
 <template>
     <li
         class="flex flex-col rounded-lg border"
-        :class="[showTrashed ? 'opacity-60' : '', isChild ? 'border-0 border-t rounded-none' : '']"
+        :class="[
+            showTrashed ? 'opacity-60' : '',
+            isChild ? 'rounded-none border-0 border-t' : '',
+        ]"
     >
         <!-- Inline edit form -->
         <TagInlineEditForm
@@ -76,8 +79,8 @@ function displaySlug(tag: Tag) {
 
         <template v-else>
             <div
-                class="flex items-center gap-3 px-4 py-3"
-                :class="isChild ? 'pl-8' : ''"
+                class="flex items-center gap-3 px-4"
+                :class="isChild ? 'py-1.5 pl-8' : 'py-3'"
             >
                 <!-- Expand toggle (only for root tags with children) -->
                 <button
@@ -85,10 +88,12 @@ function displaySlug(tag: Tag) {
                     type="button"
                     class="shrink-0 text-muted-foreground transition-transform"
                     :class="expanded ? 'rotate-180' : ''"
-                    :aria-label="t('tags.children.toggleAriaLabel', { name: tag.name })"
+                    :aria-label="
+                        t('tags.children.toggleAriaLabel', { name: tag.name })
+                    "
                     @click="expanded = !expanded"
                 >
-                    <ChevronDown class="size-4" />
+                    <ChevronDown class="size-4" aria-hidden="true" />
                 </button>
                 <!-- Spacer when no toggle (root without children) -->
                 <span v-else-if="!isChild" class="size-4 shrink-0" />
@@ -100,7 +105,10 @@ function displaySlug(tag: Tag) {
 
                 <span
                     class="flex-1 font-medium"
-                    :class="[showTrashed ? 'line-through' : '', isChild ? 'text-sm font-normal' : '']"
+                    :class="[
+                        showTrashed ? 'line-through' : '',
+                        isChild ? 'text-sm font-normal' : '',
+                    ]"
                 >
                     {{ tag.name }}
                 </span>
@@ -118,12 +126,14 @@ function displaySlug(tag: Tag) {
                     class="flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground"
                     :aria-label="`${tag.links_count} links`"
                 >
-                    <LinkIcon class="size-3 shrink-0" />
+                    <LinkIcon class="size-3 shrink-0" aria-hidden="true" />
                     {{ tag.links_count }}
                 </span>
 
                 <!-- Slug -->
-                <code class="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
+                <code
+                    class="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground"
+                >
                     /{{ displaySlug(tag) }}
                 </code>
 
@@ -158,17 +168,23 @@ function displaySlug(tag: Tag) {
                 v-if="!showTrashed && tag.is_public && !isChild"
                 class="flex items-center gap-2 px-4 pb-3 pl-15"
             >
-                <span class="rounded bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                <span
+                    class="rounded bg-green-100 px-1.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                >
                     {{ t('tags.item.publicBadge') }}
                 </span>
                 <code class="flex-1 truncate text-xs text-muted-foreground">
-                    {{ `${$page.props.appUrl}${PublicTagController.show.url(tag.slug ?? '')}` }}
+                    {{
+                        `${$page.props.appUrl}${PublicTagController.show.url(tag.slug ?? '')}`
+                    }}
                 </code>
                 <Button
                     variant="ghost"
                     size="icon"
                     class="size-7 shrink-0"
-                    :aria-label="t('tags.actions.copyUrlAriaLabel', { name: tag.name })"
+                    :aria-label="
+                        t('tags.actions.copyUrlAriaLabel', { name: tag.name })
+                    "
                     @click="copyUrl(tag.slug ?? '')"
                 >
                     <Plus class="size-3.5" />
@@ -177,7 +193,10 @@ function displaySlug(tag: Tag) {
         </template>
 
         <!-- Children (expanded) -->
-        <ul v-if="!isChild && expanded && children.length > 0" class="flex flex-col">
+        <ul
+            v-if="!isChild && expanded && children.length > 0"
+            class="flex flex-col"
+        >
             <TagItem
                 v-for="child in children"
                 :key="child.id"

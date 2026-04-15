@@ -114,12 +114,16 @@ function handleEnter(e: KeyboardEvent) {
             if (!parentPart || !childPart) return;
 
             const existingParent = props.tags.find(
-                (t) => !t.parent_id && t.name.toLowerCase() === parentPart.toLowerCase(),
+                (t) =>
+                    !t.parent_id &&
+                    t.name.toLowerCase() === parentPart.toLowerCase(),
             );
 
             emit('tag-created', {
                 name: childPart,
-                ...(existingParent ? { parentId: existingParent.id } : { parentName: parentPart }),
+                ...(existingParent
+                    ? { parentId: existingParent.id }
+                    : { parentName: parentPart }),
             });
         } else {
             emit('tag-created', { name: term });
@@ -172,10 +176,12 @@ const createHintTerm = computed(() => {
                 <button
                     type="button"
                     class="rounded-full p-0.5 text-muted-foreground hover:text-foreground"
-                    :aria-label="t('tags.select.removeAriaLabel', { name: tag.name })"
+                    :aria-label="
+                        t('tags.select.removeAriaLabel', { name: tag.name })
+                    "
                     @click.stop="remove(tag.id)"
                 >
-                    <X class="size-3" />
+                    <X class="size-3" aria-hidden="true" />
                 </button>
             </span>
 
@@ -218,13 +224,19 @@ const createHintTerm = computed(() => {
                     >
                         <span
                             class="size-2.5 shrink-0 rounded-full"
-                            :class="COLOR_BG[group.parent.color] ?? 'bg-gray-400'"
+                            :class="
+                                COLOR_BG[group.parent.color] ?? 'bg-gray-400'
+                            "
                         />
                         {{ group.parent.name }}
                         <Globe
                             v-if="group.parent.is_public"
                             class="size-3 shrink-0 opacity-60"
-                            :aria-label="t('tags.select.publicTagAriaLabel', { name: group.parent.name })"
+                            :aria-label="
+                                t('tags.select.publicTagAriaLabel', {
+                                    name: group.parent.name,
+                                })
+                            "
                         />
                         <ComboboxItemIndicator class="ml-auto">
                             <span class="text-xs opacity-60">✓</span>
@@ -247,7 +259,11 @@ const createHintTerm = computed(() => {
                         <Globe
                             v-if="child.is_public"
                             class="size-3 shrink-0 opacity-60"
-                            :aria-label="t('tags.select.publicTagAriaLabel', { name: child.name })"
+                            :aria-label="
+                                t('tags.select.publicTagAriaLabel', {
+                                    name: child.name,
+                                })
+                            "
                         />
                         <ComboboxItemIndicator class="ml-auto">
                             <span class="text-xs opacity-60">✓</span>

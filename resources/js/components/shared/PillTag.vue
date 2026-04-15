@@ -20,9 +20,11 @@ defineProps<Props>();
         "
     >
         <span
-            class="size-1.5 rounded-full"
+            class="size-1.5 shrink-0 rounded-full"
             :class="COLOR_BG[tag.color] ?? 'bg-gray-400'"
         />
+
+        <template v-if="tag.parent"> {{ tag.parent.name }} / </template>
         {{ tag.name }}
         <Globe
             v-if="tag.is_public"

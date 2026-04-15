@@ -318,6 +318,7 @@
         "empty": "Keine Tags vorhanden.",
         "emptyTrashed": "Keine gelöschten Tags.",
         "showEmpty": "Es wurden noch keine Links mit diesem Tag versehen.",
+        "showParentLinks": "Allgemein",
         "select": {
             "placeholder": "Tags suchen…",
             "createHint": "Enter drücken um \u201e{term}\u201c zu erstellen",

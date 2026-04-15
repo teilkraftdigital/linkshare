@@ -17,6 +17,7 @@ export type Tag = {
     description?: string;
     links_count?: number;
     children?: Tag[];
+    parent?: Tag;
     deleted_at?: string | null;
     /** Populated in trash view: whether this tag's parent is also trashed */
     parent_trashed?: boolean;

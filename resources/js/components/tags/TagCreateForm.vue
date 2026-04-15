@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import TagController from '@/actions/App/Http/Controllers/Dashboard/TagController';
 import ColorPalette from '@/components/shared/ColorPalette.vue';
@@ -25,8 +25,15 @@ const createColor = ref<string>('gray');
 const createIsPublic = ref<boolean>(false);
 const createParentId = ref<number | null>(props.prefillParentId ?? null);
 
-const selectedParent = computed(() =>
-    props.rootTags.find((t) => t.id === createParentId.value) ?? null,
+watch(
+    () => props.prefillParentId,
+    (newVal) => {
+        createParentId.value = newVal ?? null;
+    },
+);
+
+const selectedParent = computed(
+    () => props.rootTags.find((t) => t.id === createParentId.value) ?? null,
 );
 
 const colorIsInherited = computed(() => !!createParentId.value);
@@ -60,7 +67,9 @@ const colorIsInherited = computed(() => !!createParentId.value);
             </div>
 
             <div class="flex flex-col gap-2">
-                <Label for="tag-description">{{ t('tags.form.descriptionLabel') }}</Label>
+                <Label for="tag-description">
+                    {{ t('tags.form.descriptionLabel') }}
+                </Label>
                 <Textarea
                     id="tag-description"
                     name="description"
@@ -73,36 +82,52 @@ const colorIsInherited = computed(() => !!createParentId.value);
         </div>
 
         <!-- Parent selector -->
-        <div class="flex flex-col gap-2">
-            <Label for="tag-parent">{{ t('tags.form.parentLabel') }}</Label>
-            <input type="hidden" name="parent_id" :value="createParentId ?? ''" />
-            <select
-                id="tag-parent"
-                class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs focus:border-ring focus:ring-[3px] focus:ring-ring/50 focus:outline-none"
-                :value="createParentId ?? ''"
-                @change="createParentId = ($event.target as HTMLSelectElement).value ? Number(($event.target as HTMLSelectElement).value) : null"
-            >
-                <option value="">{{ t('tags.form.noParent') }}</option>
-                <option
-                    v-for="parent in rootTags"
-                    :key="parent.id"
-                    :value="parent.id"
+        <div class="grid gap-4 sm:grid-cols-2">
+            <div class="flex flex-col gap-2">
+                <Label for="tag-parent">{{ t('tags.form.parentLabel') }}</Label>
+                <input
+                    type="hidden"
+                    name="parent_id"
+                    :value="createParentId ?? ''"
+                />
+                <select
+                    id="tag-parent"
+                    class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs focus:border-ring focus:ring-[3px] focus:ring-ring/50 focus:outline-none"
+                    :value="createParentId ?? ''"
+                    @change="
+                        createParentId = ($event.target as HTMLSelectElement)
+                            .value
+                            ? Number(($event.target as HTMLSelectElement).value)
+                            : null
+                    "
                 >
-                    {{ parent.name }}
-                </option>
-            </select>
-            <InputError :message="errors.parent_id" />
+                    <option value="">{{ t('tags.form.noParent') }}</option>
+                    <option
+                        v-for="parent in rootTags"
+                        :key="parent.id"
+                        :value="parent.id"
+                    >
+                        {{ parent.name }}
+                    </option>
+                </select>
+                <InputError :message="errors.parent_id" />
+            </div>
         </div>
 
         <div class="flex flex-wrap items-end gap-6">
             <div class="flex flex-col gap-2">
                 <Label>{{ t('tags.form.colorLabel') }}</Label>
-                <input type="hidden" name="color" :value="selectedParent ? selectedParent.color : createColor" />
+                <input
+                    type="hidden"
+                    name="color"
+                    :value="selectedParent ? selectedParent.color : createColor"
+                />
                 <ColorPalette
+                    v-if="!colorIsInherited"
                     v-model="createColor"
                     :disabled="colorIsInherited"
                 />
-                <p v-if="colorIsInherited" class="text-xs text-muted-foreground">
+                <p v-else class="text-xs text-muted-foreground">
                     {{ t('tags.form.colorInherited') }}
                 </p>
                 <InputError :message="errors.color" />
@@ -112,14 +137,24 @@ const colorIsInherited = computed(() => !!createParentId.value);
                 <input
                     type="hidden"
                     name="is_public"
-                    :value="(selectedParent ? selectedParent.is_public : createIsPublic) ? '1' : '0'"
+                    :value="
+                        (
+                            selectedParent
+                                ? selectedParent.is_public
+                                : createIsPublic
+                        )
+                            ? '1'
+                            : '0'
+                    "
                 />
                 <Checkbox
                     id="create-is-public"
                     v-model="createIsPublic"
                     :disabled="colorIsInherited"
                 />
-                <Label for="create-is-public">{{ t('tags.form.isPublicLabel') }}</Label>
+                <Label for="create-is-public">
+                    {{ t('tags.form.isPublicLabel') }}
+                </Label>
                 <InputError :message="errors.is_public" />
             </div>
 
