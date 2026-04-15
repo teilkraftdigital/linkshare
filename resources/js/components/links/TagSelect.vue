@@ -15,7 +15,8 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { COLOR_BG } from '@/lib/colors';
 import { cn } from '@/lib/utils';
-import type { Tag } from '@/types/dashboard';
+import type { Tag, TagCreatePayload } from '@/types/dashboard';
+
 const { t } = useI18n();
 
 const props = defineProps<{
@@ -27,7 +28,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     'update:modelValue': [value: number[]];
-    'tag-created': [name: string];
+    'tag-created': [payload: TagCreatePayload];
 }>();
 
 const searchTerm = ref('');
@@ -37,15 +38,50 @@ const selectedTags = computed(() =>
     props.tags.filter((t) => props.modelValue.includes(t.id)),
 );
 
-const filteredTags = computed(() => {
+// Group tags: root tags as group headers, children underneath
+const filteredGroups = computed(() => {
     const q = searchTerm.value.toLowerCase().trim();
 
-    return q
-        ? props.tags.filter((t) => t.name.toLowerCase().includes(q))
-        : props.tags;
+    const childrenByParentId = new Map<number, Tag[]>();
+    for (const tag of props.tags) {
+        if (tag.parent_id) {
+            const list = childrenByParentId.get(tag.parent_id) ?? [];
+            list.push(tag);
+            childrenByParentId.set(tag.parent_id, list);
+        }
+    }
+
+    const rootTags = props.tags.filter((t) => !t.parent_id);
+
+    return rootTags
+        .map((parent) => {
+            const allChildren = childrenByParentId.get(parent.id) ?? [];
+
+            if (!q) {
+                return { parent, children: allChildren };
+            }
+
+            const parentMatches = parent.name.toLowerCase().includes(q);
+            const matchingChildren = allChildren.filter((c) =>
+                c.name.toLowerCase().includes(q),
+            );
+
+            if (!parentMatches && matchingChildren.length === 0) {
+                return null;
+            }
+
+            // If parent name matches show all children; otherwise only matching ones
+            return {
+                parent,
+                children: parentMatches ? allChildren : matchingChildren,
+            };
+        })
+        .filter((g): g is { parent: Tag; children: Tag[] } => g !== null);
 });
 
-// Bypass reka-ui's internal filtering — we handle it via filteredTags
+const hasResults = computed(() => filteredGroups.value.length > 0);
+
+// Bypass reka-ui's internal filtering — we handle it via filteredGroups
 function filterFunction() {
     return true;
 }
@@ -66,12 +102,39 @@ function remove(id: number) {
 }
 
 function handleEnter(e: KeyboardEvent) {
-    if (filteredTags.value.length === 0 && searchTerm.value.trim()) {
+    const term = searchTerm.value.trim();
+    if (!hasResults.value && term) {
         e.preventDefault();
-        emit('tag-created', searchTerm.value.trim());
+
+        if (term.includes('/')) {
+            const slashIndex = term.indexOf('/');
+            const parentPart = term.slice(0, slashIndex).trim();
+            const childPart = term.slice(slashIndex + 1).trim();
+
+            if (!parentPart || !childPart) return;
+
+            const existingParent = props.tags.find(
+                (t) => !t.parent_id && t.name.toLowerCase() === parentPart.toLowerCase(),
+            );
+
+            emit('tag-created', {
+                name: childPart,
+                ...(existingParent ? { parentId: existingParent.id } : { parentName: parentPart }),
+            });
+        } else {
+            emit('tag-created', { name: term });
+        }
+
         searchTerm.value = '';
     }
 }
+
+// Hint text for the empty state
+const createHintTerm = computed(() => {
+    const term = searchTerm.value.trim();
+    if (!term) return null;
+    return term;
+});
 </script>
 
 <template>
@@ -133,38 +196,58 @@ function handleEnter(e: KeyboardEvent) {
                 <ComboboxEmpty
                     class="py-2 text-center text-sm text-muted-foreground"
                 >
-                    <template v-if="searchTerm.trim()">
+                    <template v-if="createHintTerm">
                         {{
                             t('tags.select.createHint', {
-                                term: searchTerm.trim(),
+                                term: createHintTerm,
                             })
                         }}
                     </template>
                     <template v-else>{{ t('tags.select.noResults') }}</template>
                 </ComboboxEmpty>
 
-                <ComboboxGroup>
+                <ComboboxGroup
+                    v-for="group in filteredGroups"
+                    :key="group.parent.id"
+                >
+                    <!-- Root tag — selectable as group header -->
                     <ComboboxItem
-                        v-for="tag in filteredTags"
-                        :key="tag.id"
-                        :value="tag"
-                        class="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none data-highlighted:bg-accent"
-                        @select.prevent="toggle(tag)"
+                        :value="group.parent"
+                        class="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm font-medium outline-none data-highlighted:bg-accent"
+                        @select.prevent="toggle(group.parent)"
                     >
                         <span
                             class="size-2.5 shrink-0 rounded-full"
-                            :class="COLOR_BG[tag.color] ?? 'bg-gray-400'"
+                            :class="COLOR_BG[group.parent.color] ?? 'bg-gray-400'"
                         />
-                        {{ tag.name }}
+                        {{ group.parent.name }}
                         <Globe
-                            v-if="tag.is_public"
+                            v-if="group.parent.is_public"
                             class="size-3 shrink-0 opacity-60"
-                            :aria-label="`${t(
-                                'tags.select.publicTagAriaLabel',
-                                {
-                                    name: tag.name,
-                                },
-                            )}`"
+                            :aria-label="t('tags.select.publicTagAriaLabel', { name: group.parent.name })"
+                        />
+                        <ComboboxItemIndicator class="ml-auto">
+                            <span class="text-xs opacity-60">✓</span>
+                        </ComboboxItemIndicator>
+                    </ComboboxItem>
+
+                    <!-- Child tags — indented -->
+                    <ComboboxItem
+                        v-for="child in group.children"
+                        :key="child.id"
+                        :value="child"
+                        class="flex cursor-pointer items-center gap-2 rounded-sm py-1.5 pr-2 pl-7 text-sm outline-none data-highlighted:bg-accent"
+                        @select.prevent="toggle(child)"
+                    >
+                        <span
+                            class="size-2.5 shrink-0 rounded-full"
+                            :class="COLOR_BG[child.color] ?? 'bg-gray-400'"
+                        />
+                        {{ child.name }}
+                        <Globe
+                            v-if="child.is_public"
+                            class="size-3 shrink-0 opacity-60"
+                            :aria-label="t('tags.select.publicTagAriaLabel', { name: child.name })"
                         />
                         <ComboboxItemIndicator class="ml-auto">
                             <span class="text-xs opacity-60">✓</span>

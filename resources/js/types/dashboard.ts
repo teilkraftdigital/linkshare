@@ -12,10 +12,17 @@ export type Tag = {
     name: string;
     color: string;
     is_public: boolean;
+    parent_id?: number | null;
     slug?: string;
     description?: string;
     links_count?: number;
     deleted_at?: string | null;
+};
+
+export type TagCreatePayload = {
+    name: string;
+    parentId?: number;
+    parentName?: string;
 };
 
 export type Link = {

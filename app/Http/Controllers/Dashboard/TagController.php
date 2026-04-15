@@ -35,6 +35,13 @@ class TagController extends Controller
     {
         $validated = $request->validated();
         $parentId = $validated['parent_id'] ?? null;
+
+        if ($parentId) {
+            $parent = Tag::findOrFail($parentId);
+            $validated['color'] = $parent->color;
+            $validated['is_public'] = $parent->is_public;
+        }
+
         $validated['slug'] = $this->slugGenerator->generate($validated['name'], null, $parentId);
 
         $tag = Tag::create($validated);

@@ -7,11 +7,16 @@ export function useTagCreate() {
     const { toast } = useToast();
     const createError = ref<string | undefined>(undefined);
 
-    async function createTag(name: string): Promise<Tag | null> {
+    async function createTag(name: string, parentId?: number): Promise<Tag | null> {
         createError.value = undefined;
 
         const csrfToken =
             document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+
+        const body: Record<string, unknown> = { name, color: 'gray', is_public: false };
+        if (parentId !== undefined) {
+            body.parent_id = parentId;
+        }
 
         try {
             const response = await fetch(TagController.store.url(), {
@@ -21,7 +26,7 @@ export function useTagCreate() {
                     Accept: 'application/json',
                     'X-CSRF-TOKEN': csrfToken,
                 },
-                body: JSON.stringify({ name, color: 'gray', is_public: false }),
+                body: JSON.stringify(body),
             });
 
             const data = await response.json();
