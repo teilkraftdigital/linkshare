@@ -51,7 +51,7 @@ setLayoutProps({
 
         <template v-else>
             <!-- Parent tag links -->
-            <section v-if="links.length > 0">
+            <section v-if="links.length > 0" id="allgemein">
                 <h2
                     class="mb-3 text-sm font-semibold tracking-wide text-muted-foreground uppercase"
                 >
@@ -70,12 +70,22 @@ setLayoutProps({
             </section>
 
             <!-- Child tag sections -->
-            <section v-for="child in children" :key="child.id">
+            <section
+                v-for="child in children"
+                :id="child.slug"
+                :key="child.id"
+            >
                 <h2
                     class="mb-3 text-sm font-semibold tracking-wide text-muted-foreground uppercase"
                 >
                     {{ child.name }}
                 </h2>
+                <p
+                    v-if="child.description"
+                    class="mb-3 text-sm text-muted-foreground"
+                >
+                    {{ child.description }}
+                </p>
                 <ul class="flex flex-col gap-2">
                     <li v-for="link in child.links" :key="link.id">
                         <LinkCard

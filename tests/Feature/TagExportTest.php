@@ -100,3 +100,56 @@ test('export requires no authentication', function () {
 
     $this->get(route('tags.export', $tag->slug))->assertOk();
 });
+
+test('export creates nested sub-tag folder inside root folder', function () {
+    $parent = Tag::factory()->create(['name' => 'Vue', 'slug' => 'vue', 'is_public' => true]);
+    $child = Tag::factory()->childOf($parent)->create(['name' => 'Pinia', 'slug' => 'pinia']);
+    $bucket = Bucket::factory()->create();
+
+    $childLink = Link::factory()->create(['title' => 'Pinia Docs', 'url' => 'https://pinia.vuejs.org', 'bucket_id' => $bucket->id]);
+    $childLink->tags()->attach($child);
+
+    $content = $this->get(route('tags.export', $parent->slug))->getContent();
+
+    $posRoot = strpos($content, '<H3>Vue</H3>');
+    $posChild = strpos($content, '<H3>Pinia</H3>');
+
+    expect($posRoot)->toBeLessThan($posChild);
+    expect($content)->toContain('>Pinia Docs</A>');
+});
+
+test('export nested sub-tag folder appears inside root folder', function () {
+    $parent = Tag::factory()->create(['name' => 'Vue', 'slug' => 'vue', 'is_public' => true]);
+    $child = Tag::factory()->childOf($parent)->create(['name' => 'Pinia']);
+    $bucket = Bucket::factory()->create();
+
+    $childLink = Link::factory()->create(['bucket_id' => $bucket->id]);
+    $childLink->tags()->attach($child);
+
+    $content = $this->get(route('tags.export', $parent->slug))->getContent();
+
+    // The root DL should close after the child folder (nested structure)
+    $posRootDlOpen = strpos($content, '<DT><H3>Vue</H3>');
+    $posChildFolder = strpos($content, '<H3>Pinia</H3>');
+    $posRootDlClose = strrpos($content, '</DL><p>');
+
+    expect($posRootDlOpen)->toBeLessThan($posChildFolder);
+    expect($posChildFolder)->toBeLessThan($posRootDlClose);
+});
+
+test('export includes direct root links alongside sub-tag folders', function () {
+    $parent = Tag::factory()->create(['name' => 'Vue', 'slug' => 'vue', 'is_public' => true]);
+    $child = Tag::factory()->childOf($parent)->create(['name' => 'Pinia']);
+    $bucket = Bucket::factory()->create();
+
+    $rootLink = Link::factory()->create(['title' => 'Vue Docs', 'bucket_id' => $bucket->id]);
+    $rootLink->tags()->attach($parent);
+
+    $childLink = Link::factory()->create(['title' => 'Pinia Guide', 'bucket_id' => $bucket->id]);
+    $childLink->tags()->attach($child);
+
+    $content = $this->get(route('tags.export', $parent->slug))->getContent();
+
+    expect($content)->toContain('>Vue Docs</A>');
+    expect($content)->toContain('>Pinia Guide</A>');
+});

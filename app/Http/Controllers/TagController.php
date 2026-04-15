@@ -12,6 +12,7 @@ class TagController extends Controller
     public function show(Tag $tag): Response
     {
         abort_unless($tag->is_public, 404);
+        abort_if($tag->parent_id, 404);
 
         $links = $tag->links()->select(['id', 'url', 'title', 'description'])->orderBy('title')->get();
         $links->each(fn (Link $link) => $link->setAttribute('favicon_url', $link->getFirstMediaUrl('favicon') ?: null));

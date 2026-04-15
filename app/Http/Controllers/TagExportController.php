@@ -33,11 +33,10 @@ class TagExportController extends Controller
             ->sortBy('name')
             ->values();
 
-        $html = $exporter->build(
-            [
-                ['name' => $tag->name, 'links' => $links],
-                ...$children->map(fn ($child) => ['name' => $child['name'], 'links' => $child['links']])->all(),
-            ],
+        $html = $exporter->buildHierarchical(
+            $tag->name,
+            $links,
+            $children->map(fn ($child) => ['name' => $child['name'], 'links' => $child['links']])->all(),
         );
 
         $filename = 'bookmarks_linkshare_'.now()->toDateString().'.html';
