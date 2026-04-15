@@ -62,7 +62,7 @@ test('export wraps links in folder named after tag', function () {
 
     $content = $this->get(route('tags.export', $tag->slug))->getContent();
 
-    expect($content)->toContain('<H3>My Tag</H3>');
+    expect($content)->toContain('<H2>My Tag</H2>');
 });
 
 test('export links are sorted alphabetically by title', function () {

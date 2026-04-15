@@ -22,7 +22,7 @@ class NetscapeExportService
         $lines[] = '<TITLE>Bookmarks</TITLE>';
         $lines[] = '<H1>Bookmarks</H1>';
         $lines[] = '<DL><p>';
-        $lines[] = '    <DT><H3>'.e($rootName).'</H3>';
+        $lines[] = '    <DT><H2>'.e($rootName).'</H2>';
         $lines[] = '    <DL><p>';
 
         foreach ($rootLinks as $link) {
