@@ -29,6 +29,10 @@ function openTagLinks(tag: DashboardTag): void {
         LinkController.index.url({ query: { tag_id: String(tag.id) } }),
     );
 }
+
+function displayName(tag: DashboardTag): string {
+    return tag.parent ? `${tag.parent.name} / ${tag.name}` : tag.name;
+}
 </script>
 
 <template>
@@ -79,9 +83,12 @@ function openTagLinks(tag: DashboardTag): void {
                                     : ''
                             "
                         >
-                            {{ tag.name }}
+                            {{ displayName(tag) }}
                         </span>
-                        <span class="shrink-0 text-xs text-muted-foreground">
+                        <span
+                            class="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs tabular-nums text-muted-foreground"
+                            :aria-label="`${tag.links_count} Links`"
+                        >
                             {{ tag.links_count }}
                         </span>
                         <Globe

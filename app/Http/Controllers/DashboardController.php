@@ -24,7 +24,7 @@ class DashboardController extends Controller
             $tagDelta = Tag::where('created_at', '>=', $sevenDaysAgo)->count();
             $publicTagDelta = Tag::where('is_public', true)->where('updated_at', '>=', $sevenDaysAgo)->count();
 
-            $recentLinks = Link::with('bucket', 'tags')
+            $recentLinks = Link::with(['bucket', 'tags.parent'])
                 ->latest()
                 ->limit(10)
                 ->get()
@@ -34,11 +34,18 @@ class DashboardController extends Controller
                     'title' => $link->title,
                     'favicon_url' => $link->getFirstMediaUrl('favicon') ?: null,
                     'bucket' => $link->bucket ? ['id' => $link->bucket->id, 'name' => $link->bucket->name, 'color' => $link->bucket->color] : null,
-                    'tags' => $link->tags->map(fn (Tag $tag) => ['id' => $tag->id, 'name' => $tag->name, 'color' => $tag->color])->values()->all(),
+                    'tags' => $link->tags->map(fn (Tag $tag) => [
+                        'id' => $tag->id,
+                        'name' => $tag->name,
+                        'color' => $tag->color,
+                        'parent_id' => $tag->parent_id,
+                        'parent' => $tag->parent ? ['id' => $tag->parent->id, 'name' => $tag->parent->name, 'color' => $tag->parent->color] : null,
+                    ])->values()->all(),
                 ])
                 ->all();
 
-            $tags = Tag::withCount('links')
+            $tags = Tag::with(['parent:id,name,color', 'children' => fn ($q) => $q->withCount('links')])
+                ->withCount('links')
                 ->get()
                 ->map(fn (Tag $tag) => [
                     'id' => $tag->id,
@@ -46,7 +53,11 @@ class DashboardController extends Controller
                     'slug' => $tag->slug,
                     'color' => $tag->color,
                     'is_public' => $tag->is_public,
+                    'parent_id' => $tag->parent_id,
+                    'parent' => $tag->parent ? ['id' => $tag->parent->id, 'name' => $tag->parent->name, 'color' => $tag->parent->color] : null,
                     'links_count' => $tag->links_count,
+                    'total_links_count' => $tag->links_count + $tag->children->sum('links_count'),
+                    'children_count' => $tag->children->count(),
                     'updated_at' => $tag->updated_at?->toISOString(),
                 ])
                 ->all();
