@@ -53,7 +53,7 @@
         "notes": "Private Notizen",
         "privateNotes": "Private Notizen",
         "searchLinks": "Suche in deinen Links…",
-        "email": "email@example.com",
+        "email": "{'email@example.com'}",
         "password": "Passwort",
         "fullName": "Vollständiger Name"
     },
