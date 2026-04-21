@@ -72,6 +72,8 @@ export const TAG_SEARCH_THRESHOLD = 8;
 
 export type DashboardTag = Tag & {
     links_count: number;
+    total_links_count: number;
+    children_count: number;
     updated_at: string;
 };
 

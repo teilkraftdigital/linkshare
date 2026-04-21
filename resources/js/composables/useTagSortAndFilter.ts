@@ -1,6 +1,10 @@
-import { computed, ref  } from 'vue';
-import type {ComputedRef} from 'vue';
+import { computed, ref } from 'vue';
+import type { ComputedRef } from 'vue';
 import type { DashboardTag, SortKey } from '@/types/dashboard';
+
+function displayName(tag: DashboardTag): string {
+    return tag.parent ? `${tag.parent.name} / ${tag.name}` : tag.name;
+}
 
 export function useTagSortAndFilter(tags: ComputedRef<DashboardTag[]>) {
     const sortKey = ref<SortKey>('updated_at');
@@ -15,12 +19,14 @@ export function useTagSortAndFilter(tags: ComputedRef<DashboardTag[]>) {
 
         if (search.trim()) {
             const q = search.trim().toLowerCase();
-            result = result.filter((t) => t.name.toLowerCase().includes(q));
+            result = result.filter((t) =>
+                displayName(t).toLowerCase().includes(q),
+            );
         }
 
         return [...result].sort((a, b) => {
             if (sort === 'name') {
-                return a.name.localeCompare(b.name);
+                return displayName(a).localeCompare(displayName(b));
             }
 
             if (sort === 'links_count') {
@@ -34,6 +40,7 @@ export function useTagSortAndFilter(tags: ComputedRef<DashboardTag[]>) {
             );
         });
     }
+
     const sorted = computed(() =>
         sortedAndFiltered(tags.value, sortKey.value, search.value),
     );

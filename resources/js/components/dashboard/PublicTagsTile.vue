@@ -14,7 +14,9 @@ type Props = {
 };
 
 const props = defineProps<Props>();
-const publicTags = computed(() => props.tags.filter((t) => t.is_public));
+const publicTags = computed(() =>
+    props.tags.filter((t) => t.is_public && !t.parent_id),
+);
 const { t } = useI18n();
 
 const {
@@ -87,8 +89,18 @@ function copyTagUrl(tag: DashboardTag): void {
                     >
                         {{ tag.name }}
                     </a>
-                    <span class="shrink-0 text-xs text-muted-foreground">
-                        {{ tag.links_count }}
+                    <span
+                        class="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs tabular-nums text-muted-foreground"
+                        :aria-label="`${tag.total_links_count} Links`"
+                    >
+                        {{ tag.total_links_count }}
+                    </span>
+                    <span
+                        v-if="tag.children_count > 0"
+                        class="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs tabular-nums text-muted-foreground"
+                        :aria-label="`${tag.children_count} Sub-Tags`"
+                    >
+                        {{ tag.children_count }}
                     </span>
                     <a
                         :href="TagsRoute.show.url(tag.slug ?? '')"
